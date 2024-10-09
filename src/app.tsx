@@ -12,7 +12,7 @@ import { getTauriVersion, getVersion } from "@tauri-apps/api/app";
 
 export enum Pages {
   // Default = Authentication = 0
-  Default = 0,
+  Default = 3,
   Authentication = 0,
   Registration,
   PasswordRecovery,
@@ -72,6 +72,11 @@ class Application extends React.Component<ApplicationProps, ApplicationState> {
 
   static async isDebug(): Promise<boolean> {
     return await invoke("isDebug");
+  }
+
+  static updateClipboard(text: string) {
+    console.log(text);
+    invoke("updateClipboard", {text}).catch(console.log);
   }
 
   render(): React.ReactNode {

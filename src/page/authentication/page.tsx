@@ -16,9 +16,12 @@ import SteamLogo from "@/assets/logo/services/steam.svg";
 class Authentication extends ApplicationPage {
   render(): React.ReactNode {
     return (
-      <Page>
-        <TitleBar/>
-        <div className="h-full pb-10 flex justify-center items-center">
+      <>
+        <Page>
+          <TitleBar/>
+        </Page>
+
+        <div data-tauri-drag-region className="absolute w-screen h-screen flex justify-center items-center">
           <div className="w-auto h-auto min-w-80 flex flex-col space-y-2 rounded-xl border p-7 border-solid border-neutral-200">
             <div className="flex flex-col">
               <span className="font-bold text-xl uppercase">Авторизация</span>
@@ -44,7 +47,7 @@ class Authentication extends ApplicationPage {
             </OAuth>
           </div>
         </div>
-      </Page>
+      </>
     )
   }
 

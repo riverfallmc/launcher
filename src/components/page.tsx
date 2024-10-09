@@ -10,7 +10,17 @@ interface PageProps {
 
 export class Page extends React.Component<PageProps> {
   render(): React.ReactNode {
-    return <div className="w-screen h-screen p-10" data-tauri-drag-region children={this.props.children}/>;
+    return <div className="absolute w-screen h-screen p-10" data-tauri-drag-region children={<PageLayer children={this.props.children}/>}/>;
+  }
+}
+
+/**
+ * PageLayer
+ * * Класс-прослойка, нужный классу Page для нормального отображения контента
+ */
+class PageLayer extends Page {
+  render(): React.ReactNode {
+    return <div data-tauri-drag-region className="w-full h-full flex flex-col space-y-3" children={this.props.children}/>
   }
 }
 

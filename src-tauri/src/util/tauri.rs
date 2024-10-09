@@ -1,5 +1,6 @@
 use std::sync::Mutex;
 
+use copypasta::{ClipboardContext, ClipboardProvider, wayland_clipboard};
 use tauri::{InvokeError, Manager, Window};
 use thiserror::Error;
 
@@ -61,4 +62,19 @@ pub(crate) fn openUrlInBrowser(
 #[allow(non_snake_case)]
 pub(crate) fn isDebug() -> bool {
   cfg!(debug_assertions)
+}
+
+/// Обновляет буфер обмена, устанавливая свой текст
+#[tauri::command]
+#[allow(non_snake_case)]
+pub(crate) fn updateClipboard(
+  text: String
+) -> AnyhowResult<()> {
+  let mut ctx = ClipboardContext::new()
+    .map_err(|e| anyhow::anyhow!("Unable to create ClipboardContext: {e}"))?;
+
+  ctx.set_contents(text)
+    .map_err(|e| anyhow::anyhow!("Unable to update ClipboardContext: {e}"))?;
+
+  Ok(())
 }

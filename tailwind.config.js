@@ -5,7 +5,23 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        "montserrat-alternates": ["Montserrat Alternates", "sans-serif"]
+      },
+      boxShadow: {
+        "black-extended": "0 4px 4px 0 rgba(0, 0, 0, 0.25);"
+      },
+      backgroundImage: {
+        'text-gradient': 'linear-gradient(to bottom, #FF6A00, #FFAE00)',
+      },
+      backgroundClip: {
+        text: 'text',
+      },
+      textFillColor: {
+        transparent: 'transparent',
+      }
+    },
   },
   plugins: [],
 }

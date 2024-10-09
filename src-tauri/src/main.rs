@@ -31,6 +31,7 @@ fn main() -> anyhow::Result<()> {
       // Utils
       util::tauri::openUrlInBrowser,
       util::tauri::isDebug,
+      util::tauri::updateClipboard,
       // Discord Rich Presence
       discord::setDrpcEnabled,
       discord::isDrpcEnabled,
