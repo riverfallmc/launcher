@@ -1,6 +1,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use discord::RpcActivity;
 use tauri::Manager;
 
 mod util;
@@ -16,13 +15,6 @@ fn main() -> anyhow::Result<()> {
 
   // Запускаем Discord Rich Presence
   discord::run_rpc();
-
-  discord::setDrpcActivity(RpcActivity {
-    image: String::from("logo_main"),
-    title: String::from("title"),
-    subtitle: String::from("subtitle"),
-    buttons: vec![],
-  })?;
 
   log::info!("Running tauri");
 

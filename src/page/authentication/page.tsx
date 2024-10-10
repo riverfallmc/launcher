@@ -1,5 +1,5 @@
 import React from "react";
-import { Pages } from "@/app";
+import Application, { Pages } from "@/app";
 import { ApplicationPage } from "@/page/applicationpage";
 import { Page, TitleBar } from "component/page";
 import { TextEntryLabeled } from "component/textentry";
@@ -10,6 +10,7 @@ import { Link } from "component/link";
 import { LogIn } from "lucide-react";
 import { FaSteam, FaVk } from "react-icons/fa6";
 import { FaDiscord, FaYandex } from "react-icons/fa";
+import { DrpcActivity, DrpcManager } from "@/discord";
 
 class Authentication extends ApplicationPage {
   render(): React.ReactNode {
@@ -49,7 +50,9 @@ class Authentication extends ApplicationPage {
     )
   }
 
-  onPageSelected() {}
+  onPageSelected() {
+    DrpcManager.updateActivity(new DrpcActivity("Авторизируется", Application.version));
+  }
 }
 
 export default Authentication;

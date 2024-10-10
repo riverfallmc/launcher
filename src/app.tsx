@@ -7,7 +7,6 @@ import Launcher from "@/page/launcher/page";
 import Registration from "@/page/registration/page";
 import { appWindow } from "@tauri-apps/api/window";
 import { invoke } from "@tauri-apps/api/tauri";
-import { DrpcActivity, DrpcManager } from "./discord";
 import { getTauriVersion, getVersion } from "@tauri-apps/api/app";
 
 export enum Pages {
@@ -26,6 +25,7 @@ interface ApplicationState {
 
 class Application extends React.Component<ApplicationProps, ApplicationState> {
   private static instance: Application | null = null;
+  public static version: string = "version not set";
 
   constructor(props: ApplicationProps) {
     super(props);
@@ -38,7 +38,17 @@ class Application extends React.Component<ApplicationProps, ApplicationState> {
       page: Pages.Default
     };
 
+    Application.requestVersion();
+
     return Application.instance;
+  }
+
+  private static async requestVersion() {
+    const isDebug = await Application.isDebug();
+    const version = await getVersion();
+    const tauriVersion = await getTauriVersion();
+
+    Application.version = `${isDebug ? "debug" : "rc"}-${version}, tauri v${tauriVersion}`;
   }
 
   static getInstance(): Application {
@@ -51,6 +61,7 @@ class Application extends React.Component<ApplicationProps, ApplicationState> {
 
   static changePage(page: Pages) {
     const instance = Application.getInstance();
+
     if (instance.state.page !== page)
       instance.setState({ page });
   }
@@ -59,33 +70,24 @@ class Application extends React.Component<ApplicationProps, ApplicationState> {
     return Application.getInstance().state.page;
   }
 
+  static async isDebug(): Promise<boolean> {
+    return await invoke("isDebug");
+  }
+
   static openUrlInBrowser(url: string) {
-    invoke("openUrlInBrowser", {url: url})
-      .catch(e => {
-        console.log("Unable to open url in browser:", e);
-      });
+    invoke("openUrlInBrowser", {url: url});
+  }
+
+  static updateClipboard(text: string) {
+    invoke("updateClipboard", {text});
   }
 
   static exit() {
     appWindow.close();
   }
 
-  static async isDebug(): Promise<boolean> {
-    return await invoke("isDebug");
-  }
-
-  static updateClipboard(text: string) {
-    console.log(text);
-    invoke("updateClipboard", {text}).catch(console.log);
-  }
-
   render(): React.ReactNode {
     const { page } = this.state;
-
-    setTimeout(async () => {
-      const activity = new DrpcActivity("Страница авторизации", `${await Application.isDebug() ? "debug" : "rc"}-${await getVersion()}, tauri v${await getTauriVersion()}`, "logo_subtitled", []);
-      await DrpcManager.updateActivity(activity);
-    }, 1500);
 
     switch (page) {
       case Pages.Authentication:

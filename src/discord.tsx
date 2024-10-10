@@ -18,22 +18,26 @@ interface DrpcActivityStruct {
 }
 
 export class DrpcActivity implements DrpcActivityStruct {
-  private static defaultImage = "logo_main";
+  private static defaultImage: string = "logo_main";
   public image: string;
   public title: string;
   public subtitle: string;
-  public buttons: DrpcButton[];
+  public buttons: DrpcButton[] = [
+    new DrpcButton("Наш телеграм канал", "https://t.me/serenitymcru")
+  ];
 
   constructor(
     title: string = "",
     subtitle: string = "",
     image: string = DrpcActivity.defaultImage,
-    buttons: DrpcButton[] = []
+    buttons?: DrpcButton[]
   ) {
     this.title = title;
     this.subtitle = subtitle;
     this.image = image;
-    this.buttons = buttons;
+
+    if (buttons)
+      this.buttons = buttons;
   }
 
   public setImage(state: string): this {

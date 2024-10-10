@@ -1,7 +1,9 @@
 import React from "react";
 import Application, { Pages } from "@/app";
+import { ApplicationPage } from "../applicationpage";
+import { DrpcManager, DrpcActivity } from "@/discord";
 
-class NotFound extends React.Component {
+class NotFound extends ApplicationPage {
   render(): React.ReactNode {
     return (
       <div className="w-screen h-screen flex justify-center items-center">
@@ -14,6 +16,10 @@ class NotFound extends React.Component {
         </div>
       </div>
     )
+  }
+
+  onPageSelected(): void {
+    DrpcManager.updateActivity(new DrpcActivity("Словил 404 ошибку", Application.version));
   }
 }
 

@@ -71,6 +71,7 @@ export class PlayerProfile extends React.Component<{}, PlayerDetails> {
 // PlayerFace
 
 /** Информация о блокировке игрока */
+//@ts-ignore
 interface PlayerBan {
   /** Причина, по которой был заблокирован игрок */
   reason: string,
