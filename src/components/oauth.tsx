@@ -1,7 +1,7 @@
 import React from "react";
-import { className } from "../util";
-import { LucideIcon } from "lucide-react";
+import { className } from "@/util";
 import { Button } from "./button";
+import { IconType } from "react-icons";
 
 interface OAuthProps {
   children?: React.ReactNode,
@@ -15,14 +15,13 @@ export class OAuth extends React.Component<OAuthProps> {
 }
 
 interface OAuthServiceProps {
-  children?: LucideIcon,
-  svg?: string,
+  icon: IconType,
   className?: string,
   onClick?: React.MouseEventHandler;
 }
 
 export class OAuthService extends React.Component<OAuthServiceProps> {
   render(): React.ReactNode {
-    return <Button className={className("w-11 h-11 rounded-xl p-2", this.props.className)} children={this.props.svg ? <img src={this.props.svg}/> : (this.props.children ? <this.props.children className="w-full h-full"/> : <></>)}/>
+    return <Button className={className("w-11 h-11 rounded-xl p-2 flex justify-center items-center", this.props.className)} children={<this.props.icon className="w-5 h-5"/>}/>
   }
 }

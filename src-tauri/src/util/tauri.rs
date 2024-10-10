@@ -1,6 +1,6 @@
 use std::sync::Mutex;
 
-use copypasta::{ClipboardContext, ClipboardProvider, wayland_clipboard};
+use copypasta::{ClipboardContext, ClipboardProvider};
 use tauri::{InvokeError, Manager, Window};
 use thiserror::Error;
 

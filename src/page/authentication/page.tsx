@@ -8,10 +8,8 @@ import { Button } from "component/button";
 import { Link } from "component/link";
 // Icons
 import { LogIn } from "lucide-react";
-import VkLogo from "@/assets/logo/services/vk.svg";
-import YandexLogo from "@/assets/logo/services/yandex.svg";
-import DiscordLogo from "@/assets/logo/services/discord.svg";
-import SteamLogo from "@/assets/logo/services/steam.svg";
+import { FaSteam, FaVk } from "react-icons/fa6";
+import { FaDiscord, FaYandex } from "react-icons/fa";
 
 class Authentication extends ApplicationPage {
   render(): React.ReactNode {
@@ -40,10 +38,10 @@ class Authentication extends ApplicationPage {
 
             {/* oauth / авторизация через стороние сервисы */}
             <OAuth>
-              <OAuthService svg={YandexLogo}/>
-              <OAuthService svg={VkLogo}/>
-              <OAuthService svg={DiscordLogo}/>
-              <OAuthService svg={SteamLogo}/>
+              <OAuthService icon={FaYandex}/>
+              <OAuthService icon={FaVk}/>
+              <OAuthService icon={FaDiscord}/>
+              <OAuthService icon={FaSteam}/>
             </OAuth>
           </div>
         </div>

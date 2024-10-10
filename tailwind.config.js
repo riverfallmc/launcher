@@ -23,6 +23,7 @@ export default {
       }
     },
   },
-  plugins: [],
-}
-
+  plugins: [
+    require('tailwindcss-textshadow')
+  ],
+};

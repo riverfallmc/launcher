@@ -20,7 +20,7 @@ export class Page extends React.Component<PageProps> {
  */
 class PageLayer extends Page {
   render(): React.ReactNode {
-    return <div data-tauri-drag-region className="w-full h-full flex flex-col space-y-3" children={this.props.children}/>
+    return <div data-tauri-drag-region className="w-full h-full flex flex-col justify-between" children={this.props.children}/>
   }
 }
 
@@ -35,9 +35,9 @@ interface TitleBarProps {
 export class TitleBar extends React.Component<TitleBarProps> {
   render(): React.ReactNode {
     return (
-      <div className="flex justify-between w-full h-auto">
-        <img hidden={this.props.showLogo === false} src={Logo} className="w-32"/>
-        <div className="space-x-2">
+      <div className="flex justify-between w-full h-7">
+        <img hidden={this.props.showLogo === false} src={Logo} className="w-32 h-7"/>
+        <div className="space-x-2 h-auto">
           {this.props.children}
 
           <TitleBarButton
@@ -61,7 +61,7 @@ export class TitleBarButton extends React.Component<TitleBarButtonProps> {
   render(): React.ReactNode {
     return <button
       hidden={this.props.hidden}
-      className={className("w-8 h-8 transition text-black hover:text-neutral-500", this.props.className)}
+      className={className("w-7 h-7 transition text-black hover:text-neutral-500", this.props.className)}
       onClick={this.props.onClick}
       children={<this.props.children className="w-full h-full" />}/>;
   }

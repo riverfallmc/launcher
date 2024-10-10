@@ -1,8 +1,10 @@
 import React from "react";
-import { Page, TitleBar, TitleBarButton } from "@/components/page";
-import { PlayerProfile } from "./components/profile/playerprofile";
 import { Settings2 } from "lucide-react";
-import { News, NewsPlaceholder } from "./components/news/news";
+import { Page, TitleBar, TitleBarButton } from "@/components/page";
+import { PlayerProfile } from "./components/playerprofile";
+import { NewsList } from "./components/news";
+import { ServerList } from "./components/serverlist";
+import { Links } from "./components/links";
 
 class Launcher extends React.Component {
   render(): React.ReactNode {
@@ -13,20 +15,9 @@ class Launcher extends React.Component {
         </TitleBar>
 
         <PlayerProfile/>
-
-        <NewsPlaceholder>
-          <News
-            title="15% скидка"
-            shortDescription="В честь открытия нашего проекта мы делимся с вами купоном на скидку 15% при покупке доната!"
-            url="https://vk.com/"
-            imageUrl=""
-            clipboardText="ебать пенис молочный"/>
-            <News
-            title="Заголовок"
-            shortDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut quis scelerisque eros. Curabitur condimentum quis"
-            url="https://vk.com/"
-            imageUrl=""/>
-        </NewsPlaceholder>
+        <NewsList/>
+        <ServerList/>
+        <Links/>
       </Page>
     )
   }
