@@ -6,7 +6,7 @@ import { FaVk } from "react-icons/fa6";
 export class Links extends React.Component {
   render(): React.ReactNode {
     return (
-      <div className="w-full h-6 overflow-hidden flex space-x-2">
+      <div className="w-full h-6 overflow-visible flex space-x-2">
         <LinkButton
           label="Telegram"
           link="https://t.me/serenitymcru"
@@ -49,7 +49,7 @@ export class LinkButton extends React.Component<LinkDetails> {
     return (
       <button
       onClick={() => Application.openUrlInBrowser(link)}
-      className="flex items-center rounded-xl space-x-2 w-auto h-full p-2 overflow-hidden shadow-black-extended transition hover:saturate-50"
+      className="flex items-center rounded-xl space-x-2 w-auto h-full p-2 relative shadow-black-extended transition hover:saturate-50"
       style={{ backgroundColor: color }}>
         {icon}
         <span className="text-white text-sm uppercase font-semibold">{label}</span>

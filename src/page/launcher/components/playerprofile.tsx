@@ -8,8 +8,12 @@ export interface PlayerDetails {
   username: string,
   /** URL на лицо скина игрока (используется как аватарка) */
   avatar: string,
+  /** Ранг игрока */
+  rank: string,
+  /** CSS-стиль ника игрока */
+  usernameColor: string,
   /** Донат баланс игрока */
-  balance: number;
+  balance: number,
   /** Заблокирован ли игрок */
   isBanned: boolean;
 }
@@ -18,8 +22,10 @@ export class PlayerProfile extends React.Component<{}, PlayerDetails> {
   constructor(props: {}) {
     super(props);
     this.state = {
-      username: "",
+      username: "user",
       avatar: "",
+      rank: "user",
+      usernameColor: "black",
       balance: 0,
       isBanned: true
     };
@@ -31,7 +37,9 @@ export class PlayerProfile extends React.Component<{}, PlayerDetails> {
       res({
         username: "smokingplaya",
         avatar: "https://ely.by/services/skins-renderer?url=https%3A%2F%2Fely.by%2Fstorage%2Fskins%2Fcf24ddc4a884a95a232ba5200bf19ac5.png&scale=18.9&renderFace=1&v=2",
+        rank: "superadmin",
         balance: 23,
+        usernameColor: "linear-gradient(to bottom, #FF6A00, #FFAE00)",
         isBanned: false
       });
     });
@@ -51,7 +59,9 @@ export class PlayerProfile extends React.Component<{}, PlayerDetails> {
         <PlayerFace url={this.state.avatar} isBanned={this.state.isBanned} />
         <div className="flex flex-col justify-center leading-5">
           <span className="font-medium">С возвращением,</span>
-          <span className={"font-bold bg-text-gradient bg-clip-text text-transparent flex gap-x-2 " + (this.state.isBanned ? "saturate-0" : "")}>{this.state.username} <PlayerBalance balance={this.state.balance}/></span>
+          <span
+            className={"font-bold bg-clip-text text-transparent flex gap-x-2 " + (this.state.isBanned ? "saturate-0" : "")}
+            style={{backgroundImage: this.state.usernameColor}}>{this.state.username} <PlayerBalance balance={this.state.balance}/></span>
         </div>
       </div>
     );
