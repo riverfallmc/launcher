@@ -1,16 +1,24 @@
 use crate::util::tauri::AnyhowResult;
+use discord_rich_presence::{
+  activity::{Activity, Assets, Button},
+  DiscordIpc, DiscordIpcClient,
+};
 use serde::{Deserialize, Serialize};
-use std::{sync::{atomic::{AtomicBool, Ordering::Relaxed}, Mutex}, thread, time::Duration};
-use discord_rich_presence::{activity::{Activity, Assets, Button}, DiscordIpc, DiscordIpcClient};
+use std::{
+  sync::{
+    atomic::{AtomicBool, Ordering::Relaxed},
+    Mutex,
+  },
+  thread,
+  time::Duration,
+};
 
 lazy_static::lazy_static! {
   pub(crate) static ref ACTIVITY: Mutex<Option<RpcActivity>> = Mutex::new(None);
 }
 
 /// Устанавливает активность Discord Rich Presence
-pub(crate) fn set_drpc_activity(
-  activity: RpcActivity
-) -> anyhow::Result<()> {
+pub(crate) fn set_drpc_activity(activity: RpcActivity) -> anyhow::Result<()> {
   let mut activity_lock = ACTIVITY
     .lock()
     .map_err(|e| anyhow::anyhow!("Unable to lock mutex: {e}"))?;
@@ -24,7 +32,8 @@ pub(crate) fn set_drpc_activity(
 fn get_drpc_activity() -> anyhow::Result<RpcActivity> {
   Ok(ACTIVITY
     .lock()
-    .map_err(|e| anyhow::anyhow!("Unable to lock mutex: {e}"))?.clone()
+    .map_err(|e| anyhow::anyhow!("Unable to lock mutex: {e}"))?
+    .clone()
     .ok_or_else(|| anyhow::anyhow!("Unable to get DRPC activity"))?)
 }
 
@@ -34,7 +43,7 @@ static ENABLED: AtomicBool = AtomicBool::new(false);
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub(crate) struct RpcButton {
   pub label: String,
-  pub url: String
+  pub url: String,
 }
 
 impl RpcButton {
@@ -49,9 +58,7 @@ pub trait RpcButtonBuilder {
 
 impl RpcButtonBuilder for Vec<RpcButton> {
   fn build(&self) -> Vec<Button> {
-    self.iter()
-      .map(RpcButton::build)
-      .collect()
+    self.iter().map(RpcButton::build).collect()
   }
 }
 
@@ -64,7 +71,7 @@ pub(crate) struct RpcActivity {
   /// Нижняя надпись (state)
   pub subtitle: String,
   /// Кнопки
-  pub buttons: Vec<RpcButton>
+  pub buttons: Vec<RpcButton>,
 }
 
 impl RpcActivity {
@@ -72,7 +79,11 @@ impl RpcActivity {
     Activity::new()
       .details(&self.title)
       .state(&self.subtitle)
-      .assets(Assets::new().large_image(&self.image).large_text("https://t.me/serenitymcru"))
+      .assets(
+        Assets::new()
+          .large_image(&self.image)
+          .large_text("https://t.me/serenitymcru"),
+      )
       .buttons(self.buttons.build())
   }
 }
@@ -80,15 +91,13 @@ impl RpcActivity {
 /// TODO
 #[tauri::command]
 #[allow(non_snake_case)]
-pub(crate) fn setDrpcActivity(
-  activity: RpcActivity
-) -> AnyhowResult<()> {
+pub(crate) fn setDrpcActivity(activity: RpcActivity) -> AnyhowResult<()> {
   Ok(set_drpc_activity(activity)?)
 }
 
 /// Включен ли Discord Rich Presence в лаунчере?
 pub(crate) fn is_enabled() -> bool {
-  return ENABLED.load(Relaxed)
+  return ENABLED.load(Relaxed);
 }
 
 /// Включает/выключает Discord Rich Presence в лаунчере
@@ -123,6 +132,7 @@ pub(crate) fn run_rpc() {
   });
 }
 
+#[allow(unused_must_use)]
 fn setup_rpc() -> anyhow::Result<()> {
   log::info!("Setting up Discord RPC");
 
@@ -130,7 +140,8 @@ fn setup_rpc() -> anyhow::Result<()> {
     .map_err(|err| anyhow::anyhow!("Failed to create DiscordIpcClient: {err}"))?;
 
   log::info!("Connecting to Discord...");
-  client.connect()
+  client
+    .connect()
     .map_err(|err| anyhow::anyhow!("Error connecting to Discord: {err}"))?;
 
   log::info!("Connection established, updating activity...");
@@ -139,15 +150,15 @@ fn setup_rpc() -> anyhow::Result<()> {
     if is_enabled() {
       match get_drpc_activity() {
         Ok(activity) => {
-          client.set_activity(activity.build())
+          client
+            .set_activity(activity.build())
             .map_err(|err| anyhow::anyhow!("Error setting activity: {err}"))?;
-        },
+        }
         Err(_) => {
           log::warn!("Discord RPC activity not set, retrying in 2 seconds...");
         }
       }
     } else {
-      #[allow(unused_must_use)]
       client.clear_activity();
       log::debug!("Discord RPC is disabled");
     }

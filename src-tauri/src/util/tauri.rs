@@ -1,7 +1,6 @@
 use std::sync::Mutex;
 
-use copypasta::{ClipboardContext, ClipboardProvider};
-use tauri::{InvokeError, Manager, Window};
+use tauri::{ipc::InvokeError, WebviewWindow};
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -22,18 +21,19 @@ pub(crate) type AnyhowResult<T> = anyhow::Result<T, TauriCommandError>;
 // Дополнительные функции для Tauri
 
 lazy_static::lazy_static! {
-  pub(crate) static ref MAIN_WINDOW: Mutex<Option<Window>> = Mutex::new(None);
+  pub(crate) static ref MAIN_WINDOW: Mutex<Option<WebviewWindow>> = Mutex::new(None);
 }
 
 /// Устанавливает main окно
-pub(crate) fn set_main_window(window: Window) {
+pub(crate) fn set_main_window(window: WebviewWindow) {
   let mut window_lock = MAIN_WINDOW.lock().unwrap();
   *window_lock = Some(window);
 }
 
 // Rust би лайк: ☹️
 /// Функция возвращает main окно
-pub(crate) fn get_main_window() -> anyhow::Result<Window> {
+#[allow(unused)]
+pub(crate) fn get_main_window() -> anyhow::Result<WebviewWindow> {
   let window = MAIN_WINDOW
     .lock()
     .map_err(|e| anyhow::anyhow!("Unable to get window: {e}"))?
@@ -43,38 +43,9 @@ pub(crate) fn get_main_window() -> anyhow::Result<Window> {
   Ok(window)
 }
 
-/// Открывает ссылку в браузере
-#[tauri::command]
-#[allow(non_snake_case)]
-pub(crate) fn openUrlInBrowser(
-  url: String
-) -> AnyhowResult<()> {
-  let window = get_main_window()?;
-
-  tauri::api::shell::open(&window.shell_scope(), url, None)
-    .map_err(|e| anyhow::anyhow!("Failed to open URL in browser: {e}"))?;
-
-  Ok(())
-}
-
 /// Является ли текущая сборка дебаг-версией?
 #[tauri::command]
 #[allow(non_snake_case)]
 pub(crate) fn isDebug() -> bool {
   cfg!(debug_assertions)
-}
-
-/// Обновляет буфер обмена, устанавливая свой текст
-#[tauri::command]
-#[allow(non_snake_case)]
-pub(crate) fn updateClipboard(
-  text: String
-) -> AnyhowResult<()> {
-  let mut ctx = ClipboardContext::new()
-    .map_err(|e| anyhow::anyhow!("Unable to create ClipboardContext: {e}"))?;
-
-  ctx.set_contents(text)
-    .map_err(|e| anyhow::anyhow!("Unable to update ClipboardContext: {e}"))?;
-
-  Ok(())
 }

@@ -5,9 +5,13 @@ import Authentication from "@/page/authentication/page";
 import Recovery from "@/page/recovery/page";
 import Launcher from "@/page/launcher/page";
 import Registration from "@/page/registration/page";
-import { appWindow } from "@tauri-apps/api/window";
-import { invoke } from "@tauri-apps/api/tauri";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
+import { invoke } from "@tauri-apps/api/core";
 import { getTauriVersion, getVersion } from "@tauri-apps/api/app";
+import { open } from "@tauri-apps/plugin-shell";
+import { writeText } from "@tauri-apps/plugin-clipboard-manager";
+
+const appWindow = getCurrentWebviewWindow();
 
 export enum Pages {
   // Default = Authentication = 0
@@ -75,12 +79,14 @@ class Application extends React.Component<ApplicationProps, ApplicationState> {
     return await invoke("isDebug");
   }
 
-  static openUrlInBrowser(url: string) {
-    invoke("openUrlInBrowser", {url: url});
+  static async openUrlInBrowser(url: string) {
+    await open(url);
+    // invoke("openUrlInBrowser", {url: url});
   }
 
-  static updateClipboard(text: string) {
-    invoke("updateClipboard", {text});
+  static async updateClipboard(text: string) {
+    // invoke("updateClipboard", {text});
+    await writeText(text);
   }
 
   static exit() {

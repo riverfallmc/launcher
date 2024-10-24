@@ -1,11 +1,9 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use tauri::Manager;
-#[cfg(any(windows, target_os = "macos"))]
-use window_shadows::set_shadow;
 
-mod util;
 mod discord;
+mod util;
 
 fn main() -> anyhow::Result<()> {
   if cfg!(debug_assertions) {
@@ -21,23 +19,30 @@ fn main() -> anyhow::Result<()> {
   log::info!("Running tauri");
 
   tauri::Builder::default()
+    .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+    .plugin(tauri_plugin_notification::init())
+    .plugin(tauri_plugin_http::init())
+    .plugin(tauri_plugin_process::init())
+    .plugin(tauri_plugin_os::init())
+    .plugin(tauri_plugin_dialog::init())
+    .plugin(tauri_plugin_clipboard_manager::init())
+    .plugin(tauri_plugin_shell::init())
+    .plugin(tauri_plugin_fs::init())
     .invoke_handler(tauri::generate_handler![
       // Utils
-      util::tauri::openUrlInBrowser,
       util::tauri::isDebug,
-      util::tauri::updateClipboard,
       // Discord Rich Presence
       discord::setDrpcEnabled,
       discord::isDrpcEnabled,
       discord::setDrpcActivity
     ])
     .setup(|app| {
-      let main_window = app.get_window("main")
+      let main_window = app
+        .get_webview_window("main")
         .ok_or_else(|| anyhow::anyhow!("Failed to get the tauri's main window"))?;
 
-      // todo remove on v2
-      #[cfg(any(windows, target_os = "macos"))]
-      set_shadow(&main_window, true).unwrap();
+      // todo: log ok/err
+      let _ = main_window.set_shadow(true);
 
       util::tauri::set_main_window(main_window);
 
@@ -45,5 +50,5 @@ fn main() -> anyhow::Result<()> {
     })
     .run(tauri::generate_context!())?;
 
-	Ok(())
+  Ok(())
 }
