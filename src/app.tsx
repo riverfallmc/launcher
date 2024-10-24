@@ -25,7 +25,8 @@ interface ApplicationState {
 
 class Application extends React.Component<ApplicationProps, ApplicationState> {
   private static instance: Application | null = null;
-  public static version: string = "version not set";
+  public static noVersion: string = "version not set"
+  public static version: string = this.noVersion;
 
   constructor(props: ApplicationProps) {
     super(props);

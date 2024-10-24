@@ -136,14 +136,20 @@ fn setup_rpc() -> anyhow::Result<()> {
   log::info!("Connection established, updating activity...");
 
   loop {
-    match get_drpc_activity() {
-      Ok(activity) => {
-        client.set_activity(activity.build())
-          .map_err(|err| anyhow::anyhow!("Error setting activity: {err}"))?;
-      },
-      Err(_) => {
-        log::warn!("Discord RPC activity not set, retrying in 2 seconds...");
+    if is_enabled() {
+      match get_drpc_activity() {
+        Ok(activity) => {
+          client.set_activity(activity.build())
+            .map_err(|err| anyhow::anyhow!("Error setting activity: {err}"))?;
+        },
+        Err(_) => {
+          log::warn!("Discord RPC activity not set, retrying in 2 seconds...");
+        }
       }
+    } else {
+      #[allow(unused_must_use)]
+      client.clear_activity();
+      log::debug!("Discord RPC is disabled");
     }
 
     thread::sleep(Duration::from_secs(2));

@@ -1,5 +1,5 @@
 import Application, { Pages } from "@/app";
-import { className } from "@/util";
+import { className } from "../util/classname.util";
 import React from "react";
 
 interface LinkProps {

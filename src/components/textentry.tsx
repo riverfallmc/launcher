@@ -1,5 +1,5 @@
 import React from "react";
-import { className } from "../util";
+import { className } from "../util/classname.util";
 
 interface TextEntryProps {
   className?: string,

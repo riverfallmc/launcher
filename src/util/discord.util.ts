@@ -1,4 +1,6 @@
 import { invoke } from "@tauri-apps/api/tauri";
+import Application from "../app";
+import { SettingsController } from "./settings.util";
 
 export class DrpcButton {
   public label: string;
@@ -61,8 +63,51 @@ export class DrpcActivity implements DrpcActivityStruct {
   }
 }
 
+SettingsController.register("settings.discordRichPresence", true);
+
 export class DrpcManager {
+  private static intervalId?: NodeJS.Timeout;
+
+  private static updActivity(activity: DrpcActivity) {
+    return invoke("setDrpcActivity", { activity });
+  }
+
+  static initialize() {
+    this.setEnabled(SettingsController.get("settings.discordRichPresence"));
+  }
+
+  // todo: rewrite
   static async updateActivity(activity: DrpcActivity) {
-    return invoke("setDrpcActivity", {activity});
+    if (activity.subtitle === Application.noVersion) {
+      if (this.intervalId)
+        clearInterval(this.intervalId);
+
+      this.intervalId = setTimeout(() => {
+        DrpcManager.updateActivity(new DrpcActivity(
+          activity.title,
+          Application.version,
+          activity.image,
+          activity.buttons
+        ));
+
+        delete this.intervalId;
+      }, 500);
+
+      return;
+    }
+
+    DrpcManager.updActivity(activity);
+  }
+
+  static async setEnabled(enabled: boolean) {
+    SettingsController.set("settings.discordRichPresence", enabled);
+
+    return invoke("setDrpcEnabled", { enabled });
+  }
+
+  static async toggle() {
+    return this.setEnabled(!SettingsController.get("settings.discordRichPresence"));
   }
 }
+
+DrpcManager.initialize();

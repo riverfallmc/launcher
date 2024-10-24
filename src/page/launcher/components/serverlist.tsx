@@ -84,7 +84,7 @@ class Server extends React.Component<{server: ServerDetails}> {
   render(): React.ReactNode {
     return (
       <div
-        className={"w-28 h-24 p-2 rounded-lg shadow-black-extended cursor-pointer transition-all duration-300 ease-in-out " + (this.props.server.isEnabled ? "": "saturate-0")}
+        className={"w-28 h-24 p-3 rounded-xl shadow-black-extended cursor-pointer transition-all duration-300 ease-in-out " + (this.props.server.isEnabled ? "": "saturate-0")}
         style={{
           background: this.props.server.gradient,
           backgroundSize: "100%",
@@ -98,7 +98,7 @@ class Server extends React.Component<{server: ServerDetails}> {
         }}>
           <div className="h-full flex flex-col justify-between">
             <p className="text-white font-bold text-base leading-4 text-shadow-lg">{this.props.server.name}</p>
-            <div className="flex flex-col text-right ">
+            <div className="flex flex-col text-right">
               <p className="text-xs text-white/70 font-semibold leading-none text-shadow-md">{this.props.server.version}</p>
               <p className="text-sm text-white font-semibold leading-none text-shadow-lg">{this.props.server.isEnabled ? `${this.props.server.players}/${this.props.server.maxPlayers}` : "выключен"}</p>
             </div>

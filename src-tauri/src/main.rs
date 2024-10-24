@@ -1,6 +1,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use tauri::Manager;
+#[cfg(any(windows, target_os = "macos"))]
+use window_shadows::set_shadow;
 
 mod util;
 mod discord;
@@ -32,6 +34,10 @@ fn main() -> anyhow::Result<()> {
     .setup(|app| {
       let main_window = app.get_window("main")
         .ok_or_else(|| anyhow::anyhow!("Failed to get the tauri's main window"))?;
+
+      // todo remove on v2
+      #[cfg(any(windows, target_os = "macos"))]
+      set_shadow(&main_window, true).unwrap();
 
       util::tauri::set_main_window(main_window);
 

@@ -1,7 +1,7 @@
 import React from "react";
 import { ApplicationPage } from "../applicationpage";
 import Application from "@/app";
-import { DrpcManager, DrpcActivity } from "@/discord";
+import { DrpcManager, DrpcActivity } from "@/util/discord.util";
 
 class Registration extends ApplicationPage {
   render(): React.ReactNode {

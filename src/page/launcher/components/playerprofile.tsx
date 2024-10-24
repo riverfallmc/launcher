@@ -1,4 +1,5 @@
 import Application from "@/app";
+import { getWebsiteUrl } from "@/util/website.util";
 import React from "react";
 import { FaRegGem } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa6";
@@ -129,6 +130,6 @@ class PlayerBalance extends React.Component<{balance: number}> {
 
 class PlayerDonate extends React.Component {
   render(): React.ReactNode {
-    return <FaPlus onClick={() => Application.openUrlInBrowser("https://serenitymc.ru/donate")} className="cursor-pointer text-black transition hover:text-neutral-500" />
+    return <FaPlus onClick={() => Application.openUrlInBrowser(getWebsiteUrl("donate"))} className="cursor-pointer text-black transition hover:text-neutral-500" />
   }
 }

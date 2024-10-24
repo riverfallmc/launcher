@@ -1,5 +1,5 @@
 import React from "react";
-import { className } from "@/util";
+import { className } from "../util/classname.util";
 import { Button } from "./button";
 import { IconType } from "react-icons";
 

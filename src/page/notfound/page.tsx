@@ -1,7 +1,7 @@
 import React from "react";
 import Application, { Pages } from "@/app";
 import { ApplicationPage } from "../applicationpage";
-import { DrpcManager, DrpcActivity } from "@/discord";
+import { DrpcManager, DrpcActivity } from "@/util/discord.util";
 
 class NotFound extends ApplicationPage {
   render(): React.ReactNode {

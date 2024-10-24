@@ -2,15 +2,16 @@ import React from "react";
 import Application from "@/app";
 import Logo from "@/assets/logo/logo.svg";
 import { LucideIcon, X } from "lucide-react";
-import { className } from "@/util";
+import { className } from "../util/classname.util";
 
 interface PageProps {
-  children?: React.ReactNode
+  children?: React.ReactNode,
+  className?: string;
 }
 
 export class Page extends React.Component<PageProps> {
   render(): React.ReactNode {
-    return <div className="absolute w-screen h-screen p-10" data-tauri-drag-region children={<PageLayer children={this.props.children}/>}/>;
+    return <div className={className("absolute w-screen h-screen p-10", this.props.className)} data-tauri-drag-region children={<PageLayer children={this.props.children}/>}/>;
   }
 }
 
@@ -20,7 +21,7 @@ export class Page extends React.Component<PageProps> {
  */
 class PageLayer extends Page {
   render(): React.ReactNode {
-    return <div data-tauri-drag-region className="w-full h-full flex flex-col justify-between" children={this.props.children}/>
+    return <div data-tauri-drag-region className="size-full flex flex-col" children={this.props.children}/>
   }
 }
 

@@ -1,4 +1,5 @@
 import Application from "@/app";
+import { getWebsiteUrl } from "@/util/website.util";
 import React from "react";
 import { FaDiscord, FaGlobe, FaTelegramPlane } from "react-icons/fa";
 import { FaVk } from "react-icons/fa6";
@@ -27,7 +28,7 @@ export class Links extends React.Component {
 
         <LinkButton
           label="Наш сайт"
-          link="https://serenitymc.ru"
+          link={getWebsiteUrl()}
           icon={<FaGlobe className="text-white"/>}
           color="#871FE1"/>
       </div>

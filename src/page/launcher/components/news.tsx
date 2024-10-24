@@ -114,7 +114,7 @@ class NewsCopyButton extends React.Component<NewsCopyButtonProps, NewsCopyButton
 
     return (
       <button
-        className={`bg-purple-700 overflow-hidden rounded-lg p-1 text-white transition-all duration-300 ${
+        className={`bg-purple-700 hover:bg-purple-900 overflow-hidden rounded-lg p-1 text-white transition-all duration-300 ${
           copied ? 'w-40' : 'w-8'
         } h-auto flex items-center justify-center gap-x-2`}
         onClick={this.handleClick}

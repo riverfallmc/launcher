@@ -10,7 +10,7 @@ import { Link } from "component/link";
 import { LogIn } from "lucide-react";
 import { FaSteam, FaVk } from "react-icons/fa6";
 import { FaDiscord, FaYandex } from "react-icons/fa";
-import { DrpcActivity, DrpcManager } from "@/discord";
+import { DrpcActivity, DrpcManager } from "@/util/discord.util";
 
 class Authentication extends ApplicationPage {
   render(): React.ReactNode {
