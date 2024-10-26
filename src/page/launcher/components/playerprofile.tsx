@@ -119,7 +119,7 @@ class PlayerBalance extends React.Component<{balance: number}> {
     }
 
     return `${formattedCount} ${suffix}`;
-}
+  }
 
   render(): React.ReactNode {
     return <span className="text-black font-semibold font-montserrat-alternates gap-x-1 flex justify-center items-center"><FaRegGem/>{this.formatGems(this.props.balance)}<PlayerDonate/></span>

@@ -50,7 +50,7 @@ export class LinkButton extends React.Component<LinkDetails> {
     return (
       <button
       onClick={() => Application.openUrlInBrowser(link)}
-      className="flex items-center rounded-xl space-x-2 w-auto h-full p-2 relative shadow-black-extended transition hover:saturate-50"
+      className="flex items-center rounded-xl space-x-2 w-auto h-full p-2 relative shadow-black-extended transition hover:saturate-[.8]"
       style={{ backgroundColor: color }}>
         {icon}
         <span className="text-white text-sm uppercase font-semibold">{label}</span>

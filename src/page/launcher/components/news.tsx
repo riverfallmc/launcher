@@ -78,7 +78,7 @@ export class NewsList extends React.Component<{}, {news: NewsDetails[]}> {
 
   render(): React.ReactNode {
     return <div
-      className="w-full min-h-36 py-2 space-x-3 flex"
+      className="w-full min-h-36 space-x-3 flex"
       children={this.renderNews()}/>
   }
 }

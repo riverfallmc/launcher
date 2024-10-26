@@ -21,7 +21,7 @@ export class Page extends React.Component<PageProps> {
  */
 class PageLayer extends Page {
   render(): React.ReactNode {
-    return <div data-tauri-drag-region className="size-full flex flex-col" children={this.props.children}/>
+    return <div data-tauri-drag-region className="size-full flex flex-col space-y-2" children={this.props.children}/>
   }
 }
 
@@ -38,7 +38,7 @@ export class TitleBar extends React.Component<TitleBarProps> {
     return (
       <div className="flex justify-between w-full h-7">
         <img hidden={this.props.showLogo === false} src={Logo} className="w-32 h-7"/>
-        <div className="space-x-2 h-auto">
+        <div className="space-x-2 h-auto flex">
           {this.props.children}
 
           <TitleBarButton

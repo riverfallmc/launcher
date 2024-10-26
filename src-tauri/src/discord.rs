@@ -117,6 +117,7 @@ pub(crate) fn isDrpcEnabled() -> bool {
 #[allow(non_snake_case)]
 pub(crate) fn setDrpcEnabled(enabled: bool) {
   set_enabled(enabled);
+  log::info!("Discord Rich Presense {}abled", if enabled {"en"} else {"dis"});
 }
 
 /// Функция, создающая поток, который проверяет статус Discord Rich Presence
@@ -154,13 +155,10 @@ fn setup_rpc() -> anyhow::Result<()> {
             .set_activity(activity.build())
             .map_err(|err| anyhow::anyhow!("Error setting activity: {err}"))?;
         }
-        Err(_) => {
-          log::warn!("Discord RPC activity not set, retrying in 2 seconds...");
-        }
+        Err(_) => {}
       }
     } else {
       client.clear_activity();
-      log::debug!("Discord RPC is disabled");
     }
 
     thread::sleep(Duration::from_secs(2));
