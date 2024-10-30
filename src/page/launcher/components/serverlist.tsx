@@ -70,7 +70,7 @@ export class ServerList extends React.Component<{}, {servers: ServerDetails[]}> 
 
   render(): React.ReactNode {
     return <div className="w-full flex flex-col space-y-1">
-      <span className="uppercase text-xl font-bold">Наши сервера</span>
+      <span className="uppercase text-xl font-bold text-black dark:text-white">Наши сервера</span>
 
       <div className="flex space-x-3" children={this.renderServers()}/>
     </div>

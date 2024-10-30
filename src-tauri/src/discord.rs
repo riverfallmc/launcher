@@ -88,7 +88,6 @@ impl RpcActivity {
   }
 }
 
-/// TODO
 #[tauri::command]
 #[allow(non_snake_case)]
 pub(crate) fn setDrpcActivity(activity: RpcActivity) -> AnyhowResult<()> {
@@ -135,17 +134,17 @@ pub(crate) fn run_rpc() {
 
 #[allow(unused_must_use)]
 fn setup_rpc() -> anyhow::Result<()> {
-  log::info!("Setting up Discord RPC");
+  log::debug!("Setting up Discord RPC");
 
   let mut client = DiscordIpcClient::new("1292519587945906249")
     .map_err(|err| anyhow::anyhow!("Failed to create DiscordIpcClient: {err}"))?;
 
-  log::info!("Connecting to Discord...");
+  log::debug!("Connecting to Discord...");
   client
     .connect()
     .map_err(|err| anyhow::anyhow!("Error connecting to Discord: {err}"))?;
 
-  log::info!("Connection established, updating activity...");
+  log::info!("Discord RPC connection established, updating activity...");
 
   loop {
     if is_enabled() {

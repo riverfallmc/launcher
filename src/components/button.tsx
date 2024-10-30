@@ -4,7 +4,7 @@ import { className } from "../util/classname.util";
 interface ButtonProps {
   children?: React.ReactNode,
   onClick?: React.MouseEventHandler,
-  type?: "submit" | "reset" | "button", // todo просто указать тип
+  type?: React.ButtonHTMLAttributes<HTMLButtonElement>["type"],
   className?: string;
 }
 

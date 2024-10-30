@@ -66,11 +66,11 @@ class WindowContentLayer extends React.Component<WindowContentLayerProps> {
           className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-85">
           <div
             data-tauri-drag-region
-            className="w-[52vw] h-auto p-6 rounded-lg bg-white shadow-black-extended"
+            className="w-[52vw] h-auto p-6 rounded-lg bg-white dark:bg-neutral-900 shadow-black-extended"
             onClick={(e) => e.stopPropagation()}>
             <div className="size-full flex flex-col gap-y-1">
               <div data-tauri-drag-region>
-                <span className="uppercase font-bold text-xl">{this.props.title}</span>
+                <span className="uppercase font-bold text-xl text-black dark:text-white">{this.props.title}</span>
               </div>
               {this.props.children}
             </div>

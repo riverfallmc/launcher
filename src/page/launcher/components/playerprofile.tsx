@@ -59,10 +59,11 @@ export class PlayerProfile extends React.Component<{}, PlayerDetails> {
       <div className="flex gap-x-4">
         <PlayerFace url={this.state.avatar} isBanned={this.state.isBanned} />
         <div className="flex flex-col justify-center leading-5">
-          <span className="font-medium">С возвращением,</span>
-          <span
-            className={"font-bold bg-clip-text text-transparent flex gap-x-2 " + (this.state.isBanned ? "saturate-0" : "")}
-            style={{backgroundImage: this.state.usernameColor}}>{this.state.username} <PlayerBalance balance={this.state.balance}/></span>
+          <span className="font-medium text-black dark:text-white">С возвращением,</span>
+          <div className="flex space-x-2">
+            <span className={"font-bold bg-clip-text text-transparent flex gap-x-2 " + (this.state.isBanned ? "saturate-0" : "")} style={{backgroundImage: this.state.usernameColor}} children={this.state.username}/>
+            <PlayerBalance balance={this.state.balance}/>
+          </div>
         </div>
       </div>
     );
@@ -122,7 +123,7 @@ class PlayerBalance extends React.Component<{balance: number}> {
   }
 
   render(): React.ReactNode {
-    return <span className="text-black font-semibold font-montserrat-alternates gap-x-1 flex justify-center items-center"><FaRegGem/>{this.formatGems(this.props.balance)}<PlayerDonate/></span>
+    return <span className="text-black dark:text-white font-semibold font-montserrat-alternates gap-x-1 flex justify-center items-center"><FaRegGem/>{this.formatGems(this.props.balance)}<PlayerDonate/></span>
   }
 }
 
@@ -130,6 +131,6 @@ class PlayerBalance extends React.Component<{balance: number}> {
 
 class PlayerDonate extends React.Component {
   render(): React.ReactNode {
-    return <FaPlus onClick={() => Application.openUrlInBrowser(getWebsiteUrl("donate"))} className="cursor-pointer text-black transition hover:text-neutral-500" />
+    return <FaPlus onClick={() => Application.openUrlInBrowser(getWebsiteUrl("donate"))} className="cursor-pointer transition hover:text-neutral-500 dark:hover:text-neutral-400" />
   }
 }

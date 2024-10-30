@@ -1,4 +1,5 @@
 import React from "react";
+import Application from "@/app";
 import { ApplicationPage } from "@/page/applicationpage";
 import { Page, TitleBar } from "@/components/page";
 import { PlayerProfile } from "./components/playerprofile";
@@ -6,8 +7,7 @@ import { NewsList } from "./components/news";
 import { ServerList } from "./components/serverlist";
 import { Links } from "./components/links";
 import { DrpcActivity, DrpcManager } from "@/util/discord.util";
-import Application from "@/app";
-import { Settings } from "./components/settings";
+import { SettingsWindow } from "./components/settings";
 import { Downloads } from "./components/downloads";
 
 class Launcher extends ApplicationPage {
@@ -15,7 +15,7 @@ class Launcher extends ApplicationPage {
     return (
       <Page>
         <TitleBar>
-          <Settings/>
+          <SettingsWindow/>
         </TitleBar>
 
         {/* Container */}

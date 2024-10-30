@@ -11,7 +11,8 @@ interface PageProps {
 
 export class Page extends React.Component<PageProps> {
   render(): React.ReactNode {
-    return <div className={className("absolute w-screen h-screen p-10", this.props.className)} data-tauri-drag-region children={<PageLayer children={this.props.children}/>}/>;
+    // bg-neutral-900
+    return <div className={className("absolute bg-white dark:bg-neutral-900 w-screen h-screen p-10", this.props.className)} data-tauri-drag-region children={<PageLayer children={this.props.children}/>}/>;
   }
 }
 
@@ -62,7 +63,7 @@ export class TitleBarButton extends React.Component<TitleBarButtonProps> {
   render(): React.ReactNode {
     return <button
       hidden={this.props.hidden}
-      className={className("w-7 h-7 transition text-black hover:text-neutral-500", this.props.className)}
+      className={className("w-7 h-7 transition text-black dark:text-white hover:text-neutral-500 dark:hover:text-neutral-300", this.props.className)}
       onClick={this.props.onClick}
       children={<this.props.children className="w-full h-full" />}/>;
   }

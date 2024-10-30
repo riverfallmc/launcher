@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import Application from "../app";
-import { SettingsController } from "./settings.util";
+import { SettingsManager } from "./settings.util";
 
 export class DrpcButton {
   public label: string;
@@ -63,17 +63,19 @@ export class DrpcActivity implements DrpcActivityStruct {
   }
 }
 
-SettingsController.register("settings.discordRichPresence", true);
+SettingsManager.register({
+  name: "Discord RPC",
+  description: "Отображает активность в дискорде",
+  id: "settings.discordRichPresence",
+  default: true,
+  onChange: value => DrpcManager.setEnabled(value as boolean)
+});
 
 export class DrpcManager {
   private static intervalId?: NodeJS.Timeout;
 
   private static updActivity(activity: DrpcActivity) {
     return invoke("setDrpcActivity", { activity });
-  }
-
-  static initialize() {
-    this.setEnabled(SettingsController.get("settings.discordRichPresence"));
   }
 
   // todo: rewrite
@@ -100,14 +102,10 @@ export class DrpcManager {
   }
 
   static async setEnabled(enabled: boolean) {
-    SettingsController.set("settings.discordRichPresence", enabled);
-
     return invoke("setDrpcEnabled", { enabled });
   }
 
   static async toggle() {
-    return this.setEnabled(!SettingsController.get("settings.discordRichPresence"));
+    return this.setEnabled(!SettingsManager.get("settings.discordRichPresence"));
   }
 }
-
-DrpcManager.initialize();

@@ -1,6 +1,7 @@
 import React from "react";
 import Application from "@/app";
 import { Copy } from "lucide-react";
+import { OpenInBrowser } from "@/components/link";
 
 interface NewsDetails {
   /** Заголовок новости */
@@ -28,7 +29,7 @@ export class News extends React.Component<{news: NewsDetails}> {
 
         <div className="flex flex-col justify-end mt-auto">
           <span className="text-white text-lg font-bold font-montserrat-alternates text-shadow-lg">{this.props.news.title}</span>
-          <span className="text-white/70 text-xs font-semibold leading-3 text-shadow-md">{this.props.news.shortDescription}</span>
+          <span className="text-white/70 text-xs font-semibold leading-4 text-shadow-md">{this.props.news.shortDescription}</span>
         </div>
       </div>
     )
@@ -71,7 +72,7 @@ export class NewsList extends React.Component<{}, {news: NewsDetails[]}> {
   private renderNews(): React.ReactNode {
     return (
       <>
-        {this.state && this.state.news && this.state.news.map(news => <News news={news}/>)}
+        {this.state && this.state.news && this.state.news.map(news => <OpenInBrowser url={news.url}><News news={news}/></OpenInBrowser>)}
       </>
     );
   }
@@ -99,7 +100,9 @@ class NewsCopyButton extends React.Component<NewsCopyButtonProps, NewsCopyButton
     copied: false,
   };
 
-  handleClick = () => {
+  handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+
     Application.updateClipboard(this.props.text);
 
     this.setState({ copied: true });

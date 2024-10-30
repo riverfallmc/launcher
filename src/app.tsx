@@ -10,8 +10,23 @@ import { invoke } from "@tauri-apps/api/core";
 import { getTauriVersion, getVersion } from "@tauri-apps/api/app";
 import { open } from "@tauri-apps/plugin-shell";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
+import { SettingsManager } from "./util/settings.util";
 
 const appWindow = getCurrentWebviewWindow();
+
+SettingsManager.register({
+  name: "Тёмная тема",
+  description: "Включает тёмную тему",
+  id: "settings.DarkTheme",
+  default: true,
+  onChange: value => {
+    console.log(value);
+    if (value)
+      document.documentElement.classList.add('dark');
+    else
+      document.documentElement.classList.remove('dark');
+  }
+})
 
 export enum Pages {
   // Default = Authentication = 0
@@ -81,11 +96,9 @@ class Application extends React.Component<ApplicationProps, ApplicationState> {
 
   static async openUrlInBrowser(url: string) {
     await open(url);
-    // invoke("openUrlInBrowser", {url: url});
   }
 
   static async updateClipboard(text: string) {
-    // invoke("updateClipboard", {text});
     await writeText(text);
   }
 

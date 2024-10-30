@@ -23,3 +23,12 @@ export class Link extends React.Component<LinkProps> {
     return <a className={className("cursor-pointer font-bold transition text-violet-600 hover:text-violet-800", this.props.className)} onClick={() => this.handleClick()} children={this.props.children}/>
   }
 }
+
+export class OpenInBrowser extends React.Component<{children: React.ReactNode, url: string}> {
+  render(): React.ReactNode {
+    return (
+      <a className="cursor-pointer" onClick={() => Application.openUrlInBrowser(this.props.url)} children={this.props.children}>
+      </a>
+    )
+  }
+}

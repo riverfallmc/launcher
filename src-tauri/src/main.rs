@@ -16,7 +16,7 @@ fn main() -> anyhow::Result<()> {
   // Запускаем Discord Rich Presence
   discord::run_rpc();
 
-  log::info!("Running tauri");
+  log::info!("Starting Tauri {}", tauri::VERSION);
 
   tauri::Builder::default()
     .plugin(tauri_plugin_global_shortcut::Builder::new().build())
@@ -41,8 +41,10 @@ fn main() -> anyhow::Result<()> {
         .get_webview_window("main")
         .ok_or_else(|| anyhow::anyhow!("Failed to get the tauri's main window"))?;
 
-      // todo: log ok/err
-      let _ = main_window.set_shadow(true);
+      match main_window.set_shadow(true) {
+        Ok(_) => log::info!("Enabled shadow"),
+        Err(_) => log::warn!("Unable to enable shadow on main window")
+      };
 
       util::tauri::set_main_window(main_window);
 
