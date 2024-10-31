@@ -15,6 +15,9 @@ export class SettingsManager {
     settings: Settings
   ) {
     this.storage.set(settings.id, { ...settings });
+
+    if (settings.onChange)
+      settings.onChange(this.get<boolean>(settings.id) || settings.default);
   };
 
   /** Храним в виде массива с размером в 1 элемент.

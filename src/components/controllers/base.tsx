@@ -35,15 +35,10 @@ export class CheckBox<T extends boolean = boolean> extends InputController<
     super(props);
 
     this.onClick = this.onClick.bind(this);
-
-    // шобы лаунчер сам применял настройки автоматически
-    this.update(this.state.value);
   }
 
   private onClick(event: ChangeEvent<HTMLInputElement>) {
-    let value = event.target.checked;
-
-    this.update(value as T);
+    this.update(event.target.checked as T);
   }
 
   private update(value: T) {

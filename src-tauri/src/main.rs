@@ -1,7 +1,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use tauri::Manager;
+use tauri::Manager as _;
 
+mod download;
 mod discord;
 mod util;
 
@@ -13,7 +14,7 @@ fn main() -> anyhow::Result<()> {
   // Инициализируем систему логирования
   env_logger::init();
 
-  // Запускаем Discord Rich Presence
+  // Запускаем Discord RPC
   discord::run_rpc();
 
   log::info!("Starting Tauri {}", tauri::VERSION);
@@ -31,6 +32,8 @@ fn main() -> anyhow::Result<()> {
     .invoke_handler(tauri::generate_handler![
       // Utils
       util::tauri::isDebug,
+      // Downloads
+      download::interface::downloadInterfaceCommand,
       // Discord Rich Presence
       discord::setDrpcEnabled,
       discord::isDrpcEnabled,

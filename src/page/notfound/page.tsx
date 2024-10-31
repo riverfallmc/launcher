@@ -2,19 +2,20 @@ import React from "react";
 import Application, { Pages } from "@/app";
 import { ApplicationPage } from "../applicationpage";
 import { DrpcManager, DrpcActivity } from "@/util/discord.util";
+import { Page } from "@/components/page";
+import { Link } from "@/components/link";
 
 class NotFound extends ApplicationPage {
   render(): React.ReactNode {
     return (
-      <div className="w-screen h-screen flex justify-center items-center">
-        <div className="flex flex-col items-center">
-          <p className="font-extrabold text-4xl">404</p>
-          <p className="">Вас не должно быть здесь.</p>
-          <a
-            onClick={() => Application.changePage(Pages.Default)}
-            className="transition cursor-pointer font-bold hover:text-violet-700">Начальная страница</a>
+      <Page>
+        <div className="flex flex-col space-y-3 leading-3 size-full justify-center items-center">
+          <span className="text-3xl font-bold text-black dark:text-white">404</span>
+          <span className="text-black/50 dark:text-white/55">Тебя здесь не должно быть...</span>
+
+          <Link page={Pages.Authentication}>Вернуться на главную</Link>
         </div>
-      </div>
+      </Page>
     )
   }
 

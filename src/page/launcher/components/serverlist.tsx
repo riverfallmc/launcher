@@ -78,12 +78,12 @@ export class ServerList extends React.Component<{}, {servers: ServerDetails[]}> 
 }
 
 // Server component
-
 class Server extends React.Component<{server: ServerDetails}> {
   // todo сделать сортировку по isEnabled
   render(): React.ReactNode {
     return (
       <div
+        title={`Сервер ${this.props.server.name}`}
         className={"w-28 h-24 p-3 rounded-xl shadow-black-extended cursor-pointer transition-all duration-300 ease-in-out " + (this.props.server.isEnabled ? "": "saturate-0")}
         style={{
           background: this.props.server.gradient,

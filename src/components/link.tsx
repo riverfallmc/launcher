@@ -15,7 +15,7 @@ export class Link extends React.Component<LinkProps> {
   private handleClick() {
     if (this.props.href)
       Application.openUrlInBrowser(this.props.href);
-    else if (this.props.page)
+    else if (this.props.page !== undefined)
       Application.changePage(this.props.page);
   }
 

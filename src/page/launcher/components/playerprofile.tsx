@@ -39,7 +39,7 @@ export class PlayerProfile extends React.Component<{}, PlayerDetails> {
         username: "smokingplaya",
         avatar: "https://ely.by/services/skins-renderer?url=https%3A%2F%2Fely.by%2Fstorage%2Fskins%2Fcf24ddc4a884a95a232ba5200bf19ac5.png&scale=18.9&renderFace=1&v=2",
         rank: "superadmin",
-        balance: 23,
+        balance: 620,
         usernameColor: "linear-gradient(to bottom, #FF6A00, #FFAE00)",
         isBanned: false
       });
@@ -60,8 +60,8 @@ export class PlayerProfile extends React.Component<{}, PlayerDetails> {
         <PlayerFace url={this.state.avatar} isBanned={this.state.isBanned} />
         <div className="flex flex-col justify-center leading-5">
           <span className="font-medium text-black dark:text-white">С возвращением,</span>
-          <div className="flex space-x-2">
-            <span className={"font-bold bg-clip-text text-transparent flex gap-x-2 " + (this.state.isBanned ? "saturate-0" : "")} style={{backgroundImage: this.state.usernameColor}} children={this.state.username}/>
+          <div className="flex space-x-1">
+            <span className={"font-bold bg-clip-text text-transparent flex justify-center items-center gap-x-2 " + (this.state.isBanned ? "saturate-0" : "")} style={{backgroundImage: this.state.usernameColor}} children={this.state.username}/>
             <PlayerBalance balance={this.state.balance}/>
           </div>
         </div>
@@ -112,18 +112,18 @@ class PlayerBalance extends React.Component<{balance: number}> {
     let suffix: string;
 
     if (count % 10 === 1 && count % 100 !== 11) {
-        suffix = 'гем';
+      suffix = 'гем';
     } else if (count % 10 >= 2 && count % 10 <= 4 && (count % 100 < 10 || count % 100 >= 20)) {
-        suffix = 'гема';
+      suffix = 'гема';
     } else {
-        suffix = 'гемов';
+      suffix = 'гемов';
     }
 
     return `${formattedCount} ${suffix}`;
   }
 
   render(): React.ReactNode {
-    return <span className="text-black dark:text-white font-semibold font-montserrat-alternates gap-x-1 flex justify-center items-center"><FaRegGem/>{this.formatGems(this.props.balance)}<PlayerDonate/></span>
+    return <span className="text-black dark:text-white/90 text-sm font-semibold dark:font-medium font-montserrat-alternates gap-x-1 flex justify-center items-center"><FaRegGem/>{this.formatGems(this.props.balance)}<PlayerDonate/></span>
   }
 }
 
@@ -131,6 +131,6 @@ class PlayerBalance extends React.Component<{balance: number}> {
 
 class PlayerDonate extends React.Component {
   render(): React.ReactNode {
-    return <FaPlus onClick={() => Application.openUrlInBrowser(getWebsiteUrl("donate"))} className="cursor-pointer transition hover:text-neutral-500 dark:hover:text-neutral-400" />
+    return <FaPlus title="Пополнить донат-счёт" onClick={() => Application.openUrlInBrowser(getWebsiteUrl("donate"))} className="cursor-pointer transition hover:text-neutral-500 dark:hover:text-neutral-400" />
   }
 }

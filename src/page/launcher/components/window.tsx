@@ -1,18 +1,18 @@
-import React, { ReactNode, ReactElement } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 
 interface WindowProps {
-  title: string;
-  children: ReactNode;
+  title: React.ReactNode;
+  children: React.ReactNode;
 }
 
 interface WindowTriggerProps {
-  children?: ReactNode;
+  children?: React.ReactNode;
   onClick?: () => void;
 }
 
 interface WindowContentProps {
-  children: ReactNode;
+  children: React.ReactNode;
   close?: () => void;
 }
 
@@ -30,8 +30,8 @@ export class Window extends React.Component<WindowProps, { isOpen: boolean }> {
   render(): React.ReactNode {
     const { title, children } = this.props;
 
-    const trigger = React.Children.toArray(children)[0] as ReactElement<WindowTriggerProps>;
-    const content = React.Children.toArray(children)[1] as ReactElement<WindowContentProps>;
+    const trigger = React.Children.toArray(children)[0] as React.ReactElement<WindowTriggerProps>;
+    const content = React.Children.toArray(children)[1] as React.ReactElement<WindowContentProps>;
 
     return (
       <>
@@ -54,11 +54,11 @@ export class Window extends React.Component<WindowProps, { isOpen: boolean }> {
 interface WindowContentLayerProps {
   children?: React.ReactNode,
   onClose?: () => void,
-  title: string;
+  title: React.ReactNode;
 }
 
 class WindowContentLayer extends React.Component<WindowContentLayerProps> {
-  render(): ReactNode {
+  render(): React.ReactNode {
     return ReactDOM.createPortal(
       <>
         <div
@@ -70,7 +70,7 @@ class WindowContentLayer extends React.Component<WindowContentLayerProps> {
             onClick={(e) => e.stopPropagation()}>
             <div className="size-full flex flex-col gap-y-1">
               <div data-tauri-drag-region>
-                <span className="uppercase font-bold text-xl text-black dark:text-white">{this.props.title}</span>
+                <span className="uppercase font-bold text-xl text-black dark:text-white flex items-center space-x-2">{this.props.title}</span>
               </div>
               {this.props.children}
             </div>

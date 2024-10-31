@@ -49,6 +49,7 @@ export class LinkButton extends React.Component<LinkDetails> {
 
     return (
       <button
+      title={`Ссылка на ${this.props.label}`}
       onClick={() => Application.openUrlInBrowser(link)}
       className="flex items-center rounded-xl space-x-2 w-auto h-full p-2 relative shadow-black-extended transition hover:saturate-[.8]"
       style={{ backgroundColor: color }}>

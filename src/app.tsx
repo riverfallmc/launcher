@@ -11,6 +11,7 @@ import { getTauriVersion, getVersion } from "@tauri-apps/api/app";
 import { open } from "@tauri-apps/plugin-shell";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { SettingsManager } from "./util/settings.util";
+import { DownloadsManager } from "./util/downloads.util";
 
 const appWindow = getCurrentWebviewWindow();
 
@@ -20,7 +21,6 @@ SettingsManager.register({
   id: "settings.DarkTheme",
   default: true,
   onChange: value => {
-    console.log(value);
     if (value)
       document.documentElement.classList.add('dark');
     else
@@ -50,15 +50,17 @@ class Application extends React.Component<ApplicationProps, ApplicationState> {
   constructor(props: ApplicationProps) {
     super(props);
 
-    if (!Application.instance) {
+    if (!Application.instance)
       Application.instance = this;
-    }
+
+    Application.requestVersion();
+
+    // создаем прослушивателя событий скачивания чего-то там
+    new DownloadsManager;
 
     this.state = {
       page: Pages.Default
     };
-
-    Application.requestVersion();
 
     return Application.instance;
   }
@@ -71,7 +73,7 @@ class Application extends React.Component<ApplicationProps, ApplicationState> {
     Application.version = `${isDebug ? "debug" : "rc"}-${version}, tauri v${tauriVersion}`;
   }
 
-  static getInstance(): Application {
+  public static getInstance(): Application {
     if (!Application.instance) {
       throw new Error("Application is not initialized yet.");
     }
@@ -79,30 +81,30 @@ class Application extends React.Component<ApplicationProps, ApplicationState> {
     return Application.instance;
   }
 
-  static changePage(page: Pages) {
+  public static changePage(page: Pages) {
     const instance = Application.getInstance();
 
     if (instance.state.page !== page)
       instance.setState({ page });
   }
 
-  static getPage(): Pages | undefined {
+  public static getPage(): Pages | undefined {
     return Application.getInstance().state.page;
   }
 
-  static async isDebug(): Promise<boolean> {
+  public static async isDebug(): Promise<boolean> {
     return await invoke("isDebug");
   }
 
-  static async openUrlInBrowser(url: string) {
+  public static async openUrlInBrowser(url: string) {
     await open(url);
   }
 
-  static async updateClipboard(text: string) {
+  public static async updateClipboard(text: string) {
     await writeText(text);
   }
 
-  static exit() {
+  public static exit() {
     appWindow.close();
   }
 

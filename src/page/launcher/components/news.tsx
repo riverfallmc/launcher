@@ -21,6 +21,7 @@ export class News extends React.Component<{news: NewsDetails}> {
   render(): React.ReactNode {
     return (
       <div
+        title="Открыть новость в браузере"
         className="h-36 w-72 p-4 bg-neutral-100 shadow-black-extended rounded-lg flex flex-col justify-between bg-cover bg-center bg-no-repeat"
         style={{backgroundImage: `url(${this.props.news.imageUrl})`}}>
         <div className="w-full h-auto flex items-center justify-end">
@@ -117,6 +118,7 @@ class NewsCopyButton extends React.Component<NewsCopyButtonProps, NewsCopyButton
 
     return (
       <button
+        title="Скопировать"
         className={`bg-purple-700 hover:bg-purple-900 overflow-hidden rounded-lg p-1 text-white transition-all duration-300 ${
           copied ? 'w-40' : 'w-8'
         } h-auto flex items-center justify-center gap-x-2`}

@@ -5,25 +5,39 @@ import { Window, WindowContent, WindowTrigger } from "./window";
 import { Settings, SettingsManager } from "@/util/settings.util";
 import { TextEntry } from "@/components/textentry";
 import { CheckBox } from "@/components/controllers/base";
+import { invoke } from "@tauri-apps/api/core";
+import { DownloadsManager } from "@/util/downloads.util";
 
 SettingsManager.register({
-  name: "TextEntry",
-  description: "Пример ввода",
-  default: "Jopa",
-  id: "settings.TextEntryExample"
+  name: "Emit",
+  description: "Запускает процесс скачивания",
+  default: false,
+  id: "settings.TextEntryExample",
+  onChange: async value => {
+    if (value)
+      await invoke("testEmit");
+  }
 })
 
 export class SettingsWindow extends React.Component<{}, {isOpened: boolean}> {
+  private static _ = DownloadsManager.listen(event => {
+    console.log(event);
+  }, "settingsWindow");
+
   render(): React.ReactNode {
     return (
       <Window title="Настройки">
         <WindowTrigger>
-          <TitleBarButton children={Settings2}/>
+          <TitleBarButton
+            title="Открыть настройки лаунчера"
+            children={Settings2}/>
         </WindowTrigger>
         <WindowContent>
-          {Array.from(SettingsManager.getAll().entries()).map((pair) => (
-            <Setting setting={pair} />
-          ))}
+          <div className="flex flex-col space-y-2">
+            {Array.from(SettingsManager.getAll().entries()).map((pair) => (
+              <Setting setting={pair} />
+            ))}
+          </div>
         </WindowContent>
       </Window>
     )

@@ -43,6 +43,7 @@ export class TitleBar extends React.Component<TitleBarProps> {
           {this.props.children}
 
           <TitleBarButton
+            title="Закрыть лаунчер"
             hidden={this.props.showClose === false}
             onClick={() => Application.exit()}
             children={X}/>
@@ -53,15 +54,17 @@ export class TitleBar extends React.Component<TitleBarProps> {
 }
 
 interface TitleBarButtonProps {
-  children: LucideIcon;
-  className?: string;
-  onClick?: React.MouseEventHandler;
+  children: LucideIcon,
+  className?: string,
+  onClick?: React.MouseEventHandler,
   hidden?: boolean,
+  title?: string;
 }
 
 export class TitleBarButton extends React.Component<TitleBarButtonProps> {
   render(): React.ReactNode {
     return <button
+      title={this.props.title}
       hidden={this.props.hidden}
       className={className("w-7 h-7 transition text-black dark:text-white hover:text-neutral-500 dark:hover:text-neutral-300", this.props.className)}
       onClick={this.props.onClick}

@@ -63,14 +63,6 @@ export class DrpcActivity implements DrpcActivityStruct {
   }
 }
 
-SettingsManager.register({
-  name: "Discord RPC",
-  description: "Отображает активность в дискорде",
-  id: "settings.discordRichPresence",
-  default: true,
-  onChange: value => DrpcManager.setEnabled(value as boolean)
-});
-
 export class DrpcManager {
   private static intervalId?: NodeJS.Timeout;
 
@@ -109,3 +101,11 @@ export class DrpcManager {
     return this.setEnabled(!SettingsManager.get("settings.discordRichPresence"));
   }
 }
+
+SettingsManager.register({
+  name: "Discord RPC",
+  description: "Отображает активность в дискорде",
+  id: "settings.discordRichPresence",
+  default: true,
+  onChange: value => DrpcManager.setEnabled(value as boolean)
+});
