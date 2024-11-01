@@ -150,3 +150,12 @@ export class DownloadsManager {
     ];
   }
 }
+
+(() => {
+  setTimeout(async () => {
+    await DownloadInterface.create({
+      id: "client",
+      name: "Magic RPG №1"
+    });
+  }, 1500);
+})();
