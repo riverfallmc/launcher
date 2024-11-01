@@ -4,19 +4,20 @@
  * И только потому-что тут просто полный пиздец по логике, и запутаться как нехуй делать, лол))
  */
 
-use std::sync::{Arc, Mutex};
+use std::{borrow::BorrowMut, sync::{Arc, Mutex}};
 use hashbrown::HashMap;
 use lazy_static::lazy_static;
 use reqwest::Response;
 use tokio::{runtime::Runtime, task::{self, JoinHandle}};
-use tauri::async_runtime::TokioJoinHandle;
-
-use crate::util::url::join_url;
+use tauri::{async_runtime::TokioJoinHandle, Emitter};
+use crate::util::{tauri::get_main_window, url::join_url};
 
 pub(crate) mod create;
 pub(crate) mod read;
 pub(crate) mod update;
 pub(crate) mod delete;
+
+const EMIT_EVENT_ID: &'static str = "downloadThread";
 
 lazy_static! {
   /// Singleton очереди приложения
@@ -39,33 +40,33 @@ pub(crate) fn get_download_queue() -> &'static Mutex<Queue> {
 pub(crate) struct DownloadableObject {
   /// Айди клиента
   // magic-rpg
-  id: String,
+  id: Mutex<String>,
   /// Название клиента
   // Magic RPG №1
-  name: String,
+  name: Mutex<String>,
   /// Скорость загрузки
   // 10.4 мбайт/с
-  speed: f32,
+  speed: Mutex<f32>,
   /// Процентное отношение загруженного контента
   // 100%
-  progress: u8,
+  progress: Mutex<u8>,
   /// Статус загрузки (сколько байт уже скачалось)
   // 0 мб
-  state: usize,
+  state: Mutex<usize>,
   /// Поставлена ли загрузка на паузу?
   // false
-  paused: bool
+  paused: Mutex<bool>
 }
 
 impl Default for DownloadableObject {
   fn default() -> Self {
     DownloadableObject {
-      id: String::new(),
-      name: String::new(),
-      speed: 0.0,
-      progress: 0,
-      state: 0,
-      paused: false,
+      id: Mutex::new(String::new()),
+      name: Mutex::new(String::new()),
+      speed: Mutex::new(0.0),
+      progress: Mutex::new(0),
+      state: Mutex::new(0),
+      paused: Mutex::new(false),
     }
   }
 }
@@ -76,15 +77,15 @@ impl DownloadableObject {
     name: String
   ) -> DownloadableObject {
     DownloadableObject {
-      id,
-      name,
+      id: Mutex::new(id),
+      name: Mutex::new(name),
       ..Default::default()
     }
   }
 
   // https://localhost/client/magic-rpg
   fn get_download_url(&self) -> String {
-    join_url(&format!("client/{}.zip", self.id))
+    join_url(&format!("client/{}.zip", self.id.lock().unwrap()))
   }
 
   async fn save_body(
@@ -93,7 +94,13 @@ impl DownloadableObject {
   ) {
     let mut downloaded: usize = 0;
 
+    // грузим файл частями (чанками)
     while let Some(chunk) = response.chunk().await.unwrap() {
+      if *self.paused.lock().unwrap() {
+        self.commit();
+        break;
+      }
+
       let size = chunk.len();
       downloaded += size;
     }
@@ -102,33 +109,41 @@ impl DownloadableObject {
   }
 
   /// Запускает/восстанавливает загрузку клиента
-  /// Todo 💡 @ если self.paused, то убиваем поток нахуй
-  async fn start(self: Arc<Self>) {
-    log::debug!("Start downloading id({}) name({})", self.id, self.name);
+  async fn start(self: Arc<Self>) -> anyhow::Result<()> {
+    log::debug!("Starting download of ID({}) Name({})", self.id.lock().unwrap(), self.name.lock().unwrap());
     let url = self.get_download_url();
     let me = Arc::clone(&self);
 
     let client = reqwest::Client::builder()
       .timeout(std::time::Duration::from_secs(10))
-      .build()
-      .unwrap();
+      .build()?;
 
     let mut response = client.get(url)
       .send()
-      .await
-      .unwrap();
+      .await?;
 
     me.save_body(&mut response).await;
+
+    Ok(())
   }
 
-  // Останавливает загрузку клиента
-  fn pause(&self) {}
+  /// Останавливает загрузку клиента
+  fn pause(self: Arc<Self>) {
+    *self.paused.lock().unwrap() = true;
+  }
+
+  /// Пушим изменения полей на фронтенд/
+  /// Todo: Доделать
+  fn commit(&self) {
+    let window = get_main_window().unwrap();
+    window.emit(&EMIT_EVENT_ID, {});
+  }
 
   /// Убирает клиент из очереди
   fn remove(&self) {
     let queue = &mut *get_download_queue().lock().unwrap();
 
-    queue.remove(&self.id);
+    queue.remove(&self.id.lock().unwrap());
   }
 }
 
@@ -194,7 +209,8 @@ impl Queue {
         let current = Arc::clone(curr);
         rt.block_on(async {
           let ass = tokio::spawn(async move {
-            current.start().await;
+            // todo: match => log
+            current.start().await
           }).await;
 
           println!("{ass:?}");
@@ -205,10 +221,10 @@ impl Queue {
 
   /// Останавливает загрузку/установку текущего клиента
   /// todo: emit
-  fn pause_current(&self) {
+  fn pause_current(&mut self) {
     if let Some(id) = &self.current_downloadable {
       if let Some(current) = self.queue.get(id) {
-        current.pause();
+        current.clone().pause();
       }
     }
   }
