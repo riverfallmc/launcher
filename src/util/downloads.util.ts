@@ -6,8 +6,8 @@ export interface DownloadEntity {
   name: string,
   speed: number,
   progress: number,
-  status: string;
-  isPaused: boolean,
+  state: number,
+  paused: boolean;
 };
 
 type ListenCallback = (event: DownloadEntity) => void;
@@ -114,6 +114,7 @@ export class DownloadsManager {
   };
 
   private static onEvent(payload: DownloadEntity) {
+    console.log(payload);
     this.listeners.forEach(listener => {
       listener(payload);
     });
@@ -130,24 +131,7 @@ export class DownloadsManager {
   }
 
   public static getAll(): DownloadEntity[] {
-    return [
-      {
-        id: "magic-rpg",
-        name: "Говно с горы",
-        progress: 10,
-        speed: 10.5,
-        isPaused: true,
-        status: "Скачивание говна"
-      },
-      {
-        id: "magic-sus-rpg",
-        name: "sus",
-        progress: 25,
-        speed: 10.5,
-        isPaused: false,
-        status: "Соси хуй"
-      }
-    ];
+    return [];
   }
 }
 

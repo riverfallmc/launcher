@@ -8,6 +8,7 @@ use std::{borrow::BorrowMut, sync::{Arc, Mutex}};
 use hashbrown::HashMap;
 use lazy_static::lazy_static;
 use reqwest::Response;
+use serde::{Deserialize, Serialize};
 use tokio::{runtime::Runtime, task::{self, JoinHandle}};
 use tauri::{async_runtime::TokioJoinHandle, Emitter};
 use crate::util::{tauri::get_main_window, url::join_url};
@@ -35,8 +36,20 @@ pub(crate) fn get_download_queue() -> &'static Mutex<Queue> {
   &DOWNLOAD_QUEUE
 }
 
+/// DownloadableObject без мьютекса
+#[derive(Serialize, Deserialize, Debug, Clone)]
+struct DownloadableObjectNoMutex {
+  id: String,
+  name: String,
+  speed: f32,
+  progress: u8,
+  state: usize,
+  paused: bool
+}
+
 /// Единица скачиваемого клиента
-#[allow(unused)]
+// #[allow(unused)]
+#[derive(Debug)]
 pub(crate) struct DownloadableObject {
   /// Айди клиента
   // magic-rpg
@@ -79,6 +92,7 @@ impl DownloadableObject {
     DownloadableObject {
       id: Mutex::new(id),
       name: Mutex::new(name),
+      paused: Mutex::new(false),
       ..Default::default()
     }
   }
@@ -97,15 +111,36 @@ impl DownloadableObject {
     // грузим файл частями (чанками)
     while let Some(chunk) = response.chunk().await.unwrap() {
       if *self.paused.lock().unwrap() {
-        self.commit();
+        log::warn!("Download paused. Breaking loop");
         break;
       }
 
       let size = chunk.len();
       downloaded += size;
+
+      let speed = 0 as f32;
+      let progress = 0 as u8;
+
+      self.set_speed(speed);
+      self.set_progress(progress);
+      self.set_state(downloaded.clone());
+
+      self.commit();
     }
 
     log::debug!("Download completed. Downloaded {}MB", downloaded/1_000_000);
+  }
+
+  fn set_speed(&self, speed: f32) {
+    *self.speed.lock().unwrap() = speed;
+  }
+
+  fn set_progress(&self, progress: u8) {
+    *self.progress.lock().unwrap() = progress;
+  }
+
+  fn set_state(&self, downloaded: usize) {
+    *self.state.lock().unwrap() = downloaded;
   }
 
   /// Запускает/восстанавливает загрузку клиента
@@ -117,6 +152,8 @@ impl DownloadableObject {
     let client = reqwest::Client::builder()
       .timeout(std::time::Duration::from_secs(10))
       .build()?;
+
+    log::debug!("Downloading URL: {url}");
 
     let mut response = client.get(url)
       .send()
@@ -130,13 +167,27 @@ impl DownloadableObject {
   /// Останавливает загрузку клиента
   fn pause(self: Arc<Self>) {
     *self.paused.lock().unwrap() = true;
+    self.commit();
+  }
+
+  /// Возвращает структуру, которая имеет поля без мьютекса
+  /// Мда... пиздец...
+  fn save_current_state(&self) -> DownloadableObjectNoMutex {
+    DownloadableObjectNoMutex {
+      id: self.id.lock().unwrap().to_string(),
+      name: self.name.lock().unwrap().to_string(),
+      speed: *self.speed.lock().unwrap(),
+      progress: *self.progress.lock().unwrap(),
+      state: *self.state.lock().unwrap(),
+      paused: *self.paused.lock().unwrap(),
+    }
   }
 
   /// Пушим изменения полей на фронтенд/
   /// Todo: Доделать
   fn commit(&self) {
     let window = get_main_window().unwrap();
-    window.emit(&EMIT_EVENT_ID, {});
+    window.emit::<DownloadableObjectNoMutex>(&EMIT_EVENT_ID, self.save_current_state());
   }
 
   /// Убирает клиент из очереди
@@ -183,10 +234,10 @@ impl Queue {
     id: String,
     name: String
   ) {
+    self.queue.insert(id.clone(), Arc::new(DownloadableObject::new(id.clone(), name)));
+
     self.set_current(id.clone());
     self.start_current();
-
-    self.queue.insert(id.clone(), Arc::new(DownloadableObject::new(id, name)));
   }
 
   // Устанавливает текущий скачиваемый клиент
