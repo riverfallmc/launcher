@@ -137,7 +137,7 @@ export class DownloadsManager {
 (() => {
   setTimeout(async () => {
     await DownloadInterface.create({
-      id: "client",
+      id: "magicrpg",
       name: "Magic RPG №1"
     });
   }, 1500);

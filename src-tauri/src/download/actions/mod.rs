@@ -11,7 +11,9 @@ use reqwest::Response;
 use serde::{Deserialize, Serialize};
 use tokio::{runtime::Runtime, task::{self, JoinHandle}};
 use tauri::{async_runtime::TokioJoinHandle, Emitter};
-use crate::util::{tauri::get_main_window, url::join_url};
+use crate::util::{paths::LauncherPaths, tauri::get_main_window, url::join_url};
+
+use super::unpack::unpack_rar;
 
 pub(crate) mod create;
 pub(crate) mod read;
@@ -107,12 +109,36 @@ impl DownloadableObject {
     ((downloaded as f32/body_size as f32)*100.0) as u8
   }
 
+  fn get_client_path(&self) -> anyhow::Result<String> {
+    let id = self.id.lock().unwrap().to_string();
+
+    Ok(LauncherPaths::get_client_path(id)?)
+  }
+
+  fn get_archive_path(&self) -> anyhow::Result<String> {
+    Ok(format!("{}/{ARCHIVE_NAME}", self.get_client_path()?))
+  }
+
   fn open_archive_file(&self) -> anyhow::Result<File> {
-    if Path::new(ARCHIVE_NAME).exists() {
-      fs::remove_file(ARCHIVE_NAME);
+    let archive_path = self.get_archive_path()?;
+
+    if Path::new(&archive_path).exists() {
+      fs::remove_file(archive_path.clone());
     }
 
-    Ok(File::create(ARCHIVE_NAME)?)
+    Ok(File::create(archive_path)?)
+  }
+
+  fn unpack(&self) -> anyhow::Result<()> {
+    let archive_path = self.get_archive_path()?;
+
+    unpack_rar(&archive_path, &self.get_client_path()?)?;
+
+    fs::remove_file(&archive_path)?;
+
+    log::info!("Game client unpacked. Download complete");
+
+    Ok(())
   }
 
   async fn save_body(
@@ -153,6 +179,8 @@ impl DownloadableObject {
     }
 
     log::debug!("Download completed. Downloaded {:.2?}MB", (downloaded as f32/1_000_000.0));
+
+    self.unpack()?;
 
     Ok(())
   }
@@ -301,7 +329,7 @@ impl Queue {
             current.start().await
           }).await;
 
-          println!("{ass:?}");
+          // println!("{ass:?}");
         });
       }
     }
