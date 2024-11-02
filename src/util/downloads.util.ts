@@ -114,7 +114,6 @@ export class DownloadsManager {
   };
 
   private static onEvent(payload: DownloadEntity) {
-    console.log(payload);
     this.listeners.forEach(listener => {
       listener(payload);
     });

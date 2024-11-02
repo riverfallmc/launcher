@@ -21,7 +21,7 @@ SettingsManager.register({
 
 export class SettingsWindow extends React.Component<{}, {isOpened: boolean}> {
   private static _ = DownloadsManager.listen(event => {
-    console.log(event);
+    console.log("Got event", event);
   }, "settingsWindow");
 
   render(): React.ReactNode {

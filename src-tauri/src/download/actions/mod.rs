@@ -4,7 +4,7 @@
  * И только потому-что тут просто полный пиздец по логике, и запутаться как нехуй делать, лол))
  */
 
-use std::{borrow::BorrowMut, sync::{Arc, Mutex}};
+use std::{borrow::BorrowMut, fs::{self, File}, io::Write, path::Path, sync::{Arc, Mutex}};
 use hashbrown::HashMap;
 use lazy_static::lazy_static;
 use reqwest::Response;
@@ -19,6 +19,7 @@ pub(crate) mod update;
 pub(crate) mod delete;
 
 const EMIT_EVENT_ID: &'static str = "downloadThread";
+const ARCHIVE_NAME: &'static str = "gameclient.zip";
 
 lazy_static! {
   /// Singleton очереди приложения
@@ -43,7 +44,7 @@ struct DownloadableObjectNoMutex {
   name: String,
   speed: f32,
   progress: u8,
-  state: usize,
+  state: u64,
   paused: bool
 }
 
@@ -65,7 +66,7 @@ pub(crate) struct DownloadableObject {
   progress: Mutex<u8>,
   /// Статус загрузки (сколько байт уже скачалось)
   // 0 мб
-  state: Mutex<usize>,
+  state: Mutex<u64>,
   /// Поставлена ли загрузка на паузу?
   // false
   paused: Mutex<bool>
@@ -102,11 +103,30 @@ impl DownloadableObject {
     join_url(&format!("client/{}.zip", self.id.lock().unwrap()))
   }
 
+  fn calc_progress(downloaded: u64, body_size: u64) -> u8 {
+    ((downloaded as f32/body_size as f32)*100.0) as u8
+  }
+
+  fn open_archive_file(&self) -> anyhow::Result<File> {
+    if Path::new(ARCHIVE_NAME).exists() {
+      fs::remove_file(ARCHIVE_NAME);
+    }
+
+    Ok(File::create(ARCHIVE_NAME)?)
+  }
+
   async fn save_body(
     self: Arc<Self>,
     response: &mut Response
-  ) {
-    let mut downloaded: usize = 0;
+  ) -> anyhow::Result<()> {
+    let mut downloaded: u64 = 0;
+    let body_size = response
+      .content_length()
+      .unwrap_or_default() as u64;
+
+    log::debug!("Downloadable file size: {body_size}");
+
+    let mut output_file = self.open_archive_file()?;
 
     // грузим файл частями (чанками)
     while let Some(chunk) = response.chunk().await.unwrap() {
@@ -115,20 +135,26 @@ impl DownloadableObject {
         break;
       }
 
-      let size = chunk.len();
+      // размеры туда сюда
+      let size = chunk.len() as u64;
       downloaded += size;
 
+      // сохраняем полученные данные в файлик
+      output_file.write(&chunk)?;
+
+      // TODO вычислить это вот
       let speed = 0 as f32;
-      let progress = 0 as u8;
 
       self.set_speed(speed);
-      self.set_progress(progress);
+      self.set_progress(DownloadableObject::calc_progress(downloaded, body_size));
       self.set_state(downloaded.clone());
 
       self.commit();
     }
 
-    log::debug!("Download completed. Downloaded {}MB", downloaded/1_000_000);
+    log::debug!("Download completed. Downloaded {:.2?}MB", (downloaded as f32/1_000_000.0));
+
+    Ok(())
   }
 
   fn set_speed(&self, speed: f32) {
@@ -139,12 +165,14 @@ impl DownloadableObject {
     *self.progress.lock().unwrap() = progress;
   }
 
-  fn set_state(&self, downloaded: usize) {
+  fn set_state(&self, downloaded: u64) {
     *self.state.lock().unwrap() = downloaded;
   }
 
   /// Запускает/восстанавливает загрузку клиента
   async fn start(self: Arc<Self>) -> anyhow::Result<()> {
+    self.clone().unpause();
+
     log::debug!("Starting download of ID({}) Name({})", self.id.lock().unwrap(), self.name.lock().unwrap());
     let url = self.get_download_url();
     let me = Arc::clone(&self);
@@ -155,13 +183,22 @@ impl DownloadableObject {
 
     log::debug!("Downloading URL: {url}");
 
+    let range = *self.state.lock().unwrap();
+
     let mut response = client.get(url)
+      .header(reqwest::header::RANGE, range.to_string())
       .send()
       .await?;
 
-    me.save_body(&mut response).await;
+    me.save_body(&mut response).await?;
 
     Ok(())
+  }
+
+  /// Восстанавливает загрузку клиента
+  fn unpause(self: Arc<Self>) {
+    *self.paused.lock().unwrap() = false;
+    self.commit();
   }
 
   /// Останавливает загрузку клиента
