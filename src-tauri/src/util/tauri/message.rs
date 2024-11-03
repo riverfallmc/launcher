@@ -3,7 +3,7 @@
 use serde::{Serialize, Deserialize};
 use super::emit;
 
-const EMIT_EVENT_ID: &'static str = "message";
+const EMIT_EVENT_ID: &str = "message";
 
 #[derive(Serialize, Deserialize, Clone)]
 pub(crate) struct Message<T: Serialize + Clone> {

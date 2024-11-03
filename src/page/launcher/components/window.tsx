@@ -20,7 +20,7 @@ export class Window extends React.Component<WindowProps, { isOpen: boolean }> {
   constructor(props: WindowProps) {
     super(props);
     this.state = {
-      isOpen: false,
+      isOpen: true,
     };
   }
 

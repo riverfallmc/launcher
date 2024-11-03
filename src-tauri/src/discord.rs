@@ -30,11 +30,11 @@ pub(crate) fn set_drpc_activity(activity: RpcActivity) -> anyhow::Result<()> {
 
 /// Возвращает активность Discord Rich Presence
 fn get_drpc_activity() -> anyhow::Result<RpcActivity> {
-  Ok(ACTIVITY
+  ACTIVITY
     .lock()
     .map_err(|e| anyhow::anyhow!("Unable to lock mutex: {e}"))?
     .clone()
-    .ok_or_else(|| anyhow::anyhow!("Unable to get DRPC activity"))?)
+    .ok_or_else(|| anyhow::anyhow!("Unable to get DRPC activity"))
 }
 
 /// Включен ли Discord Rich Presence
@@ -47,7 +47,7 @@ pub(crate) struct RpcButton {
 }
 
 impl RpcButton {
-  pub fn build<'a>(&self) -> Button {
+  pub fn build(&self) -> Button {
     Button::new(&self.label, &self.url)
   }
 }
@@ -96,7 +96,7 @@ pub(crate) fn setDrpcActivity(activity: RpcActivity) -> AnyhowResult<()> {
 
 /// Включен ли Discord Rich Presence в лаунчере?
 pub(crate) fn is_enabled() -> bool {
-  return ENABLED.load(Relaxed);
+  ENABLED.load(Relaxed)
 }
 
 /// Включает/выключает Discord Rich Presence в лаунчере
@@ -108,7 +108,7 @@ pub(crate) fn set_enabled(value: bool) {
 #[tauri::command]
 #[allow(non_snake_case)]
 pub(crate) fn isDrpcEnabled() -> bool {
-  return is_enabled();
+  is_enabled()
 }
 
 /// Команда для Tauri
@@ -148,13 +148,10 @@ fn setup_rpc() -> anyhow::Result<()> {
 
   loop {
     if is_enabled() {
-      match get_drpc_activity() {
-        Ok(activity) => {
-          client
-            .set_activity(activity.build())
-            .map_err(|err| anyhow::anyhow!("Error setting activity: {err}"))?;
-        }
-        Err(_) => {}
+      if let Ok(activity) = get_drpc_activity() {
+        client
+          .set_activity(activity.build())
+          .map_err(|err| anyhow::anyhow!("Error setting activity: {err}"))?;
       }
     } else {
       client.clear_activity();

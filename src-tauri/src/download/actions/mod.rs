@@ -21,8 +21,8 @@ pub(crate) mod create;
 pub(crate) mod update;
 pub(crate) mod delete;
 
-const EMIT_EVENT_ID: &'static str = "downloadThread";
-const ARCHIVE_NAME: &'static str = "gameclient.zip";
+const EMIT_EVENT_ID: &str = "downloadThread";
+const ARCHIVE_NAME: &str = "gameclient.zip";
 
 /// * Можно скрыть
 lazy_static! {
@@ -120,7 +120,7 @@ impl DownloadableObject {
   async fn get_client_path(&self) -> anyhow::Result<String> {
     let id = self.id.lock().await.to_string();
 
-    Ok(LauncherPaths::get_client_path(id)?)
+    LauncherPaths::get_client_path(id)
   }
 
   /// Возвращает путь до архива с клиентом после загрузки
@@ -181,7 +181,7 @@ impl DownloadableObject {
       downloaded += chunk_size;
 
       // сохраняем полученные данные в файлик
-      output_file.write(&chunk)?;
+      let _ = output_file.write(&chunk)?;
 
       let elapsed_time = start_time.elapsed();
 
@@ -191,12 +191,12 @@ impl DownloadableObject {
       }
 
       self.set_progress(DownloadableObject::calc_progress(downloaded, body_size)).await;
-      self.set_state(downloaded.clone()).await;
+      self.set_state(downloaded).await;
 
       self.commit().await;
     }
 
-    log::debug!("Download completed. Downloaded {:.2?}MB", (downloaded as f32/1_000_000.0));
+    log::info!("Download completed. Downloaded {:.2?}MB", (downloaded as f32/1_000_000.0));
 
     self.unpack().await?;
 
@@ -223,7 +223,7 @@ impl DownloadableObject {
 
   /// Запускает/восстанавливает загрузку клиента
   async fn start(self: Arc<Self>) -> anyhow::Result<()> {
-    self.clone().unpause();
+    self.clone().unpause().await;
 
     log::debug!("Starting download of ID({}) Name({})", self.id.lock().await, self.name.lock().await);
     let url = self.get_download_url().await;
@@ -275,7 +275,7 @@ impl DownloadableObject {
   /// Пушим изменения полей на фронтенд/
   async fn commit(&self) {
     let message = self.save_current_state().await;
-    message::send::<DownloadableObjectNoMutex>(Some(&EMIT_EVENT_ID), "download", message).await;
+    message::send::<DownloadableObjectNoMutex>(Some(EMIT_EVENT_ID), "download", message).await;
   }
 
   /// Убирает клиент из очереди
@@ -326,16 +326,16 @@ impl Queue {
     // Отправляем сообщение о том, что новая загрузка добавлена в очередь
     self.emit_create(id.to_string(), name.to_string()).await;
 
-    self.set_current(id.clone());
+    self.set_current(id.clone()).await;
     self.start_current().await;
   }
 
   // Устанавливает текущий скачиваемый клиент
-  fn set_current(
+  async fn set_current(
     &mut self,
     new: String
   ) {
-    self.pause_current();
+    self.pause_current().await;
     self.current_downloadable = Some(new);
   }
 
@@ -344,29 +344,32 @@ impl Queue {
     if let Some(id) = &self.current_downloadable {
       if let Some(curr) = self.queue.get(id) {
         let current = Arc::clone(curr);
+        // !!! клонируем значение чтобы мьютекс разблочился
+        let name = current.name.lock().await.clone();
 
         match current.clone().start().await {
-          Ok(_) => self.emit_installed(id.to_string()).await,
+          Ok(_) => self.emit_installed(id.to_string(), name.to_string()).await,
           Err(e) => {
+            log::warn!("Не скачалось {e:?}");
             self.delete(&id.clone()).await;
-            self.emit_ui_error(&format!("Не получилось скачать клиент: {}", e.to_string()), "Ошибка скачивания клиента").await;
+            self.emit_ui_error(&format!("Не получилось скачать клиент: {}", e), "Ошибка скачивания клиента").await;
           },
         };
       }
-  }
+    }
   }
 
   /// Останавливает загрузку/установку текущего клиента
-  fn pause_current(&self) {
+  async fn pause_current(&self) {
     if let Some(id) = &self.current_downloadable {
-      self.pause(id);
+      self.pause(id).await;
     }
   }
 
   /// Ставит на паузу DownloadableObject
-  fn pause(&self, id: &str) {
+  async fn pause(&self, id: &str) {
     if let Some(current) = self.queue.get(id) {
-      current.clone().pause();
+      current.clone().pause().await;
     }
   }
 
@@ -403,9 +406,11 @@ impl Queue {
   async fn emit_installed(
     &self,
     id: String,
+    name: String
   ) {
     message::send::<InstalledData>(Some(EMIT_EVENT_ID), "installed", InstalledData {
       id: id.clone(),
+      name: name.clone()
     }).await;
   }
 

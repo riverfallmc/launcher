@@ -45,7 +45,7 @@ export class NewsList extends React.Component<{}, {news: NewsDetails[]}> {
       .then(news => {
         this.setState({news});
       })
-      .catch(console.error);
+      // .catch(console.error);
   }
 
   // todo

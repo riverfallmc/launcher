@@ -51,7 +51,7 @@ export class PlayerProfile extends React.Component<{}, PlayerDetails> {
       .then(profile => {
         this.setState(profile);
       })
-      .catch(console.error);
+      // .catch(console.error);
   }
 
   render() {

@@ -13,12 +13,39 @@ export interface DownloadEntity {
 //                Процесс скачивания  Создание    Удаление   Скачано, можно удалить
 type BackendMessageType = "download" | "create" | "delete" | "installed";
 
-interface BackendMessage<T> {
+export interface BackendMessage<T> {
   type: BackendMessageType,
   body: T;
 }
 
 type ListenCallback<T> = (event: BackendMessage<T>) => void;
+
+// *
+// * Интерфейсы на приём (BackendMessage Body)
+// *
+
+// type: download
+export interface DownloadBody extends DownloadEntity { };
+
+// type: create
+export interface CreateBody {
+  id: string,
+  name: string;
+}
+
+// type: delete
+export interface DeleteBody {
+  id: string,
+}
+
+// type: installed
+export interface InstalledBody {
+  id: string,
+  name: string;
+}
+// *
+// * Интерфейсы на отправку
+// *
 
 enum DIType {
   Create = "Create",
