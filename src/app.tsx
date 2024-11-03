@@ -12,6 +12,8 @@ import { open } from "@tauri-apps/plugin-shell";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { SettingsManager } from "./util/settings.util";
 import { DownloadsManager } from "./util/downloads.util";
+import { MessageManager, UiErrorBody } from "./util/message.util";
+import { sendNotify } from "./util/notification.util";
 
 const appWindow = getCurrentWebviewWindow();
 
@@ -50,19 +52,35 @@ class Application extends React.Component<ApplicationProps, ApplicationState> {
   constructor(props: ApplicationProps) {
     super(props);
 
+    Application.requestVersion();
+
     if (!Application.instance)
       Application.instance = this;
 
-    Application.requestVersion();
-
-    // создаем прослушивателя событий скачивания чего-то там
+    // создаем прослушивателя событий скачивания
     new DownloadsManager;
+    // создаем прослушивателя остальных сообщений
+    new MessageManager;
+
+    Application.listenMessage();
 
     this.state = {
       page: Pages.Default
     };
+  }
 
-    return Application.instance;
+  private static listenMessage() {
+    MessageManager.listen(async event => {
+      switch (event.type) {
+        case "uiError":
+          return await this.pushUiError(event.body);
+      }
+    }, "application");
+  }
+
+  private static async pushUiError(body: UiErrorBody) {
+    await sendNotify(body.small);
+    // Todo добавить уведомление на весь экран
   }
 
   private static async requestVersion() {

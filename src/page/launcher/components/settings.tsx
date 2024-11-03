@@ -5,23 +5,12 @@ import { Window, WindowContent, WindowTrigger } from "./window";
 import { Settings, SettingsManager } from "@/util/settings.util";
 import { TextEntry } from "@/components/textentry";
 import { CheckBox } from "@/components/controllers/base";
-import { invoke } from "@tauri-apps/api/core";
 import { DownloadsManager } from "@/util/downloads.util";
-
-SettingsManager.register({
-  name: "Emit",
-  description: "Запускает процесс скачивания",
-  default: false,
-  id: "settings.TextEntryExample",
-  onChange: async value => {
-    if (value)
-      await invoke("testEmit");
-  }
-})
 
 export class SettingsWindow extends React.Component<{}, {isOpened: boolean}> {
   private static _ = DownloadsManager.listen(event => {
-    console.log(`Type ${event.type}:Body ${event.body}`);
+    console.log(`Type ${event.type}`);
+    console.log(event.body);
   }, "settingsWindow");
 
   render(): React.ReactNode {

@@ -11,6 +11,12 @@ pub(crate) struct Message<T: Serialize + Clone> {
   body: T
 }
 
+#[derive(Serialize, Deserialize, Clone)]
+pub(crate) struct ErrorInUI {
+  pub message: String,
+  pub small: String
+}
+
 pub(crate) async fn send<T: Serialize + Clone>(
   channel: Option<&str>,
   r#type: &str,

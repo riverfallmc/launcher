@@ -10,8 +10,8 @@ export interface DownloadEntity {
   paused: boolean;
 };
 
-//                Процесс скачивания  Создание    Пауза      Удаления
-type BackendMessageType = "download" | "create" | "update" | "remove";
+//                Процесс скачивания  Создание    Удаление   Скачано, можно удалить
+type BackendMessageType = "download" | "create" | "delete" | "installed";
 
 interface BackendMessage<T> {
   type: BackendMessageType,
@@ -19,18 +19,6 @@ interface BackendMessage<T> {
 }
 
 type ListenCallback<T> = (event: BackendMessage<T>) => void;
-
-// бэкенд должен возвращать payload-объект с следующими полями:
-// id: string
-// name: string
-// speed: number (float)
-// progress: number (float)
-// status: string // например: распаковка архива
-//
-// или
-//
-// id: string
-// isPaused: true/false (поставлен на паузу/убран с паузы)
 
 enum DIType {
   Create = "Create",
@@ -109,7 +97,6 @@ export class DownloadsManager {
   };
 
   private static onEvent(payload: BackendMessage<any>) {
-    console.log(payload);
     this.listeners.forEach(listener => {
       listener(payload);
     });
@@ -129,7 +116,7 @@ export class DownloadsManager {
     });
   }
 
-  public static async removeDownload(id: string) {
+  public static async deleteDownload(id: string) {
     return await DownloadInterface.delete({
       id
     });

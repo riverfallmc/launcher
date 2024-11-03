@@ -21,7 +21,7 @@ export class ServerList extends React.Component<{}, {servers: ServerDetails[]}> 
   componentDidMount() {
     ServerList.requestServers()
       .then(servers => this.setState({servers}))
-      .catch(console.error);
+      // .catch(console.error);
   }
 
   // todo

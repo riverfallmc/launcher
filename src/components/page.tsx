@@ -11,8 +11,7 @@ interface PageProps {
 
 export class Page extends React.Component<PageProps> {
   render(): React.ReactNode {
-    // bg-neutral-900
-    return <div className={className("absolute bg-white dark:bg-neutral-900 w-screen h-screen p-10", this.props.className)} data-tauri-drag-region children={<PageLayer children={this.props.children}/>}/>;
+    return <div className={className("absolute bg-white dark:bg-neutral-900 w-full h-full p-10", this.props.className)} data-tauri-drag-region children={<PageLayer children={this.props.children}/>}/>;
   }
 }
 

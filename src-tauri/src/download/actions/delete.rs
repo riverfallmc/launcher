@@ -4,15 +4,15 @@ use crate::{download::interface::DIAction, util::tauri::AnyhowResult};
 
 use super::get_download_queue;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub(crate) struct DeleteData {
-  id: String,
+  pub id: String,
 }
 
 impl DIAction for DeleteData {
   async fn handle(&self) -> AnyhowResult<()> {
     let queue = &mut *get_download_queue().lock().await;
-    queue.remove(&self.id);
+    queue.delete(&self.id);
 
     Ok(())
   }

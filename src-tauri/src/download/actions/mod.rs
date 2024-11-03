@@ -5,7 +5,8 @@
  */
 
 use std::{borrow::BorrowMut, fs::{self, File}, io::Write, path::Path, sync::Arc, time::{Duration, Instant}};
-use create::CreateData;
+use create::{CreateData, InstalledData};
+use delete::DeleteData;
 use hashbrown::HashMap;
 use lazy_static::lazy_static;
 use reqwest::Response;
@@ -13,6 +14,7 @@ use serde::{Deserialize, Serialize};
 use tokio::{runtime::Runtime, sync::Mutex, task::{self, JoinHandle}};
 use tauri::{async_runtime::TokioJoinHandle, Emitter};
 use crate::util::{paths::LauncherPaths, tauri::{get_main_window, message}, url::join_url};
+use self::message::ErrorInUI;
 use super::unpack::unpack_rar;
 
 pub(crate) mod create;
@@ -277,10 +279,10 @@ impl DownloadableObject {
   }
 
   /// Убирает клиент из очереди
-  async fn remove(&self) {
+  async fn delete(&self) {
     let queue = &mut *get_download_queue().lock().await;
 
-    queue.remove(&self.id.lock().await);
+    queue.delete(&self.id.lock().await);
   }
 }
 
@@ -314,20 +316,21 @@ impl Queue {
   }
 
   /// Добавляет клиент в очередь загрузки
-  /// todo: emit
   async fn add(
     &mut self,
     id: String,
     name: String
   ) {
-    self.queue.insert(id.clone(), Arc::new(DownloadableObject::new(id.clone(), name)));
+    self.queue.insert(id.clone(), Arc::new(DownloadableObject::new(id.clone(), name.clone())));
+
+    // Отправляем сообщение о том, что новая загрузка добавлена в очередь
+    self.emit_create(id.to_string(), name.to_string()).await;
 
     self.set_current(id.clone());
     self.start_current().await;
   }
 
   // Устанавливает текущий скачиваемый клиент
-  /// todo: emit
   fn set_current(
     &mut self,
     new: String
@@ -337,25 +340,16 @@ impl Queue {
   }
 
   /// Включает загрузку/установку текущего клиента
-  /// todo: emit
   async fn start_current(&mut self) {
     if let Some(id) = &self.current_downloadable {
       if let Some(curr) = self.queue.get(id) {
         let current = Arc::clone(curr);
 
-        let result = current.clone().start().await;
-
-        // Todo: emit
-        match result {
-          Ok(_) => {
-            log::warn!("Скачали все");
-            message::send::<CreateData>(Some(EMIT_EVENT_ID), "create", CreateData {
-              id: id.clone(),
-              name: current.name.lock().await.to_string()
-            }).await;
-          },
+        match current.clone().start().await {
+          Ok(_) => self.emit_installed(id.to_string()).await,
           Err(e) => {
-            message::send::<String>(None, "ErrorInUI", format!("Не получилось скачать клиент: {}", e.to_string())).await;
+            self.delete(&id.clone()).await;
+            self.emit_ui_error(&format!("Не получилось скачать клиент: {}", e.to_string()), "Ошибка скачивания клиента").await;
           },
         };
       }
@@ -370,21 +364,73 @@ impl Queue {
   }
 
   /// Ставит на паузу DownloadableObject
-  /// todo: emit
   fn pause(&self, id: &str) {
     if let Some(current) = self.queue.get(id) {
       current.clone().pause();
     }
   }
 
-  /// todo: emit
-  fn remove(
+  async fn delete(
     &mut self,
     id: &str
   ) {
     if let Some(downloadable) = self.queue.get(id) {
       downloadable.clone().pause();
       self.queue.remove(id);
+      self.emit_delete(id.to_string()).await;
     }
+  }
+
+  /// *
+  /// * EMIT
+  /// *
+
+  /// Emit с типом ``create``\
+  /// Показывает то, что в очередь был добавлен клиент
+  async fn emit_create(
+    &self,
+    id: String,
+    name: String
+  ) {
+    message::send::<CreateData>(Some(EMIT_EVENT_ID), "create", CreateData {
+      id: id.clone(),
+      name: name.clone()
+    }).await;
+  }
+
+  /// Emit с типом ``installed``\
+  /// Показывает то, что клиент из очереди установился
+  async fn emit_installed(
+    &self,
+    id: String,
+  ) {
+    message::send::<InstalledData>(Some(EMIT_EVENT_ID), "installed", InstalledData {
+      id: id.clone(),
+    }).await;
+  }
+
+  /// Emit с типом ``delete``\
+  /// Показывает то, что клиент из очереди удалён
+  async fn emit_delete(
+    &self,
+    id: String,
+  ) {
+    message::send::<DeleteData>(Some(EMIT_EVENT_ID), "delete", DeleteData {
+      id: id.clone(),
+    }).await;
+  }
+
+  /// Emit с типом ``uiError``\
+  /// Канал ``message``\
+  /// Показывает ошибку в интерфейсе
+  async fn emit_ui_error(
+    &self,
+    msg: &str,
+    small: &str
+  ) {
+    message::send::<ErrorInUI>(None, "uiError", ErrorInUI {
+      message: msg.to_string(),
+      small: small.to_string()
+    }).await;
   }
 }
