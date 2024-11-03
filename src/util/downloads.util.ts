@@ -10,7 +10,15 @@ export interface DownloadEntity {
   paused: boolean;
 };
 
-type ListenCallback = (event: DownloadEntity) => void;
+//                Процесс скачивания  Создание    Пауза      Удаления
+type BackendMessageType = "download" | "create" | "update" | "remove";
+
+interface BackendMessage<T> {
+  type: BackendMessageType,
+  body: T;
+}
+
+type ListenCallback<T> = (event: BackendMessage<T>) => void;
 
 // бэкенд должен возвращать payload-объект с следующими полями:
 // id: string
@@ -26,7 +34,6 @@ type ListenCallback = (event: DownloadEntity) => void;
 
 enum DIType {
   Create = "Create",
-  Read = "Read",
   Update = "Update",
   Delete = "Delete"
 }
@@ -44,21 +51,15 @@ interface CreateData extends Data {
   name: string;
 }
 
-interface ReadData extends Data {
-  name: string,
-  speed: number,
-  progress: number,
-  status: string;
-}
-
 interface UpdateData extends Data {
   isPaused: boolean;
 }
 
 interface DeleteData extends Data { }
 
+// Отправка сообщений Backend
 export class DownloadInterface {
-  private static tauriCommand: Readonly<string> = "downloadInterfaceCommand";
+  private static tauriCommand: Readonly<string> = "di_cmd";
 
   private static async command<T extends Data>(data: DataParams<T>) {
     return await invoke(this.tauriCommand, {
@@ -69,13 +70,6 @@ export class DownloadInterface {
   public static async create<T extends CreateData>(data: T) {
     return await this.command<T>({
       type: DIType.Create,
-      body: data
-    });
-  }
-
-  public static async read<T extends ReadData>(data: T) {
-    return await this.command<T>({
-      type: DIType.Read,
       body: data
     });
   }
@@ -95,38 +89,50 @@ export class DownloadInterface {
   }
 }
 
+// Прием сообщений от Backend + Отправка через DownloadInterface
 export class DownloadsManager {
   private static managerInstance: DownloadsManager;
-  private static listeners: Map<string, ListenCallback> = new Map();
+  private static listeners: Map<string, ListenCallback<any>> = new Map();
 
   constructor() {
     if (DownloadsManager.managerInstance !== undefined)
       throw new Error("An application can have only one DownloadManager instance");
 
-    listen<DownloadEntity>("downloadThread", event => DownloadsManager.onEvent(event.payload));
+    listen<BackendMessage<any>>("downloadThread", event => DownloadsManager.onEvent(event.payload));
   }
 
-  public static listen(
-    callback: ListenCallback,
+  public static listen<T = any>(
+    callback: ListenCallback<T>,
     id: string
   ) {
     this.listeners.set(id, callback);
   };
 
-  private static onEvent(payload: DownloadEntity) {
+  private static onEvent(payload: BackendMessage<any>) {
+    console.log(payload);
     this.listeners.forEach(listener => {
       listener(payload);
     });
   }
 
-  // todo
-  public static async download(id: string, serverName: string) {
-    return await invoke("downloadClient", { id, serverName });
+  public static async download(id: string, name: string) {
+    return await DownloadInterface.create({
+      id,
+      name
+    });
   }
 
-  // todo
-  public static async downloadPause(id: string) {
-    return await invoke("downloadPause", { id });
+  public static async setDownloadPaused(id: string, isPaused: boolean) {
+    return await DownloadInterface.update({
+      id,
+      isPaused
+    });
+  }
+
+  public static async removeDownload(id: string) {
+    return await DownloadInterface.delete({
+      id
+    });
   }
 
   public static getAll(): DownloadEntity[] {

@@ -1,4 +1,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+#![allow(unused_must_use)]
 
 use tauri::Manager as _;
 
@@ -6,7 +7,8 @@ mod download;
 mod discord;
 mod util;
 
-fn main() -> anyhow::Result<()> {
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
   if cfg!(debug_assertions) {
     dotenv::dotenv().ok();
   }
@@ -33,13 +35,13 @@ fn main() -> anyhow::Result<()> {
       // Utils
       util::tauri::isDebug,
       // Downloads
-      download::interface::downloadInterfaceCommand,
+      download::interface::di_cmd,
       // Discord Rich Presence
       discord::setDrpcEnabled,
       discord::isDrpcEnabled,
       discord::setDrpcActivity
     ])
-    .setup(|app| {
+    .setup(|app|{
       let main_window = app
         .get_webview_window("main")
         .ok_or_else(|| anyhow::anyhow!("Failed to get the tauri's main window"))?;
@@ -49,7 +51,9 @@ fn main() -> anyhow::Result<()> {
         Err(_) => log::warn!("Unable to enable shadow on main window")
       };
 
-      util::tauri::set_main_window(main_window);
+      tokio::spawn(async move {
+        util::tauri::set_main_window(main_window).await
+      });
 
       Ok(())
     })

@@ -10,7 +10,8 @@ pub(crate) struct UpdateData {
 }
 
 impl DIAction for UpdateData {
-  fn handle(&self, _window: WebviewWindow) -> AnyhowResult<()> {
+  // Todo
+  async fn handle(&self) -> AnyhowResult<()> {
     log::info!("Update Data: {:?}", self);
 
     Ok(())

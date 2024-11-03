@@ -3,17 +3,17 @@ use tauri::WebviewWindow;
 use crate::{download::interface::DIAction, util::tauri::AnyhowResult};
 use super::get_download_queue;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub(crate) struct CreateData {
-  id: String,
-  name: String,
+  pub id: String,
+  pub name: String,
 }
 
 impl DIAction for CreateData {
-  fn handle(&self, _window: WebviewWindow) -> AnyhowResult<()> {
-    let queue = &mut *get_download_queue().lock().unwrap();
+  async fn handle(&self) -> AnyhowResult<()> {
+    let queue = &mut *get_download_queue().lock().await;
 
-    queue.add(self.id.clone(), self.name.clone());
+    queue.add(self.id.clone(), self.name.clone()).await;
 
     Ok(())
   }

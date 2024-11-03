@@ -1,7 +1,9 @@
-use std::sync::Mutex;
-
-use tauri::{ipc::InvokeError, WebviewWindow};
+use serde::Serialize;
+use tauri::{ipc::InvokeError, Emitter, WebviewWindow};
 use thiserror::Error;
+use tokio::sync::Mutex;
+
+pub(crate) mod message;
 
 #[derive(Error, Debug)]
 pub enum TauriCommandError {
@@ -25,18 +27,19 @@ lazy_static::lazy_static! {
 }
 
 /// Устанавливает main окно
-pub(crate) fn set_main_window(window: WebviewWindow) {
-  let mut window_lock = MAIN_WINDOW.lock().unwrap();
+pub(crate) async fn set_main_window(window: WebviewWindow) {
+  let mut window_lock = MAIN_WINDOW.lock().await;
   *window_lock = Some(window);
 }
 
-// Rust би лайк: ☹️
 /// Функция возвращает main окно
 #[allow(unused)]
-pub(crate) fn get_main_window() -> anyhow::Result<WebviewWindow> {
-  let window = MAIN_WINDOW
+pub(crate) async fn get_main_window() -> anyhow::Result<WebviewWindow> {
+  let window_option = MAIN_WINDOW
     .lock()
-    .map_err(|e| anyhow::anyhow!("Unable to get window: {e}"))?
+    .await;
+
+  let window = window_option
     .clone()
     .ok_or_else(|| anyhow::anyhow!("Main window is not set"))?;
 
@@ -48,4 +51,13 @@ pub(crate) fn get_main_window() -> anyhow::Result<WebviewWindow> {
 #[allow(non_snake_case)]
 pub(crate) fn isDebug() -> bool {
   cfg!(debug_assertions)
+}
+
+#[allow(unused)]
+pub(crate) async fn emit<T: Serialize + Clone>(event: &str, payload: T) -> anyhow::Result<()> {
+  let window = get_main_window().await?;
+
+  window.emit::<T>(event, payload)?;
+
+  Ok(())
 }
