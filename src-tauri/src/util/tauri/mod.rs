@@ -1,7 +1,11 @@
+use std::path::Path;
+
 use serde::Serialize;
 use tauri::{ipc::InvokeError, Emitter, WebviewWindow};
 use thiserror::Error;
 use tokio::sync::Mutex;
+
+use super::paths::LauncherPaths;
 
 pub(crate) mod message;
 
@@ -52,6 +56,18 @@ pub(crate) async fn get_main_window() -> anyhow::Result<WebviewWindow> {
 pub(crate) fn isDebug() -> bool {
   cfg!(debug_assertions)
 }
+
+/// Установлен ли клиент
+#[tauri::command]
+#[allow(non_snake_case)]
+pub(crate) fn isClientInstalled(
+  id: String
+) -> AnyhowResult<bool> {
+  let dir = format!("{}/{id}", LauncherPaths::get_client_dir()?);
+
+  Ok(Path::new(&dir).is_dir())
+}
+
 
 #[allow(unused)]
 pub(crate) async fn emit<T: Serialize + Clone>(event: &str, payload: T) -> anyhow::Result<()> {

@@ -1,4 +1,5 @@
 import React from "react";
+import { ServerPage } from "./serverpage";
 
 interface ServerDetails {
   /** Название сервера */
@@ -14,8 +15,16 @@ interface ServerDetails {
   /** Включен ли вообще сервер */
   isEnabled: boolean,
   /** Градиент стиль для фона */
-  gradient: string;
+  gradient: string,
+  /** Айпи сервера */
+  ip: string,
+  /** Фон в ServerPage */
+  bgUrl: string,
+  /** Описание сервера */
+  description: string;
 }
+
+const textDesc = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam enim felis, efficitur et dui ut, mattis mattis felis. Nulla facilisi. Sed faucibus egestas ipsum a vulputate. Curabitur at odio quis est fermentum consequat."
 
 export class ServerList extends React.Component<{}, {servers: ServerDetails[]}> {
   componentDidMount() {
@@ -36,6 +45,9 @@ export class ServerList extends React.Component<{}, {servers: ServerDetails[]}> 
           maxPlayers: 10,
           isEnabled: true,
           gradient: "linear-gradient(147.15deg, #CDD353 0%, #77B800 80.38%)",
+          ip: "localhost",
+          description: textDesc,
+          bgUrl: "https://i.tlauncher.org/images/tmphmamuzd4.png?rand=1569096381"
         },
         {
           name: "TECHNO MAGIC",
@@ -45,6 +57,9 @@ export class ServerList extends React.Component<{}, {servers: ServerDetails[]}> 
           maxPlayers: 128,
           isEnabled: true,
           gradient: "linear-gradient(147.15deg, #4568DC 0%, #B06AB3 80.38%)",
+          ip: "localhost",
+          description: textDesc,
+          bgUrl: "https://www.meme-arsenal.com/memes/548967e1bf6a8c8384ae2344725828fc.jpg"
         },
         {
           name: "SURVIVAL",
@@ -54,6 +69,9 @@ export class ServerList extends React.Component<{}, {servers: ServerDetails[]}> 
           maxPlayers: 64,
           isEnabled: false,
           gradient: "linear-gradient(147.15deg, #FFAFBD 0%, #C9009D 80.38%)",
+          ip: "localhost",
+          description: textDesc,
+          bgUrl: "https://i.ytimg.com/vi/nJMTBCMWcE4/maxresdefault.jpg"
         }
       ]);
     });
@@ -63,7 +81,7 @@ export class ServerList extends React.Component<{}, {servers: ServerDetails[]}> 
   private renderServers(): React.ReactNode {
     return (
       <>
-        {this.state && this.state.servers && this.state.servers.map(server => <Server server={server}/>)}
+        {this.state && this.state.servers && this.state.servers.map(server => <Server {...server}/>)}
       </>
     );
   }
@@ -78,32 +96,48 @@ export class ServerList extends React.Component<{}, {servers: ServerDetails[]}> 
 }
 
 // Server component
-class Server extends React.Component<{server: ServerDetails}> {
+class Server<T extends ServerDetails> extends React.Component<T, {isOpen: boolean}> {
+  constructor(props: T) {
+    super(props);
+
+    this.state = {
+      isOpen: false
+    }
+  }
+
   // todo сделать сортировку по isEnabled
   render(): React.ReactNode {
     return (
-      <div
-        title={`Сервер ${this.props.server.name}`}
-        className={"w-28 h-24 p-3 rounded-xl shadow-black-extended cursor-pointer transition-all duration-300 ease-in-out " + (this.props.server.isEnabled ? "": "saturate-0")}
-        style={{
-          background: this.props.server.gradient,
-          backgroundSize: "100%",
-          transition: "background-size 0.3s ease-in-out"
-        }}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLDivElement).style.backgroundSize = "200%";
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLDivElement).style.backgroundSize = "100%";
-        }}>
-          <div className="h-full flex flex-col justify-between">
-            <p className="text-white font-bold text-base leading-4 text-shadow-lg">{this.props.server.name}</p>
-            <div className="flex flex-col text-right">
-              <p className="text-xs text-white/70 font-semibold leading-none text-shadow-md">{this.props.server.version}</p>
-              <p className="text-sm text-white font-semibold leading-none text-shadow-lg">{this.props.server.isEnabled ? `${this.props.server.players}/${this.props.server.maxPlayers}` : "выключен"}</p>
+      <>
+        <ServerPage
+          {...this.props}
+          isOpen={this.state.isOpen}
+          onClose={() => this.setState({isOpen: false})}/>
+
+        <div
+          title={`Сервер ${this.props.name}`}
+          className={"w-28 h-24 p-3 rounded-xl shadow-black-extended cursor-pointer transition-all duration-300 ease-in-out " + (this.props.isEnabled ? "": "saturate-0")}
+          style={{
+            background: this.props.gradient,
+            backgroundSize: "100%",
+            transition: "background-size 0.3s ease-in-out"
+          }}
+          onClick={() => this.setState({isOpen: true})}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLDivElement).style.backgroundSize = "200%";
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLDivElement).style.backgroundSize = "100%";
+          }}>
+            <div className="h-full flex flex-col justify-between">
+              <p className="text-white font-bold text-base leading-4 text-shadow-lg">{this.props.name}</p>
+              <div className="flex flex-col text-right">
+                <p className="text-xs text-white/70 font-semibold leading-none text-shadow-md">{this.props.version}</p>
+                <p className="text-sm text-white font-semibold leading-none text-shadow-lg">{this.props.isEnabled ? `${this.props.players}/${this.props.maxPlayers}` : "выключен"}</p>
+              </div>
             </div>
-          </div>
-      </div>
+        </div>
+      </>
     )
   }
 }

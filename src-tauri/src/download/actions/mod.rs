@@ -12,7 +12,6 @@ use lazy_static::lazy_static;
 use reqwest::Response;
 use serde::{Deserialize, Serialize};
 use tokio::{runtime::Runtime, sync::Mutex, task::{self, JoinHandle}};
-use tauri::{async_runtime::TokioJoinHandle, Emitter};
 use crate::util::{paths::LauncherPaths, tauri::{get_main_window, message}, url::join_url};
 use self::message::ErrorInUI;
 use super::unpack::unpack_rar;

@@ -159,9 +159,3 @@ export class DownloadsManager {
     return [];
   }
 }
-
-(() => {
-  setTimeout(async () => {
-    await DownloadsManager.download("magicrpg", "Magic-RPG Тестовый");
-  }, 1500);
-})();

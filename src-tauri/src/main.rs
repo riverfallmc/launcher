@@ -5,6 +5,7 @@ use tauri::Manager as _;
 
 mod download;
 mod discord;
+mod play;
 mod util;
 
 #[tokio::main]
@@ -34,6 +35,9 @@ async fn main() -> anyhow::Result<()> {
     .invoke_handler(tauri::generate_handler![
       // Utils
       util::tauri::isDebug,
+      util::tauri::isClientInstalled,
+      // Play
+      play::play,
       // Downloads
       download::interface::di_cmd,
       // Discord Rich Presence
