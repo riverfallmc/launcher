@@ -1,11 +1,17 @@
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 
+export enum ProcessState {
+  Downloading = "Downloading",
+  Unarchiving = "Unarchiving"
+}
+
 export interface DownloadEntity {
   id: string,
   name: string,
   speed: number,
   progress: number,
+  process: ProcessState,
   state: number,
   paused: boolean;
 };
@@ -156,9 +162,6 @@ export class DownloadsManager {
 
 (() => {
   setTimeout(async () => {
-    await DownloadInterface.create({
-      id: "magicrpg",
-      name: "Magic RPG №1"
-    });
+    await DownloadsManager.download("magicrpg", "Magic-RPG Тестовый");
   }, 1500);
 })();

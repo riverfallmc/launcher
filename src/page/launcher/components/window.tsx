@@ -13,6 +13,7 @@ interface WindowTriggerProps {
 
 interface WindowContentProps {
   children: React.ReactNode;
+  className?: string;
   close?: () => void;
 }
 
@@ -20,7 +21,7 @@ export class Window extends React.Component<WindowProps, { isOpen: boolean }> {
   constructor(props: WindowProps) {
     super(props);
     this.state = {
-      isOpen: true,
+      isOpen: false,
     };
   }
 
@@ -90,6 +91,6 @@ export class WindowTrigger extends React.Component<WindowTriggerProps> {
 
 export class WindowContent extends React.Component<WindowContentProps> {
   render() {
-    return <>{this.props.children}</>;
+    return <div {...this.props}/>;
   }
 }

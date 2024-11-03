@@ -30,6 +30,12 @@ lazy_static! {
   static ref DOWNLOAD_QUEUE: Mutex<Queue> = Mutex::new(Queue::new());
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+enum ProcessState {
+  Downloading,
+  Unarchiving
+}
+
 /// Возвращает глобальную (ну она типо как singleton) очередь приложения
 /// в виде мьютекса, так что если надо как-то с ней взаимодействовать
 /// то держи пример как это делать:
@@ -49,6 +55,7 @@ struct DownloadableObjectNoMutex {
   name: String,
   speed: f32,
   progress: u8,
+  process: ProcessState,
   state: u64,
   paused: bool
 }
@@ -69,6 +76,9 @@ pub(crate) struct DownloadableObject {
   /// Процентное отношение загруженного контента
   // 100%
   progress: Mutex<u8>,
+  /// Какой процесс сейчас идёт
+  // Скачивание архива / разархивирование
+  process: Mutex<ProcessState>,
   /// Статус загрузки (сколько байт уже скачалось)
   // 0 мб
   state: Mutex<u64>,
@@ -85,6 +95,7 @@ impl Default for DownloadableObject {
       name: Mutex::new(String::new()),
       speed: Mutex::new(0.0),
       progress: Mutex::new(0),
+      process: Mutex::new(ProcessState::Downloading),
       state: Mutex::new(0),
       paused: Mutex::new(false),
     }
@@ -142,6 +153,9 @@ impl DownloadableObject {
 
   /// Распаковывает скачанный архив клиента в директорию клиента
   async fn unpack(&self) -> anyhow::Result<()> {
+    self.set_process(ProcessState::Unarchiving).await;
+    self.commit().await;
+
     let archive_path = self.get_archive_path().await?;
 
     unpack_rar(&archive_path, &self.get_client_path().await?)?;
@@ -210,6 +224,12 @@ impl DownloadableObject {
   }
 
   /// ``INTERNAL``\
+  /// Обновляет поле с процессом
+  async fn set_process(&self, process: ProcessState) {
+    *self.process.lock().await = process;
+  }
+
+  /// ``INTERNAL``\
   /// Обновляет поле с прогрессом загрузки (0%-100%)
   async fn set_progress(&self, progress: u8) {
     *self.progress.lock().await = progress;
@@ -267,6 +287,7 @@ impl DownloadableObject {
       name: self.name.lock().await.to_string(),
       speed: *self.speed.lock().await,
       progress: *self.progress.lock().await,
+      process: self.process.lock().await.clone(),
       state: *self.state.lock().await,
       paused: *self.paused.lock().await,
     }
