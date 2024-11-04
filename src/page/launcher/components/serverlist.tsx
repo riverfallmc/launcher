@@ -1,7 +1,7 @@
 import React from "react";
-import { ServerPage } from "./serverpage";
+import Application, { Pages } from "@/app";
 
-interface ServerDetails {
+export interface ServerDetails {
   /** Название сервера */
   name: string,
   /** ID Клиента */
@@ -96,24 +96,17 @@ export class ServerList extends React.Component<{}, {servers: ServerDetails[]}> 
 }
 
 // Server component
-class Server<T extends ServerDetails> extends React.Component<T, {isOpen: boolean}> {
-  constructor(props: T) {
-    super(props);
-
-    this.state = {
-      isOpen: false
-    }
+class Server<T extends ServerDetails> extends React.Component<T> {
+  // Открывает страницу сервера
+  private static open(data: ServerDetails) {
+    Application.setCurrentServer(data);
+    Application.changePage(Pages.Server);
   }
 
   // todo сделать сортировку по isEnabled
   render(): React.ReactNode {
     return (
       <>
-        <ServerPage
-          {...this.props}
-          isOpen={this.state.isOpen}
-          onClose={() => this.setState({isOpen: false})}/>
-
         <div
           title={`Сервер ${this.props.name}`}
           className={"w-28 h-24 p-3 rounded-xl shadow-black-extended cursor-pointer transition-all duration-300 ease-in-out " + (this.props.isEnabled ? "": "saturate-0")}
@@ -122,7 +115,7 @@ class Server<T extends ServerDetails> extends React.Component<T, {isOpen: boolea
             backgroundSize: "100%",
             transition: "background-size 0.3s ease-in-out"
           }}
-          onClick={() => this.setState({isOpen: true})}
+          onClick={() => Server.open(this.props)}
           onMouseEnter={(e) => {
             (e.currentTarget as HTMLDivElement).style.backgroundSize = "200%";
           }}

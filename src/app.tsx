@@ -14,6 +14,8 @@ import { SettingsManager } from "./util/settings.util";
 import { DownloadsManager } from "./util/downloads.util";
 import { MessageManager, UiErrorBody } from "./util/message.util";
 import { sendNotify } from "./util/notification.util";
+import { ServerDetails } from "./page/launcher/components/serverlist";
+import { ServerPage } from "./page/server/page";
 
 const appWindow = getCurrentWebviewWindow();
 
@@ -36,26 +38,20 @@ export enum Pages {
   Authentication = 0,
   Registration,
   PasswordRecovery,
-  Launcher
+  Launcher,
+  Server
 }
 
-interface ApplicationProps {}
-interface ApplicationState {
-  page?: Pages;
-}
-
-class Application extends React.Component<ApplicationProps, ApplicationState> {
+class Application<T = {}> extends React.Component<T, {page?: Pages}> {
   private static instance: Application | null = null;
+  private static currentServer: ServerDetails;
   public static noVersion: string = "version not set"
   public static version: string = this.noVersion;
 
-  constructor(props: ApplicationProps) {
+  constructor(props: T) {
     super(props);
 
     Application.requestVersion();
-
-    if (!Application.instance)
-      Application.instance = this;
 
     // создаем прослушивателя событий скачивания
     new DownloadsManager;
@@ -67,6 +63,10 @@ class Application extends React.Component<ApplicationProps, ApplicationState> {
     this.state = {
       page: Pages.Default
     };
+  }
+
+  componentDidMount() {
+    Application.instance = this;
   }
 
   private static listenMessage() {
@@ -81,6 +81,10 @@ class Application extends React.Component<ApplicationProps, ApplicationState> {
   private static async pushUiError(body: UiErrorBody) {
     await sendNotify(body.small);
     // Todo добавить уведомление на весь экран
+  }
+
+  public static setCurrentServer(data: ServerDetails) {
+    this.currentServer = data;
   }
 
   private static async requestVersion() {
@@ -138,6 +142,8 @@ class Application extends React.Component<ApplicationProps, ApplicationState> {
         return <Registration/>;
       case Pages.Launcher:
         return <Launcher/>
+      case Pages.Server:
+        return <ServerPage {...Application.currentServer}/>
       default:
         return <NotFound/>;
     }

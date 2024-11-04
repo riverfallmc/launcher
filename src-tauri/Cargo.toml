@@ -1,6 +1,6 @@
 [package]
 name = "launcher"
-version = "0.2.3"
+version = "0.2.4"
 description = "A Tauri App"
 authors = ["you"]
 edition = "2021"
@@ -33,9 +33,10 @@ hashbrown = "0.15.0"
 reqwest = {version = "0.12.9", features = ["blocking"] }
 tokio = "1.41.0"
 zip = "2.2.0"
+# Project modules
+mc_version_parser = {path = "crates/mc-version-parser"} # https://github.com/smokingplaya/mc-version-parser
 
 [features]
-# This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]

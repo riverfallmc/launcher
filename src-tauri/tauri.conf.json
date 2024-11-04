@@ -19,7 +19,7 @@
   },
   "productName": "serenitymc.ru Launcher",
   "mainBinaryName": "serenitymc.ru Launcher",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "identifier": "ru.serenitymc.launcher",
   "plugins": {},
   "app": {

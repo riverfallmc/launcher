@@ -2558,7 +2558,7 @@ dependencies = [
 
 [[package]]
 name = "launcher"
-version = "0.2.3"
+version = "0.2.4"
 dependencies = [
  "anyhow",
  "discord-rich-presence",
@@ -2567,6 +2567,7 @@ dependencies = [
  "hashbrown 0.15.0",
  "lazy_static",
  "log",
+ "mc_version_parser",
  "reqwest",
  "serde",
  "serde_json",
@@ -2771,6 +2772,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8ea1f30cedd69f0a2954655f7188c6a834246d2bcf1e315e2ac40c4b24dc9519"
 dependencies = [
  "cfg-if",
+]
+
+[[package]]
+name = "mc_version_parser"
+version = "0.1.0"
+dependencies = [
+ "regex",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

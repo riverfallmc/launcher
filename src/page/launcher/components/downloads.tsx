@@ -10,6 +10,7 @@ export class Downloads<T = {}> extends React.Component<T, {downloads: Map<string
 
   constructor(props: T) {
     super(props);
+
     this.state = {
       downloads: new Map()
     };
@@ -78,7 +79,10 @@ export class Downloads<T = {}> extends React.Component<T, {downloads: Map<string
     return (
       <Window title={<><Download/><span>Загрузки</span></>}>
         <WindowTrigger>
-          <button title="Загрузки" className="p-3 rounded-[50%] bg-neutral-100/20 transition hover:bg-neutral-100 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-white/80 shadow-black-extended"><Download/></button>
+          <button title="Загрузки" className="relative p-3 rounded-[50%] bg-neutral-100/20 transition hover:bg-neutral-100 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-white/80 shadow-black-extended">
+            <Download/>
+          {this.state.downloads.size > 0 && <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-red-600 text-white rounded-full px-2 py-1 text-xs">{this.state.downloads.size}</span>}
+          </button>
         </WindowTrigger>
         <WindowContent className="flex flex-col space-y-2">
           {Array.from(this.state.downloads.entries()).length == 0

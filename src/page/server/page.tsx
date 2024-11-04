@@ -1,9 +1,9 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import { EllipsisVertical, Undo2 } from "lucide-react";
 import { invoke } from "@tauri-apps/api/core";
 import { PlayManager } from "@/util/play.util";
 import { DownloadsManager } from "@/util/downloads.util";
+import Application, { Pages } from "@/app";
 
 interface ServerProps {
   // ClientID
@@ -12,23 +12,10 @@ interface ServerProps {
   name: string,
   // Картинка для фона
   bgUrl: string,
-  // Открыто ли окно
-  isOpen: boolean,
   // Описание клиента
   description: string,
   // Айпи сервера
   ip: string,
-  // Закрываем нахуй
-  onClose: () => void;
-}
-
-export class ServerPage<T extends ServerProps> extends React.Component<T> {
-  render(): React.ReactNode {
-    if (!this.props.isOpen)
-      return <></>;
-
-    return ReactDOM.createPortal(<ServerPageElement {...this.props}/>, document.body);
-  }
 }
 
 interface Mod {
@@ -44,24 +31,17 @@ for (let i = 0; i < 10; i++)
     icon: "https://static-cdn.jtvnw.net/jtv_user_pictures/benimatic-profile_image-390c4d3e4aa14241-150x150.png"
   });
 
-export class ServerPageElement<T extends ServerProps> extends React.Component<T, {installed: boolean, playButtonBlocken: boolean}> {
-  constructor(props: T) {
-    super(props);
+export class ServerPage<T extends ServerProps> extends React.Component<T, {installed: boolean, playButtonBlocked: boolean}> {
+  state = {
+    installed: true,
+    playButtonBlocked: false
+  };
 
-    this.state = {
-      installed: false,
-      playButtonBlocken: false
-    };
-
-    this.initState();
-  }
-
-  public async initState() {
-    let state: boolean = await invoke("isClientInstalled", {id: this.props.clientId});
-    console.log(state);
+  async componentDidMount() {
     this.setState({
-      installed: state
-    })
+      installed: await invoke<boolean>("isClientInstalled", {id: this.props.clientId}),
+      playButtonBlocked: false
+    });
   }
 
   public handleClick() {
@@ -75,18 +55,21 @@ export class ServerPageElement<T extends ServerProps> extends React.Component<T,
 
   public setPlayButtonBlock(state: boolean) {
     this.setState({
-      playButtonBlocken: state
+      playButtonBlocked: state
     });
   }
 
   render(): React.ReactNode {
     return (
-      <div className="absolute w-screen h-screen overflow-hidden">
+      <div className="w-screen h-screen overflow-hidden">
         {/* Backdrop Blur */}
-        <div className="fixed w-screen h-screen backdrop-blur-sm" />
+        <div className="absolute w-screen h-screen overflow-hidden">
+          <div className="fixed w-screen h-screen backdrop-blur-xl bg-black/50"/>
+          <img src={this.props.bgUrl} className="h-full w-full object-cover"/>
+        </div>
 
         {/* Content */}
-        <div data-tauri-drag-region className="fixed flex w-screen h-screen p-8 z-10 space-y-6">
+        <div data-tauri-drag-region className="fixed flex w-screen h-screen p-8 space-y-6">
           {/* Content Layer */}
           <div className="flex flex-grow w-full overflow-hidden space-x-6">
             {/* Left Panel: Server controls */}
@@ -95,7 +78,7 @@ export class ServerPageElement<T extends ServerProps> extends React.Component<T,
                 {/* Return Button */}
                 <button
                   title="Вернуться в главное меню"
-                  onClick={this.props.onClose}
+                  onClick={() => Application.changePage(Pages.Launcher)}
                   className="transition bg-neutral-900/30 hover:bg-neutral-900/30 text-white rounded-full p-2 aspect-square w-9 flex justify-center items-center shadow-black-extended">
                   <Undo2 className="w-5 h-5" />
                 </button>
@@ -127,9 +110,6 @@ export class ServerPageElement<T extends ServerProps> extends React.Component<T,
             </div>
           </div>
         </div>
-
-        {/* Background */}
-        <img data-tauri-drag-region src={this.props.bgUrl} className="absolute inset-0 w-full h-full object-cover blur-md" />
       </div>
     );
   }
