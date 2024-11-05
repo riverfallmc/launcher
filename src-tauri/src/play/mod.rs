@@ -1,28 +1,48 @@
+use std::process::Stdio;
+use arguments::Arguments;
 use clientinfo::get_client_info;
 use java::Java;
 use crate::util::{paths::LauncherPaths, tauri::AnyhowResult};
 
 pub(crate) mod java;
+pub(crate) mod arguments;
+pub(crate) mod session_manager;
+pub(crate) mod variables;
 pub(crate) mod clientinfo;
 
 #[tauri::command]
-pub(crate) fn play(
+pub(crate) async fn play(
   id: String,
-  _ip: String
+  ip: Option<String>
 ) -> AnyhowResult<()> {
+  // Папка клиента
   let dir = LauncherPaths::get_client_path(id.clone())?;
-
-  let client_info = get_client_info(id)?;
-  let jar = client_info.get_jar(&dir)?;
-  let _data = client_info.open_data(&dir)?;
-
-  dbg!(&client_info);
-  dbg!(&jar);
+  // Клиент
+  let client = get_client_info(id)?;
+  // VersionData
+  let data = client.open_data(&dir)?;
 
   let java = Java::new()?;
-  java.min_version(client_info.min_java_version)?;
+  // Проверяем что на компе установлена нужная джава
+  // Ибо мы ленивые бояре, которые не хотят ставить джаву вместе с клиентом
+  java.min_version(client.min_java_version)?;
 
-  dbg!(java.get_path());
+  // Готовый вариант аргументов для запуска процесса
+  let arguments = arguments::generate(
+    Arguments {ip},
+    &dir,
+    data,
+    client
+  ).await?;
+
+  // Запускаем процесс
+  let process = java.start()
+    .args(arguments)
+    .stdout(Stdio::piped())
+    .stderr(Stdio::piped())
+    .spawn();
+
+  dbg!(process);
 
   Ok(())
 }

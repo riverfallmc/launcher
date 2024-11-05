@@ -1,10 +1,10 @@
+/// Модуль, который парсит
+/// файл ${папка клиента}/client.json
+
 use std::{fs::File, path::{Path, PathBuf}};
 use mc_version_parser::types::VersionData;
 use serde::{Deserialize, Serialize};
 use crate::util::paths::LauncherPaths;
-
-/// Модуль, который парсит
-/// файл ${папка клиента}/client.json
 
 const FILE: &str = "client.json";
 

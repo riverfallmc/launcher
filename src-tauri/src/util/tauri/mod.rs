@@ -8,6 +8,7 @@ use tokio::sync::Mutex;
 use super::paths::LauncherPaths;
 
 pub(crate) mod message;
+pub(crate) mod userdata;
 
 #[derive(Error, Debug)]
 pub enum TauriCommandError {

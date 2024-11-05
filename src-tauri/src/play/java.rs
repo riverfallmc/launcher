@@ -1,3 +1,6 @@
+/// Модуль который отвечает за все
+/// что связано с джавой
+
 use core::str;
 use std::{env, path::{Path, PathBuf}, process::Command};
 use anyhow::Context;
@@ -8,11 +11,10 @@ pub(crate) struct Java {
   path: PathBuf
 }
 
+#[allow(unused)]
 impl Java {
   pub fn new() -> anyhow::Result<Java> {
     let java = Java::find_one()?;
-
-    log::debug!("{java}");
 
     if Command::new(&java).output().is_ok() {
       return Ok(Java {
@@ -71,6 +73,10 @@ impl Java {
       .context("Failed to extract major version")?;
 
     version_number.parse::<u8>().context("Failed to convert version to u8")
+  }
+
+  pub fn start(&self) -> Command {
+    Command::new(self.path.clone())
   }
 
   /// Ищет Java в переменных среды а так же через команды ``where/which``
