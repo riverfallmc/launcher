@@ -2,7 +2,7 @@ use std::process::Stdio;
 use arguments::Arguments;
 use clientinfo::get_client_info;
 use java::Java;
-use crate::util::{paths::LauncherPaths, tauri::AnyhowResult};
+use crate::util::{self, paths::LauncherPaths, process::ProcessTrait, tauri::AnyhowResult};
 
 pub(crate) mod java;
 pub(crate) mod arguments;
@@ -35,14 +35,23 @@ pub(crate) async fn play(
     client
   ).await?;
 
+  log::info!("{:?}", arguments);
+
   // Запускаем процесс
-  let process = java.start()
+  let mut child = java.start()
     .args(arguments)
     .stdout(Stdio::piped())
     .stderr(Stdio::piped())
-    .spawn();
+    .spawn()
+    .unwrap();
 
-  dbg!(process);
+  if let Err(err) = child.read_stderr() {
+    log::error!("Java exception error: {err:?}");
+
+    child.read_stdout();
+
+    return Err(util::tauri::TauriCommandError::Anyhow(err));
+  }
 
   Ok(())
 }

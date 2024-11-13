@@ -22,7 +22,6 @@ pub(crate) enum DIRequest {
   Delete(DeleteData)
 }
 
-// todo: make this more beauty
 impl DIAction for DIRequest {
   async fn handle(&self) -> AnyhowResult<()> {
     match self {

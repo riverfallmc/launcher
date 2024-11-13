@@ -45,7 +45,7 @@ export class ServerList extends React.Component<{}, {servers: ServerDetails[]}> 
           maxPlayers: 10,
           isEnabled: true,
           gradient: "linear-gradient(147.15deg, #CDD353 0%, #77B800 80.38%)",
-          ip: "localhost",
+          ip: "0.0.0.0:25565",
           description: textDesc,
           bgUrl: "https://i.tlauncher.org/images/tmphmamuzd4.png?rand=1569096381"
         },

@@ -1,7 +1,7 @@
 use std::path::Path;
 use anyhow::Context;
 use mc_version_parser::{arguments::Substitution, libraries::LibrariesCollect, types::VersionData};
-use crate::util::{pathbuf::PathBufToString, tauri::userdata::get_user};
+use crate::util::{pathbuf::PathBufToString, tauri::userdata::get_user, url::get_session_server_url};
 use super::{clientinfo::ClientInfo, session_manager, variables::{GameArguments, LibraryPathFormat}};
 
 pub(crate) struct Arguments {
@@ -16,6 +16,7 @@ pub(crate) async fn generate(
   client: ClientInfo
 ) -> anyhow::Result<Vec<String>> {
   // Получаем данные пользователя
+
   let user = get_user().await;
   let path = Path::new(dir);
 
@@ -25,10 +26,12 @@ pub(crate) async fn generate(
   let mut libs = data.libraries
     .collect()
     .into_iter()
-    .map(|mut lib| {lib.format(&libraries)})
+    .map(|mut lib| lib.format(&libraries))
     .collect::<Vec<String>>();
 
-  libs.push(client.get_jar(dir)?.to_str().context("Unable to join two paths")?.to_string());
+  libs.push(client.get_jar(dir)?
+    .to_str()
+    .context("Unable to join two paths")?.to_string());
 
   let session = session_manager::request().await?;
 
@@ -36,17 +39,19 @@ pub(crate) async fn generate(
   // которые будут подставлены в аргументы
   // процесса джавы
   let variables = GameArguments {
+    website: get_session_server_url().to_string(),
     natives_directory: client.get_folder(dir)?.join("natives").to_string()?,
     launcher_name: "java-minecraft-launcher".to_string(),
     launcher_version: "1.6.84-j".to_string(),
-    classpath: libs.join(";"),
+    classpath: libs.join(":"),
     auth_player_name: user.username,
     version_name: data.id,
     game_directory: dir.to_string(),
+    game_libraries_directory: libraries,
     assets_root: path.join("assets").to_string()?,
     assets_index_name: data.assets,
     auth_uuid: session.uuid,
-    auth_access_token: session.token,
+    auth_access_token: session.access_token,
     main_class: data.mainClass,
     user_type: "mojang".to_string(),
     version_type: data.r#type,

@@ -13,14 +13,16 @@ pub(crate) struct UserData {
   /// Игровое имя игрока
   pub username: String,
   /// JWT
-  pub jwt: String
+  // pub jwt: String
+  pub password: String
 }
 
 impl UserData {
   fn new() -> UserData {
     UserData {
       username: String::new(),
-      jwt: String::new()
+      password: String::new()
+      // jwt: String::new()
     }
   }
 }

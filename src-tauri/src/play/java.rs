@@ -1,8 +1,11 @@
 /// Модуль который отвечает за все
 /// что связано с джавой
+///
+/// 1. Ищет путь до установленной Java
+/// 2. Проверяет версию Java
 
 use core::str;
-use std::{env, path::{Path, PathBuf}, process::Command};
+use std::{env, path::{Path, PathBuf}, process::Command, str::Split};
 use anyhow::Context;
 use serde::{Deserialize, Serialize};
 
@@ -14,7 +17,8 @@ pub(crate) struct Java {
 #[allow(unused)]
 impl Java {
   pub fn new() -> anyhow::Result<Java> {
-    let java = Java::find_one()?;
+    // let java = Java::find_one()?;
+    let java = "/home/smokingplaya/.tlauncher/mojang_jre/java-runtime-alpha/linux/java-runtime-alpha/bin/java".to_string();
 
     if Command::new(&java).output().is_ok() {
       return Ok(Java {
@@ -45,6 +49,22 @@ impl Java {
 
   // Вот тут начинается пиздец
 
+  fn get_major_version(
+    version: &mut Split<'_, char>
+  ) -> anyhow::Result<u8> {
+    let current = version.next()
+      .context("Couldn't get the version out")?;
+
+    // Версии с 1.0 - 1.9
+    // Версия 1.1 не будет так воркать.
+    // Ну блять, я не собираюсь 1.1 использовать
+    if (current == "1") {
+      return Self::get_major_version(version);
+    }
+
+    Ok(current.parse::<u8>()?)
+  }
+
   /// Возвращает версию найденной Java
   fn get_version(&self) -> anyhow::Result<u8> {
     let java = self.path
@@ -63,16 +83,14 @@ impl Java {
       .next()
       .context("Failed to read output from java -version")?;
 
-    let version_number = version_line
+    let mut version = version_line
       .split_whitespace()
       .find(|s| s.starts_with('"'))
       .context("Failed to parse version number")?
       .trim_matches('"')
-      .split('.')
-      .next()
-      .context("Failed to extract major version")?;
+      .split('.');
 
-    version_number.parse::<u8>().context("Failed to convert version to u8")
+    Self::get_major_version(&mut version)
   }
 
   pub fn start(&self) -> Command {
@@ -81,12 +99,16 @@ impl Java {
 
   /// Ищет Java в переменных среды а так же через команды ``where/which``
   fn find_one() -> anyhow::Result<String> {
+    let java_name = if cfg!(target_os = "windows") {"javaw.exe"} else {"java"};
+
     if let Ok(java_home) = env::var("JAVA_HOME") {
-      return Ok(java_home);
+      return Ok(Path::new(&java_home).join(java_name).to_str().unwrap().to_string());
     }
 
     let cmd = if cfg!(target_os = "windows") {"where"} else {"which"};
-    let output = Command::new(cmd).arg("java").output()?;
+    let output = Command::new(
+      if cfg!(target_os = "windows") {"where"} else {"which"}
+    ).arg(java_name).output()?;
 
     let path = String::from_utf8_lossy(&output.stdout);
     let first_line = path.lines().next().unwrap_or("");

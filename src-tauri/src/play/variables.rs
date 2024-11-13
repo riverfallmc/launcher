@@ -12,6 +12,7 @@ pub(crate) struct PlayArguments<'a> {
 #[allow(non_snake_case)]
 #[derive(Clone)]
 pub(crate) struct GameArguments {
+  pub website: String,
   pub natives_directory: String,
   pub launcher_name: String,
   pub launcher_version: String,
@@ -28,13 +29,15 @@ pub(crate) struct GameArguments {
   pub version_type: String,
   pub width: String,
   pub height: String,
-  pub server_ip: String
+  pub server_ip: String,
+  pub game_libraries_directory: String
 }
 
 impl GameArguments {
   pub fn collect(&self) -> HashMap<String, String> {
     let mut hashmap: HashMap<String, String> = HashMap::new();
 
+    hashmap.insert("website".to_string(), self.website.clone());
     hashmap.insert("natives_directory".to_string(), self.natives_directory.clone());
     hashmap.insert("launcher_name".to_string(), self.launcher_name.clone());
     hashmap.insert("launcher_version".to_string(), self.launcher_version.clone());
@@ -42,6 +45,7 @@ impl GameArguments {
     hashmap.insert("auth_player_name".to_string(), self.auth_player_name.clone());
     hashmap.insert("version_name".to_string(), self.version_name.clone());
     hashmap.insert("game_directory".to_string(), self.game_directory.clone());
+    hashmap.insert("game_libraries_directory".to_string(), self.game_libraries_directory.clone());
     hashmap.insert("assets_root".to_string(), self.assets_root.clone());
     hashmap.insert("assets_index_name".to_string(), self.assets_index_name.clone());
     hashmap.insert("auth_uuid".to_string(), self.auth_uuid.clone());
@@ -65,11 +69,11 @@ impl LibraryPathFormat for String {
   fn format(&mut self, client: &str) -> String {
     let parts: Vec<&str> = self.split(':').collect();
     let subparts: Vec<&str> = parts[0].split('.').collect();
-    let joined_subparts = subparts.join("\\");
+    let joined_subparts = subparts.join("/");
 
     format!(
-        "{client}\\{}\\{}\\{}\\{}-{}.jar",
-        joined_subparts, parts[1], parts[2], parts[1], parts[2]
+      "{client}/{}/{}/{}/{}-{}.jar",
+      joined_subparts, parts[1], parts[2], parts[1], parts[2]
     )
   }
 }

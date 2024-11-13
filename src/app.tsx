@@ -58,6 +58,14 @@ class Application<T = {}> extends React.Component<T, {page?: Pages}> {
     // создаем прослушивателя остальных сообщений
     new MessageManager;
 
+    // Todo
+    invoke("updateUserData", {
+      data: {
+        username: "smokingplaya",
+        password: "E;#==x@=FkbVxJs[Lv7z7wAr"
+      }
+    })
+
     Application.listenMessage();
 
     this.state = {
