@@ -36,8 +36,8 @@ async fn main() -> anyhow::Result<()> {
       // Utils
       util::tauri::isDebug,
       util::tauri::isClientInstalled,
-      util::tauri::userdata::updateUserData,
-      // Playq
+      util::tauri::userdata::updateUser,
+      // Play
       play::play,
       // Downloads
       download::interface::di_cmd,

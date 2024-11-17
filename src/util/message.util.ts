@@ -12,7 +12,7 @@ export interface UiErrorBody {
   // Сообщение ошибки
   message: string,
   // Маленький текст для уведомления в ОС
-  small: string;
+  small?: string;
 }
 
 type ListenCallback<T> = (event: Message<T>) => void;

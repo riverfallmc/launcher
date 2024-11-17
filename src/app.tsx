@@ -2,9 +2,7 @@ import "@/index.css";
 import React from "react";
 import NotFound from "@/page/notfound/page";
 import Authentication from "@/page/authentication/page";
-import Recovery from "@/page/recovery/page";
 import Launcher from "@/page/launcher/page";
-import Registration from "@/page/registration/page";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { invoke } from "@tauri-apps/api/core";
 import { getTauriVersion, getVersion } from "@tauri-apps/api/app";
@@ -33,13 +31,10 @@ SettingsManager.register({
 })
 
 export enum Pages {
-  // Default = Authentication = 0
-  Default = 3,
   Authentication = 0,
-  Registration,
-  PasswordRecovery,
   Launcher,
-  Server
+  Server,
+  Default = Pages.Authentication, // Pages.Launcher
 }
 
 class Application<T = {}> extends React.Component<T, {page?: Pages}> {
@@ -58,14 +53,6 @@ class Application<T = {}> extends React.Component<T, {page?: Pages}> {
     // создаем прослушивателя остальных сообщений
     new MessageManager;
 
-    // Todo
-    invoke("updateUserData", {
-      data: {
-        username: "smokingplaya",
-        password: "E;#==x@=FkbVxJs[Lv7z7wAr"
-      }
-    })
-
     Application.listenMessage();
 
     this.state = {
@@ -81,13 +68,21 @@ class Application<T = {}> extends React.Component<T, {page?: Pages}> {
     MessageManager.listen(async event => {
       switch (event.type) {
         case "uiError":
-          return await this.pushUiError(event.body);
+          return await this.showErrorInUI(event.body);
       }
     }, "application");
   }
 
-  private static async pushUiError(body: UiErrorBody) {
-    await sendNotify(body.small);
+  /**
+   * showErrorInUI
+   * * Показывает ошибку-уведомление на экран
+   * @param body 
+   */
+  public static async showErrorInUI(body: UiErrorBody) {
+    if (body.small)
+      await sendNotify(body.small);
+
+    console.log("Error message:", body.message);
     // Todo добавить уведомление на весь экран
   }
 
@@ -144,10 +139,6 @@ class Application<T = {}> extends React.Component<T, {page?: Pages}> {
     switch (page) {
       case Pages.Authentication:
         return <Authentication/>;
-      case Pages.PasswordRecovery:
-        return <Recovery/>;
-      case Pages.Registration:
-        return <Registration/>;
       case Pages.Launcher:
         return <Launcher/>
       case Pages.Server:
