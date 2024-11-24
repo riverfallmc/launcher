@@ -8,7 +8,7 @@ import { Background } from "../../components/background";
 import { getWebsiteUrl } from "@/util/website.util";
 import { className } from "@/util/classname.util";
 import { FaGithub, FaVk } from "react-icons/fa6";
-import { AuthData, Authorization, authSchema } from "@/util/auth.util";
+import { AuthData, AuthorizationManager, authSchema } from "@/util/auth.util";
 
 const AuthenticationPage: React.FC<{onSubmit: (data: AuthData) => Promise<void>}> = ({onSubmit}) => {
   const {
@@ -25,7 +25,7 @@ const AuthenticationPage: React.FC<{onSubmit: (data: AuthData) => Promise<void>}
   const {
     username,
     password
-  } = Authorization.getCredentials();
+  } = AuthorizationManager.getCredentials();
 
   return (
     <main className="flex h-screen justify-between">
@@ -90,7 +90,7 @@ class Authentication extends ApplicationPage {
     data: AuthData
   ) {
     try {
-      await Authorization.withArguments(data);
+      await AuthorizationManager.withArguments(data);
 
       Application.changePage(Pages.Launcher);
     } catch (error) {

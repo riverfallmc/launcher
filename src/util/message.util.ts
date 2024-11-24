@@ -1,4 +1,5 @@
 import { listen } from "@tauri-apps/api/event";
+import { BaseManager } from "./manager.util";
 
 //                Ошибка
 type MessageType = "uiError";
@@ -17,13 +18,11 @@ export interface UiErrorBody {
 
 type ListenCallback<T> = (event: Message<T>) => void;
 
-export class MessageManager {
-  private static managerInstance: MessageManager;
+export class MessageManager extends BaseManager {
   private static listeners: Map<string, ListenCallback<any>> = new Map();
 
-  constructor() {
-    if (MessageManager.managerInstance !== undefined)
-      throw new Error("An application can have only one DownloadManager instance");
+  constructor(name: string) {
+    super(name);
 
     listen<Message<any>>("message", event => MessageManager.onEvent(event.payload));
   }

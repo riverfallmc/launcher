@@ -2,6 +2,9 @@ import { invoke } from "@tauri-apps/api/core";
 import Application from "../app";
 import { SettingsManager } from "./settings.util";
 
+/**
+ * Класс кнопки для Discord Rich Presence Activity
+ */
 export class DrpcButton {
   public label: string;
   public url: string;

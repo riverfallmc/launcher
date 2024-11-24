@@ -1,5 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
+import { BaseManager } from './manager.util';
 
 export enum ProcessState {
   Downloading = "Downloading",
@@ -111,13 +112,11 @@ export class DownloadInterface {
 }
 
 // Прием сообщений от Backend + Отправка через DownloadInterface
-export class DownloadsManager {
-  private static managerInstance: DownloadsManager;
+export class DownloadsManager extends BaseManager {
   private static listeners: Map<string, ListenCallback<any>> = new Map();
 
-  constructor() {
-    if (DownloadsManager.managerInstance !== undefined)
-      throw new Error("An application can have only one DownloadManager instance");
+  constructor(name: string) {
+    super(name);
 
     listen<BackendMessage<any>>("downloadThread", event => DownloadsManager.onEvent(event.payload));
   }
@@ -130,29 +129,19 @@ export class DownloadsManager {
   };
 
   private static onEvent(payload: BackendMessage<any>) {
-    this.listeners.forEach(listener => {
-      listener(payload);
-    });
+    this.listeners.forEach(listener => listener(payload));
   }
 
   public static async download(id: string, name: string) {
-    return await DownloadInterface.create({
-      id,
-      name
-    });
+    return await DownloadInterface.create({ id, name });
   }
 
   public static async setDownloadPaused(id: string, isPaused: boolean) {
-    return await DownloadInterface.update({
-      id,
-      isPaused
-    });
+    return await DownloadInterface.update({ id, isPaused });
   }
 
   public static async deleteDownload(id: string) {
-    return await DownloadInterface.delete({
-      id
-    });
+    return await DownloadInterface.delete({ id });
   }
 
   public static getAll(): DownloadEntity[] {
