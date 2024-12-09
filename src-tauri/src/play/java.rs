@@ -17,8 +17,8 @@ pub(crate) struct Java {
 #[allow(unused)]
 impl Java {
   pub fn new() -> anyhow::Result<Java> {
-    // let java = Java::find_one()?;
-    let java = "/home/smokingplaya/.tlauncher/mojang_jre/java-runtime-alpha/linux/java-runtime-alpha/bin/java".to_string();
+    let java = Java::find_path()?;
+    // let java = "/home/smokingplaya/.tlauncher/mojang_jre/java-runtime-alpha/linux/java-runtime-alpha/bin/java".to_string();
 
     if Command::new(&java).output().is_ok() {
       return Ok(Java {
@@ -97,9 +97,34 @@ impl Java {
     Command::new(self.path.clone())
   }
 
+  #[cfg(target_os = "windows")]
+  fn find_path() -> anyhow::Result<String> {
+    use crate::util::process::OutputReader;
+
+    let output = Command::new("powershell")
+      .args(["-Command", "(Get-Command javaw).Source"]) // Да, мне так можно
+      .output()?;
+
+    let path = OutputReader::from(output)
+      .to_string();
+
+    log::debug!("Java path -> {path}");
+
+    Ok(path)
+  }
+
+  #[cfg(not(target_os = "windows"))]
+  fn find_path() -> anyhow::Result<String> {
+    Ok(String::new())
+  }
+
+  #[deprecated = "Переписывается"]
   /// Ищет Java в переменных среды а так же через команды ``where/which``
   fn find_one() -> anyhow::Result<String> {
-    let java_name = if cfg!(target_os = "windows") {"javaw.exe"} else {"java"};
+    let java_name = if cfg!(target_os = "windows")
+      {"javaw.exe"}
+      else
+      {"java"};
 
     if let Ok(java_home) = env::var("JAVA_HOME") {
       return Ok(Path::new(&java_home).join(java_name).to_str().unwrap().to_string());

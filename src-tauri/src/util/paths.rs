@@ -7,7 +7,9 @@
 ///       /client.json          ФАЙЛ
 ///
 
-use std::{env, fs};
+use std::{env, fs, path::Path};
+
+use super::pathbuf::PathBufToString;
 
 /// Структура для получения путей до папок\
 /// Перед тем как вернет вам нужную папку - проверит существует ли она, и создаст полный путь если её нет\
@@ -39,7 +41,9 @@ impl LauncherPaths {
   /// Возвращает полный путь до папки лаунчера
   pub(crate) fn get_launcher() -> anyhow::Result<String> {
     let home = LauncherPaths::get_home()?;
-    let dir = format!("{home}/.serenitymc");
+    let dir = Path::new(&home)
+      .join(".serenitymc")
+      .to_string()?;
 
     LauncherPaths::prepare_dir(dir)
   }
@@ -47,7 +51,9 @@ impl LauncherPaths {
   /// Возвращает полный путь до папки с клиентами
   pub(crate) fn get_client_dir() -> anyhow::Result<String> {
     let launcher = LauncherPaths::get_launcher()?;
-    let dir = format!("{launcher}/clients");
+    let dir = Path::new(&launcher)
+      .join("clients")
+      .to_string()?;
 
     LauncherPaths::prepare_dir(dir)
   }
@@ -55,7 +61,9 @@ impl LauncherPaths {
   /// Возвращает полный путь до папки указанного клиента
   pub(crate) fn get_client_path(client: String) -> anyhow::Result<String> {
     let client_dir = LauncherPaths::get_client_dir()?;
-    let dir = format!("{client_dir}/{client}");
+    let dir = Path::new(&client_dir)
+      .join(client)
+      .to_string()?;
 
     LauncherPaths::prepare_dir(dir)
   }

@@ -1,4 +1,4 @@
-use std::{io::{BufRead, BufReader}, process::Child};
+use std::{io::{BufRead, BufReader}, process::{Child, Output}};
 
 #[allow(unused)]
 pub(crate) trait ProcessTrait {
@@ -40,5 +40,26 @@ impl ProcessTrait for Child {
 
     Ok(buffer
         .join("\n"))
+  }
+}
+
+pub struct OutputReader(Output);
+
+impl From<Output> for OutputReader {
+  fn from(output: Output) -> Self {
+    OutputReader(output)
+  }
+}
+
+impl ToString for OutputReader {
+  fn to_string(&self) -> String {
+    let stdout = String::from_utf8_lossy(&self.0.stdout);
+
+    let first_line = stdout
+      .lines()
+      .next()
+      .unwrap_or("");
+
+    first_line.to_string()
   }
 }

@@ -9,6 +9,8 @@ pub(crate) struct Arguments {
   pub ip: Option<String>,
 }
 
+const CLASSPATH_SEPARATOR: &str = if cfg!(target_os = "windows") {";"} else {":"};
+
 pub(crate) async fn generate(
   arguments: Arguments,
   dir: &String,
@@ -43,7 +45,7 @@ pub(crate) async fn generate(
     natives_directory: client.get_folder(dir)?.join("natives").to_string()?,
     launcher_name: "java-minecraft-launcher".to_string(),
     launcher_version: "1.6.84-j".to_string(),
-    classpath: libs.join(":"),
+    classpath: libs.join(CLASSPATH_SEPARATOR),
     auth_player_name: user.username,
     version_name: data.id,
     game_directory: dir.to_string(),

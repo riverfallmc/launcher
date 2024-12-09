@@ -3,13 +3,16 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 
 export default defineConfig(async () => ({
-  plugins: [react()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
-      "component": path.resolve(__dirname, "./src/components")
+      "@": path.join(__dirname, "./src"),
+      "page": path.join(__dirname, "./src/ui/pages"),
+      "component": path.join(__dirname, "./src/ui/components"),
+      "util": path.join(__dirname, "./src/util")
     }
   },
+
+  plugins: [react()],
   clearScreen: false,
   server: {
     port: 1420,

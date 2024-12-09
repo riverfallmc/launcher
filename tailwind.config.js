@@ -1,3 +1,5 @@
+import textshadow from "tailwindcss-textshadow";
+
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: "selector",
@@ -24,7 +26,5 @@ export default {
       }
     },
   },
-  plugins: [
-    require('tailwindcss-textshadow')
-  ],
+  plugins: [textshadow],
 };

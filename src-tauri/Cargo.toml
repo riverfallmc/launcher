@@ -1,11 +1,9 @@
 [package]
 name = "launcher"
-version = "0.2.7"
-description = "A Tauri App"
-authors = ["you"]
+version = "0.3.0"
+description = "SerenityMC's Launcher"
+authors = ["smokingplaya"]
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
@@ -30,7 +28,7 @@ tauri-plugin-process = "2"
 tauri-plugin-http = "2"
 tauri-plugin-notification = "2"
 hashbrown = "0.15.0"
-reqwest = {version = "0.12.9", features = ["blocking"] }
+reqwest = { version = "0.12.9", features = ["blocking"] }
 tokio = "1.41.0"
 zip = "2.2.0"
 # Project modules
