@@ -7,7 +7,7 @@ interface Props
   subtitle?: string;
 }
 
-const className = "p-5 bg-neutral-950 rounded-lg space-y-2.5";
+const className = "bg-neutral-950 rounded-md space-y-2.5";
 
 function Form(
   props: Props

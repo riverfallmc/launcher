@@ -5,7 +5,7 @@ interface Props
   variant?: "primary" | "secondary";
 }
 
-const className = "text-white p-2 rounded-lg transition";
+const className = "text-white py-2 px-3 rounded-md transition";
 
 function Button(
   props: Props

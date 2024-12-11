@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Rubik;
+  font-weight: 400;
+}
+
+@layer base {
+  :root {
+    --primary: 0 0% 7.8%;
+    --secondary: 0 0% 10.2%;
+    --accent: 273 100% 50%; /* amethyst 153,102,204   270 50% 60% */
+  }
+}

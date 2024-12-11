@@ -22,5 +22,5 @@ export default Input;
 function TextInput(
   props: Props
 ) {
-  return <input {...props} className={cn("bg-neutral-900 placeholder:text-white/30 text-white focus:outline-none py-2.5 px-3 rounded-lg", props.className)}/>
+  return <input {...props} className={cn("bg-neutral-900 placeholder:text-white/30 text-white focus:outline-none py-2 px-3 rounded-md", props.className)}/>
 }

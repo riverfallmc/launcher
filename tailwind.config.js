@@ -9,21 +9,11 @@ export default {
   ],
   theme: {
     extend: {
-      fontFamily: {
-        "montserrat-alternates": ["Montserrat Alternates", "sans-serif"]
+      colors: {
+        primary: 'hsl(var(--primary))',
+        secondary: 'hsl(var(--secondary))',
+        accent: 'hsl(var(--accent))',
       },
-      boxShadow: {
-        "black-extended": "0 4px 4px 0 rgba(0, 0, 0, 0.25);"
-      },
-      backgroundImage: {
-        'text-gradient': 'linear-gradient(to bottom, #FF6A00, #FFAE00)',
-      },
-      backgroundClip: {
-        text: 'text',
-      },
-      textFillColor: {
-        transparent: 'transparent',
-      }
     },
   },
   plugins: [textshadow],

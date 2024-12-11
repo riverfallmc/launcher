@@ -17,6 +17,8 @@ lazy_static::lazy_static! {
   pub(crate) static ref ACTIVITY: Mutex<Option<RpcActivity>> = Mutex::new(None);
 }
 
+const CLIENT_ID: &str = "1292519587945906249";
+
 /// Устанавливает активность Discord Rich Presence
 pub(crate) fn set_drpc_activity(activity: RpcActivity) -> anyhow::Result<()> {
   let mut activity_lock = ACTIVITY
@@ -136,7 +138,7 @@ pub(crate) fn run_rpc() {
 fn setup_rpc() -> anyhow::Result<()> {
   log::debug!("Setting up Discord RPC");
 
-  let mut client = DiscordIpcClient::new("1292519587945906249")
+  let mut client = DiscordIpcClient::new(CLIENT_ID)
     .map_err(|err| anyhow::anyhow!("Failed to create DiscordIpcClient: {err}"))?;
 
   log::debug!("Connecting to Discord...");
