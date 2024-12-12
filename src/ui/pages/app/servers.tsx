@@ -1,8 +1,9 @@
 import { ReactNode } from "react";
 import Page, { ApplicationPage } from "component/page";
+import Server from "component/server";
 import { Activity, Buttons, Images } from "util/discord";
 import { Server as IServer } from "util/util";
-import { getServerList } from "@/util/server";
+import { getServerList, getServerListSorted } from "util/server";
 
 interface State {
   serverList: IServer[];
@@ -29,18 +30,24 @@ class Servers<P = {}> extends Page<P, State> {
     );
 
     (async () => {
+      let serverList = await getServerListSorted((a, b) => b.online[0] - a.online[0]);
+
       this.setState({
-        serverList: await getServerList()
+        serverList
       });
     })();
   }
 
+  protected getEnabledServerCount(): number {
+    return this.state.serverList.filter(server => server.enabled).length;
+  }
+
   render(): ReactNode {
     return (
-      <ApplicationPage title={Servers.title}>
-        <div className="flex flex-col size-full">
+      <ApplicationPage title={Servers.title} subtitle={`Сейчас доступно ${this.getEnabledServerCount()} сервера`}>
+        <div className="flex-col size-full scroll grid grid-cols-3 content-start gap-y-4 overflow-y-auto">
           {this.state.serverList && this.state.serverList.map(server => {
-            return <span className="text-white">{server.name}</span>
+            return <Server {...server}/>
           })}
         </div>
       </ApplicationPage>
