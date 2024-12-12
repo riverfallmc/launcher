@@ -10,7 +10,11 @@ function Server(props: Props) {
   let subtitle = props.time ? `${formatTime(props.time)} наиграно` : (props.enabled ? `${props.online[0]}/${props.online[1]} ${formatPlayers(props.online[0])}` : "выключен");
 
   return (
-    <div className={cn("relative flex p-3 leading-5 w-56 h-32", props.className)}>
+    <div
+      onClick={() => {
+        document.location = `/server?serverId=${props.id}`;
+      }}
+      className={cn("relative flex flex-shrink-0 p-3 leading-5 w-56 h-32 cursor-pointer", props.className)}>
       <div className="absolute inset-0 overflow-hidden z-0">
         <img src={props.image} className="rounded-md filter brightness-50 size-full object-cover"/>
       </div>

@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Page, { ApplicationPage } from "component/page";
 import UserProfile from "component/userprofile";
 import Server from "component/server";
 import { ServerHistory as IServerHistory, Server as IServer } from "util/util";
 import { Activity, Images } from "util/discord";
 import { getUser, User } from "util/user";
-import { getServerList, getServerListSorted } from "util/server";
+import { getServerHistory, getServerListSorted } from "util/server";
+import { RoundedButton } from "@/ui/components/button";
+import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 
 class Library<P = {}> extends Page<P> {
   static title: string = "Библиотека";
@@ -44,24 +46,12 @@ export default Library;
 
 function History() {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col leading-5">
       <span className="text-white font-medium text-lg">Продолжить игру</span>
 
       <ServerHistory/>
     </div>
   )
-}
-
-async function getServerHistory(
-  _token: string
-): Promise<IServerHistory[]> {
-  // todo @ http request
-  return [
-    {
-      server: (await getServerList())[0],
-      time: 72600
-    }
-  ]
 }
 
 /**
@@ -86,6 +76,7 @@ function ServerHistory() {
     <div className="flex space-x-2">
       {servers.length === 0 &&
         <NoHistory/>}
+      {/* todo @ сделать скролл */}
       {servers.map(server => {
         return <Server {...server.server} time={server.time}/>
       })}
@@ -94,11 +85,33 @@ function ServerHistory() {
 }
 
 function NoHistory() {
-  return <span className="text-neutral-500 leading-5">Вы еще не играли ни на одном сервере.</span>
+  return <span className="text-neutral-500">Вы еще не играли ни на одном сервере.</span>
 }
 
 function Recommendations() {
   const [servers, setServers] = useState<IServer[]>([]);
+  const scroll = useRef<HTMLDivElement>(null);
+  const scrollPower = 50;
+  let scrollInterval: NodeJS.Timeout | null;
+
+  const startScroll = (direction: "left" | "right") => {
+    if (scrollInterval) return;
+    scrollInterval = setInterval(() => {
+      if (scroll.current) {
+        scroll.current.scrollBy({
+          left: direction === "left" ? -scrollPower : scrollPower,
+          behavior: "smooth",
+        });
+      }
+    }, 50);
+  };
+
+  const stopScroll = () => {
+    if (scrollInterval) {
+      clearInterval(scrollInterval);
+      scrollInterval = null;
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -107,15 +120,34 @@ function Recommendations() {
   }, []);
 
   return (
-    <div className="flex flex-col space-y-2">
-      <div className="flex flex-col space-y-1">
-        <span className="text-white text-lg font-medium leading-5">Рекомендации</span>
-        <span className="text-neutral-500 leading-5">Возможно вам понравятся эти сервера</span>
+    <div className="flex flex-col space-y-2 overflow-x-auto">
+      <div className="flex justify-between">
+        <div className="flex flex-col leading-5">
+          <span className="text-white text-lg font-medium">Рекомендации</span>
+          <span className="text-neutral-500">Возможно вам понравятся эти сервера</span>
+        </div>
+
+        <div className="flex space-x-2 pr-1 items-center">
+          {/* todo @ убрать кнопки если нет оверфлоуааа */}
+          <RoundedButton
+            onMouseDown={() => startScroll("left")}
+            onMouseUp={stopScroll}
+            onMouseLeave={stopScroll}
+            ><FaAngleLeft/></RoundedButton>
+          <RoundedButton
+            onMouseDown={() => startScroll("right")}
+            onMouseUp={stopScroll}
+            onMouseLeave={stopScroll}
+            ><FaAngleRight/></RoundedButton>
+        </div>
       </div>
 
-      <div className="flex overflow-x-auto whitespace-nowrap space-x-3">
+      {/* Todo: w-full */}
+      <div
+        ref={scroll}
+        className="max-w-full flex scrollbar overflow-x-auto scroll-hidden whitespace-nowrap space-x-3">
         {servers.map(server => {
-          return <Server className="flex-shrink-0" {...server}/>
+          return <Server {...server}/>
         })}
       </div>
     </div>

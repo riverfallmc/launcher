@@ -3,7 +3,7 @@ import { Activity, updateActivity } from "@/util/discord";
 import { updateTitle } from "@/util/util";
 import { Sidebar } from "./sidebar";
 
-export default abstract class Page<P = {}> extends React.Component<P> {
+export default abstract class Page<P = {}, S = {}> extends React.Component<P, S> {
   public title: string;
   public rpc: Activity;
 
@@ -25,15 +25,11 @@ export default abstract class Page<P = {}> extends React.Component<P> {
 }
 
 export function BasePage({children}: {children: React.ReactNode}) {
-  return <main data-tauri-drag-region children={children} className="fixed w-screen h-screen bg-primary flex"/>
+  return <main data-tauri-drag-region children={children} className="w-screen h-screen flex fixed bg-primary"/>
 }
 
 export function BasePageContent({children}: {children: React.ReactNode}) {
-  return (
-    <div data-tauri-drag-region className="flex flex-col space-y-3 size-full p-4">
-        {children}
-    </div>
-  )
+  return <div data-tauri-drag-region className="flex-grow max-w-full overflow-x-auto p-4" children={children}/>
 }
 
 export function ApplicationPage({children, title}: {children?: React.ReactNode, title: string}) {
@@ -41,11 +37,11 @@ export function ApplicationPage({children, title}: {children?: React.ReactNode, 
     <BasePage>
       <Sidebar/>
       <BasePageContent>
-        <div data-tauri-drag-region>
+        <div data-tauri-drag-region className="size-full flex flex-col space-y-2">
           <span className="text-white font-medium text-xl">{title}</span>
-        </div>
 
-        {children}
+          {children}
+        </div>
       </BasePageContent>
     </BasePage>
   )

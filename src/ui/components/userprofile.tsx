@@ -3,6 +3,14 @@ import Avatar from "./avatar";
 import { useEffect, useState } from "react";
 
 function UserProfile({user}: {user: User}) {
+  const [isBanned, setIsBanned] = useState<boolean>();
+
+  useEffect(() => {
+    (async () => {
+      setIsBanned(false); // todo @ http request
+    })();
+  })
+
   return (
     <div className="flex w-auto space-x-3">
       <Avatar
@@ -11,20 +19,30 @@ function UserProfile({user}: {user: User}) {
 
       <div className="flex flex-col justify-center leading-5">
         <span className="text-white/80">С возвращением,</span>
-        <span className="text-white font-medium flex gap-x-1.5">{user.username} <RankBadge username={user.username}/></span>
+        <span className="text-white font-medium flex gap-x-1.5">{user.username} <RankBadge username={user.username}/> {isBanned && <Badge color="#444444">BANNED</Badge>}</span>
       </div>
     </div>
   )
 }
 
+function Badge({color, children}: {color?: string, children: React.ReactNode}) {
+  return <div
+    className="py-0.5 px-1 text-xs font-medium rounded-md uppercase"
+    style={{
+      backgroundColor: color
+    }}>{children}</div>
+}
+
 function RankBadge({username}: {username: string}) {
   const [rank, setRank] = useState<string>();
+  const [color, setColor] = useState<string>();
 
   useEffect(() => {
     (async () => setRank("owner"))();
+    setColor("#5B21B6");
   });
 
-  return <div className="py-0.5 px-1 text-xs font-medium bg-violet-800 rounded-md uppercase">{rank}</div>
+  return <Badge color={color}>{rank}</Badge>
 }
 
 export default UserProfile

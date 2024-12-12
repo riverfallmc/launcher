@@ -28,7 +28,8 @@ export function Sidebar(_props: Props) {
 
 function SidebarPanel({children}: {children: React.ReactNode}) {
   return <div
-    className="w-auto h-full flex flex-col p-2 space-y-1 outline outline-1 outline-secondary outline-offset-0 outline-r"
+    data-tauri-drag-region
+    className="w-auto h-full p-2 flex flex-col flex-shrink-0 outline outline-1 outline-secondary outline-offset-0 outline-r"
     >{children}</div>
 }
 
@@ -42,6 +43,7 @@ function SidebarButton({children, href, alt}: {children: React.ReactNode, href: 
 
 function SidebarBottom({children}: {children: React.ReactNode}) {
   return (
+    // todo @ костыль
     <div className="bottom-0 fixed pb-2 space-y-1">
       {children}
     </div>

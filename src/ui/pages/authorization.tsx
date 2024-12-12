@@ -10,13 +10,6 @@ import { Activity, Images } from "util/discord";
 import { ServiceAuth } from "../components/serviceauth";
 import Background from "../components/background";
 
-// Todo
-//interface User {
-//  username: string,
-//  avatar: string,
-//  token: string
-//}
-
 class Authorization<P = {}> extends Page<P> {
   private static title = "Авторизация";
   private static rpc = new Activity({

@@ -1,4 +1,4 @@
-import { Server } from "util/util";
+import { Server, ServerHistory } from "util/util";
 
 export const Background = {
   fp: "https://preview.redd.it/beautiful-farm-and-shader-v0-4gfqslsxfs8b1.png?auto=webp&s=e032d8e191208b51dd6949606f28156e1d7011b8",
@@ -69,4 +69,27 @@ export async function getServerListSorted(
   });
 
   return servers;
+}
+
+export async function getServerHistory(
+  _token: string
+): Promise<ServerHistory[]> {
+  // todo @ http request
+  let server = (await getServerList())[2];
+
+  if (!server) return [];
+
+  return [
+    {
+      server,
+      time: 72600
+    }
+  ];
+}
+
+// todo @ http request
+export async function getServer(
+  id: string
+): Promise<Server | null> {
+  return (await getServerList()).filter(server => server.id === id)[0];
 }

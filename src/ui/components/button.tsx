@@ -14,3 +14,9 @@ function Button(
 }
 
 export default Button;
+
+export function RoundedButton(
+  props: Props
+) {
+  return <button {...props} className={cn("text-white aspect-square hover:text-white/70 transition rounded-full", props.className)}>{props.children}</button>
+}
