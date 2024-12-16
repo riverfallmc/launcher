@@ -1,6 +1,7 @@
-import { getAvatarUrl, User } from "@/util/user";
-import Avatar from "./avatar";
 import { useEffect, useState } from "react";
+import { getAvatarUrl, User } from "util/user";
+import Avatar from "component/avatar";
+import Badge from "component/badge";
 
 function UserProfile({user}: {user: User}) {
   const [isBanned, setIsBanned] = useState<boolean>();
@@ -23,14 +24,6 @@ function UserProfile({user}: {user: User}) {
       </div>
     </div>
   )
-}
-
-function Badge({color, children}: {color?: string, children: React.ReactNode}) {
-  return <div
-    className="py-0.5 px-1 text-xs font-medium rounded-md uppercase"
-    style={{
-      backgroundColor: color
-    }}>{children}</div>
 }
 
 function RankBadge({username}: {username: string}) {

@@ -63,10 +63,10 @@ export async function updateTitle(
 
 export interface Server {
   id: string,
-  client: string,
   name: string,
   image: string,
   enabled: boolean,
+  client: string,
   // Если enabled = false, то online отсутствует
   online: [current: number, max: number],
 }
@@ -76,7 +76,7 @@ export interface ServerHistory {
   time: number;
 }
 
-interface Modification {
+export interface Modification {
   name: string,
   icon?: string;
 }
@@ -85,4 +85,15 @@ export interface ServerDetails {
   client: string,
   description: string,
   mods: Modification[];
+}
+
+type UserOnlineStatus = "online" | "afk" | "offline";
+
+export interface Friend {
+  username: string,
+  status: UserOnlineStatus;
+}
+
+export interface FriendOnServer extends Friend {
+  playTime?: number;
 }

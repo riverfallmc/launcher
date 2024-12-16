@@ -45,7 +45,7 @@ class Servers<P = {}> extends Page<P, State> {
   render(): ReactNode {
     return (
       <ApplicationPage title={Servers.title} subtitle={`Сейчас доступно ${this.getEnabledServerCount()} сервера`}>
-        <div className="flex-col size-full scroll grid grid-cols-3 content-start gap-y-4 overflow-y-auto">
+        <div className="flex-col size-full scroll grid grid-cols-3 content-start gap-3 overflow-y-auto">
           {this.state.serverList && this.state.serverList.map(server => {
             return <Server {...server}/>
           })}

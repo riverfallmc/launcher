@@ -11,13 +11,13 @@
   :root {
     --primary: 0 0% 7.8%;
     --secondary: 0 0% 10.2%;
-    --accent: 273 100% 50%; /* amethyst 153,102,204   270 50% 60% */
     --tertiary: 0 0% 13%;
+    --accent: 273 100% 50%; /* amethyst 153,102,204   270 50% 60% */
   }
 }
 
 .server-time {
-  background: linear-gradient(0deg, rgba(14,0,255,0.5) 0%, rgba(0,0,0,0) 51%);
+  background: linear-gradient(0deg, rgba(14,0,255,0.3) 0%, rgba(0,0,0,0) 51%);
 }
 
 .server-disabled {

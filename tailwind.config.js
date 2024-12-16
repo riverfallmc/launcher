@@ -12,6 +12,7 @@ export default {
       colors: {
         primary: 'hsl(var(--primary))',
         secondary: 'hsl(var(--secondary))',
+        tertiary: 'hsl(var(--tertiary))',
         accent: 'hsl(var(--accent))',
       },
     },

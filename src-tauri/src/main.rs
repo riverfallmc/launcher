@@ -52,7 +52,7 @@ async fn main() -> anyhow::Result<()> {
         .ok_or_else(|| anyhow::anyhow!("Failed to get the tauri's main window"))?;
 
       match main_window.set_shadow(true) {
-        Ok(_) => log::info!("Enabled shadow"),
+        Ok(_) => log::info!("Enabled shadows on window"),
         Err(_) => log::warn!("Unable to enable shadow on main window")
       };
 

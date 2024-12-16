@@ -1,6 +1,6 @@
 import React from "react";
 import { Activity, updateActivity } from "@/util/discord";
-import { updateTitle } from "@/util/util";
+import { cn, updateTitle } from "@/util/util";
 import { Sidebar } from "./sidebar";
 
 export default abstract class Page<P = {}, S = {}> extends React.Component<P, S> {
@@ -24,12 +24,15 @@ export default abstract class Page<P = {}, S = {}> extends React.Component<P, S>
   }
 }
 
-export function BasePage({children}: {children: React.ReactNode}) {
-  return <main data-tauri-drag-region children={children} className="w-screen h-screen flex fixed bg-primary"/>
+interface DivProps
+  extends React.HTMLAttributes<HTMLDivElement> {}
+
+export function BasePage(props: DivProps) {
+  return <main data-tauri-drag-region {...props} className={cn("w-screen h-screen flex fixed bg-primary", props.className)}/>
 }
 
-export function BasePageContent({children}: {children: React.ReactNode}) {
-  return <div data-tauri-drag-region className="flex-grow max-w-full overflow-x-auto p-4" children={children}/>
+export function BasePageContent(props: DivProps) {
+  return <div data-tauri-drag-region {...props} className={cn("max-w-full p-4", props.className)}/>
 }
 
 export function ApplicationPage({children, title, subtitle}: {children?: React.ReactNode, title: string, subtitle?: string}) {

@@ -1,23 +1,14 @@
 use crate::util::tauri::AnyhowResult;
-use discord_rich_presence::{
-  activity::{Activity, Assets, Button},
-  DiscordIpc, DiscordIpcClient,
-};
+use discord_rich_presence::{activity::{Activity, Assets, Button},DiscordIpc, DiscordIpcClient};
 use serde::{Deserialize, Serialize};
-use std::{
-  sync::{
-    atomic::{AtomicBool, Ordering::Relaxed},
-    Mutex,
-  },
-  thread,
-  time::Duration,
-};
+use std::{sync::{atomic::{AtomicBool, Ordering::Relaxed},Mutex,}, thread, time::Duration};
+
+const CLIENT_ID: &str = "1292519587945906249";
+const RECONNECT_SECONDS: u64 = 15;
 
 lazy_static::lazy_static! {
   pub(crate) static ref ACTIVITY: Mutex<Option<RpcActivity>> = Mutex::new(None);
 }
-
-const CLIENT_ID: &str = "1292519587945906249";
 
 /// Устанавливает активность Discord Rich Presence
 pub(crate) fn set_drpc_activity(activity: RpcActivity) -> anyhow::Result<()> {
@@ -128,10 +119,18 @@ pub(crate) fn run_rpc() {
   thread::spawn(move || {
     log::debug!("Discord RPC thread created");
 
-    if let Err(err) = setup_rpc() {
-      log::error!("Error during Discord RPC setup: {err}");
+    loop {
+      if setup_rpc()
+        .map_err(setup_error_handler)
+        .is_ok() {break}
     }
   });
+}
+
+fn setup_error_handler(e: anyhow::Error) {
+  anyhow::anyhow!("Discord Rich Presence setup error: {e}");
+
+  std::thread::sleep(Duration::from_secs(RECONNECT_SECONDS));
 }
 
 #[allow(unused_must_use)]
