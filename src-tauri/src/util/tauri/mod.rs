@@ -69,6 +69,11 @@ pub(crate) fn isClientInstalled(
   Ok(Path::new(&dir).is_dir())
 }
 
+#[tauri::command]
+pub async fn check_updates() -> bool {
+  std::thread::sleep(std::time::Duration::from_secs(1));
+  false
+}
 
 #[allow(unused)]
 pub(crate) async fn emit<T: Serialize + Clone>(event: &str, payload: T) -> anyhow::Result<()> {

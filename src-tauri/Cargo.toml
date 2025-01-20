@@ -1,6 +1,6 @@
 [package]
 name = "launcher"
-version = "0.3.1"
+version = "0.3.2"
 description = "SerenityMC's Launcher"
 authors = ["smokingplaya"]
 edition = "2021"
@@ -32,7 +32,7 @@ reqwest = { version = "0.12.9", features = ["blocking"] }
 tokio = "1.41.0"
 zip = "2.2.0"
 # Project modules
-mc_version_parser = {path = "crates/mc-version-parser"} # https://github.com/smokingplaya/mc-version-parser
+mc_version_parser = {git = "https://github.com/smokingplaya/mc-version-parser"} # https://github.com/smokingplaya/mc-version-parser
 
 [features]
 custom-protocol = ["tauri/custom-protocol"]

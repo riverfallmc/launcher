@@ -33,6 +33,7 @@ async fn main() -> anyhow::Result<()> {
     .plugin(tauri_plugin_shell::init())
     .plugin(tauri_plugin_fs::init())
     .invoke_handler(tauri::generate_handler![
+      util::tauri::check_updates,
       // Utils
       util::tauri::isDebug,
       util::tauri::isClientInstalled,
