@@ -7,7 +7,7 @@ export default defineConfig(async () => ({
   resolve: {
     alias: {
       "@": path.join(__dirname, "./src"),
-      "assets": path.join(__dirname, "./src/assets"),
+      "assets": path.join(__dirname, "./src/asset"),
       "component": path.join(__dirname, "./src/ui/components"),
       "page": path.join(__dirname, "./src/ui/pages"),
       "util": path.join(__dirname, "./src/util")

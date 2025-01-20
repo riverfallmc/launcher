@@ -1,7 +1,10 @@
 import Input from "@/component/input";
 import Link from "@/component/link";
 import Background from "@/component/window/background";
+import { AuthUtil } from "@/util/auth.util";
+import { AppManager } from "@/util/tauri.util";
 import { WebUtil } from "@/util/web.util";
+import { useEffect } from "react";
 
 function Authorization() {
   return (
@@ -22,7 +25,7 @@ function BlockHints() {
           left: "-205px",
           bottom: "-40px",
           rotate: "3deg"
-        }} src="src/assets/scene.png"></img>
+        }} src="src/asset/scene.png"></img>
       </div>
     </div>
   )
@@ -47,21 +50,77 @@ function AuthorizationTitle() {
   )
 }
 
+// TODO @ Сделать окошко для двуфактороной аутентификации
 function AuthorizationForm() {
-  const onSubmit = () => {
-    // TODO
+  const authSavedData = AuthUtil.getSavedData();
+
+  const onError = (_message: string) => {
+    // TODO @ Вывод ошибки на экран
+    console.log(_message);
+  };
+
+  const onSubmit = async () => {
+    const shouldSave = (document.getElementById("remember_me") as HTMLInputElement)?.checked;
+    const user = {
+      username: (document.getElementById("username") as HTMLInputElement)?.value,
+      password: (document.getElementById("password") as HTMLInputElement)?.value
+    };
+
+    try {
+      const res = await fetch(WebUtil.getWebsiteUrl("api/auth/login"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(user)
+      });
+
+      const body: {is_error?: boolean, message: string} = await res.json();
+
+      if (res.status != 200)
+        throw new Error(body.message);
+
+      ///@ts-ignore саси хуй0))))0)0
+      await WebUtil.setSession(body);
+
+      if (shouldSave)
+        AuthUtil.setSavedData(user);
+      else
+        AuthUtil.removeSavedData();
+
+      AppManager.launcher();
+    } catch (err: unknown) {
+      let message: string;
+
+      if (err instanceof Error)
+        message = err.message;
+      else {
+        console.error(err);
+        message = "Неизвестная ошибка: " + err;
+      }
+
+      onError(message);
+    }
   }
 
+  useEffect(() => {
+    if (authSavedData)
+      // на найсычах
+      setTimeout(() => {
+        onSubmit();
+      }, 500);
+  })
+
   return (
-    <form onSubmit={onSubmit} className="space-y-3 w-[22.5rem]">
-      <Input type="text" placeholder="Логин" id="login"/>
-      <Input type="password" placeholder="Пароль" id="login"/>
+    <div className="space-y-3 w-[22.5rem]">
+      <Input type="text" placeholder="Никнейм" id="username" value={authSavedData?.username}/>
+      <Input type="password" placeholder="Пароль" id="password" value={authSavedData?.password}/>
       <div className="flex space-x-2 items-center">
-          <Input type="checkbox" id="remember_me"/>
-          <label htmlFor="remember_me" className="text-sm text-neutral-500">Запомнить меня</label>
+        <Input defaultChecked={true} type="checkbox" id="remember_me"/>
+        <label htmlFor="remember_me" className="text-sm text-neutral-500">Заходить автоматически</label>
       </div>
-      <button type="submit" className="bg-blue-500 hover:bg-blue-600 transition py-3 w-full rounded-lg">Войти</button>
-    </form>
+      <button onClick={onSubmit} className="bg-blue-500 hover:bg-blue-600 transition py-3 w-full rounded-lg">Войти</button>
+    </div>
   )
 }
 

@@ -2,6 +2,7 @@ import { AppManager, Invoker } from "@/util/tauri.util";
 import { useEffect } from "react";
 import Copyright from "./component/copyright";
 import Loader from "./component/loader";
+import Background from "@/component/window/background";
 
 function Updater() {
   useEffect(() => {
@@ -10,23 +11,25 @@ function Updater() {
       if (shouldClose)
         AppManager.closeApp();
       else
-        // TODO#production @ AppManager.authorization();
-        AppManager.launcher();
+        AppManager.authorization();
     })()
   }, [])
 
-  // TODO @ Добавить пиксельный шум на фон
+  // TODO @ Пересмотреть дизайн
   return (
-    <div className="p-6 flex flex-col h-screen">
-      <div data-tauri-drag-region className="h-full flex justify-center items-center">
-        <Loader/>
-      </div>
+    <>
+      <Background src="src/asset/background/updater.png"/>
+      <div className="p-6 flex flex-col h-screen">
+        <div data-tauri-drag-region className="h-full flex justify-center items-center">
+          <Loader/>
+        </div>
 
-      {/* Низ (копирайт) */}
-      <div className="w-full flex justify-center items-center">
-        <Copyright/>
+        {/* Низ (копирайт) */}
+        <div className="w-full flex justify-center items-center">
+          <Copyright/>
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 

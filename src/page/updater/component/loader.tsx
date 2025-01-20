@@ -1,7 +1,7 @@
 function Loader() {
   return (
     <div className="flex flex-col justify-center items-center space-y-3">
-      <LoadingSpinner logoSrc="src/assets/test.png"/>
+      <LoadingSpinner logoSrc="src/asset/test.png"/>
       <div className="flex flex-col justify-center items-center">
         <span className="font-bold text-xl">Riverfall</span>
         <span className="text-sm text-neutral-400">Загружаем лаунчер...</span>

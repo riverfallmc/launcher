@@ -1,6 +1,6 @@
 [package]
 name = "launcher"
-version = "0.3.2"
+version = "0.3.3"
 description = "SerenityMC's Launcher"
 authors = ["smokingplaya"]
 edition = "2021"

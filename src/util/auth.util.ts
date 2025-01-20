@@ -1,0 +1,23 @@
+interface AuthSaved {
+  username: string,
+  password: string;
+};
+
+export class AuthUtil {
+  static setSavedData(data: AuthSaved) {
+    localStorage.setItem("savedUser", JSON.stringify(data));
+  }
+
+  static getSavedData(): AuthSaved | null {
+    const data = localStorage.getItem("savedUser");
+
+    if (!data)
+      return null;
+
+    return JSON.parse(data);
+  }
+
+  static removeSavedData() {
+    localStorage.removeItem("savedUser");
+  }
+}

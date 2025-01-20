@@ -20,12 +20,12 @@ function Titlebar() {
 function Layout(
   props: {children: ReactNode, className?: string}
 ) {
-  return <div {...props} className={cn("flex items-center space-x-6", props.className)}/>
+  return <div {...props} className={cn("flex items-center", props.className)}/>
 }
 
 function LogoLinks() {
   return (
-    <Layout>
+    <Layout className="space-x-6">
       <Riverfall/>
       <WebLink disableBlank href="/launcher">Главная</WebLink>
       <WebLink href={WebUtil.getWebsiteUrl()}>Сайт</WebLink>
@@ -35,7 +35,7 @@ function LogoLinks() {
 }
 
 function Riverfall() {
-  return <img className="w-auto h-12" src="src/assets/riverfall.png"/>
+  return <img className="w-auto h-12" src="src/asset/riverfall.png"/>
 }
 
 function WebLink(
@@ -67,18 +67,19 @@ function WebButton(
 
 function User() {
   const user = WebUtil.getUser();
+  const session = WebUtil.getSession();
 
   // возвращаем div а не пустые скобки, чтобы сохранять layout
-  if (!user)
+  if (!user || !session)
     return <div></div>
 
   const [balance, setBalance] = useState(0);
 
   const requestBalance = async () => {
-    const res = await fetch(WebUtil.getWebsiteUrl("/api/donate/balance?id=" + user.id), {
+    const res = await fetch(WebUtil.getWebsiteUrl("api/donate/balance?id=" + user.id), {
       method: "GET",
       headers: {
-        "Authorization": user.jwt
+        "Authorization": session.jwt
       }
     });
 
