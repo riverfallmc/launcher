@@ -8,3 +8,8 @@
   font-family: "SF Pro Display";
   font-weight: 500;
 }
+
+.back-blur {
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}

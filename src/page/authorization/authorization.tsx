@@ -3,8 +3,10 @@ import Link from "@/component/link";
 import Background from "@/component/window/background";
 import { AuthUtil } from "@/util/auth.util";
 import { AppManager } from "@/util/tauri.util";
+import { formatError } from "@/util/unsorted.util";
 import { WebUtil } from "@/util/web.util";
 import { useEffect } from "react";
+import ConfirmTwoFactorAuth from "./2faconfirm";
 
 function Authorization() {
   return (
@@ -25,7 +27,7 @@ function BlockHints() {
           left: "-205px",
           bottom: "-40px",
           rotate: "3deg"
-        }} src="src/asset/scene.png"></img>
+        }} src="src/asset/scene/flyisland.png"></img>
       </div>
     </div>
   )
@@ -54,11 +56,6 @@ function AuthorizationTitle() {
 function AuthorizationForm() {
   const authSavedData = AuthUtil.getSavedData();
 
-  const onError = (_message: string) => {
-    // TODO @ Вывод ошибки на экран
-    console.log(_message);
-  };
-
   const onSubmit = async () => {
     const shouldSave = (document.getElementById("remember_me") as HTMLInputElement)?.checked;
     const user = {
@@ -80,26 +77,20 @@ function AuthorizationForm() {
       if (res.status != 200)
         throw new Error(body.message);
 
-      ///@ts-ignore саси хуй0))))0)0
-      await WebUtil.setSession(body);
-
       if (shouldSave)
         AuthUtil.setSavedData(user);
       else
         AuthUtil.removeSavedData();
 
+      if (body.message && body.message.toLowerCase().includes("2fa"))
+        return ConfirmTwoFactorAuth.setUsername(user.username);
+
+      ///@ts-ignore саси хуй0))))0)0
+      await WebUtil.setSession(body);
+
       AppManager.launcher();
     } catch (err: unknown) {
-      let message: string;
-
-      if (err instanceof Error)
-        message = err.message;
-      else {
-        console.error(err);
-        message = "Неизвестная ошибка: " + err;
-      }
-
-      onError(message);
+      AppManager.showError(formatError(err));
     }
   }
 
@@ -112,15 +103,19 @@ function AuthorizationForm() {
   })
 
   return (
-    <div className="space-y-3 w-[22.5rem]">
-      <Input type="text" placeholder="Никнейм" id="username" value={authSavedData?.username}/>
-      <Input type="password" placeholder="Пароль" id="password" value={authSavedData?.password}/>
-      <div className="flex space-x-2 items-center">
-        <Input defaultChecked={true} type="checkbox" id="remember_me"/>
-        <label htmlFor="remember_me" className="text-sm text-neutral-500">Заходить автоматически</label>
+    <>
+      <div className="space-y-3 w-[22.5rem]">
+        <Input type="text" placeholder="Никнейм" id="username" value={authSavedData?.username}/>
+        <Input type="password" placeholder="Пароль" id="password" value={authSavedData?.password}/>
+        <div className="flex space-x-2 items-center">
+          <Input defaultChecked={true} type="checkbox" id="remember_me"/>
+          <label htmlFor="remember_me" className="text-sm text-neutral-500">Заходить автоматически</label>
+        </div>
+        <button onClick={onSubmit} className="bg-blue-500 hover:bg-blue-600 transition py-3 w-full rounded-lg">Войти</button>
       </div>
-      <button onClick={onSubmit} className="bg-blue-500 hover:bg-blue-600 transition py-3 w-full rounded-lg">Войти</button>
-    </div>
+
+      {/* <ConfirmTwoFactorAuth/> */}
+    </>
   )
 }
 

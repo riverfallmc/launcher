@@ -7,10 +7,13 @@ interface Props
 export default function Input(props: Props) {
   switch (props.type) {
     case "text":
+    case "number":
     case "password":
       return <Text {...props}/>
     case "checkbox":
       return <CheckBox {...props}/>
+    case "otp":
+      return <OTP {...props}/>
     default:
       return <input {...props} />
   }
@@ -20,6 +23,13 @@ function Text(props: Props) {
   return <input {...props} className={cn("w-full py-4 px-5 bg-neutral-700/10 rounded-lg outline outline-1 outline-none placeholder:text-neutral-500", props.className)} />
 }
 
+function OTP(props: Props) {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.target.value = event.target.value.replace(/[^0-9]/g, '');
+  };
+
+  return <Text maxLength={6} minLength={6} {...props} onInput={handleInputChange} />;
+}
 
 function CheckBox(props: Props) {
   return (

@@ -1,6 +1,7 @@
 import Background from "@/component/window/background";
 import Titlebar from "./component/titlebar";
 import Content from "./component/content";
+import { ServerList } from "./component/server";
 
 function Launcher() {
   return (
@@ -10,6 +11,7 @@ function Launcher() {
       <Titlebar/>
 
       <Content>
+        <ServerList/>
       </Content>
     </div>
   )

@@ -15,3 +15,16 @@ export function formatGemsBalance(balance: number): string {
 
   return `${balance} ${cases[caseIndex]}`;
 }
+
+export function formatError(
+  error: unknown
+): string {
+  let message: string;
+
+  if (error instanceof Error)
+    message = error.message;
+  else
+    message = "Неизвестная ошибка: " + error;
+
+  return message;
+}

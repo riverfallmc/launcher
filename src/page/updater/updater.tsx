@@ -1,15 +1,16 @@
-import { AppManager, Invoker } from "@/util/tauri.util";
+import { AppManager } from "@/util/tauri.util";
 import { useEffect } from "react";
 import Copyright from "./component/copyright";
 import Loader from "./component/loader";
 import Background from "@/component/window/background";
+import { UpdateManager } from "@/util/update.util";
 
 function Updater() {
   useEffect(() => {
     (async () => {
-      const shouldClose = await Invoker.checkUpdates();
+      const shouldClose = await UpdateManager.update();
       if (shouldClose)
-        AppManager.closeApp();
+        AppManager.restart();
       else
         AppManager.authorization();
     })()
