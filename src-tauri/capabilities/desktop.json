@@ -1,11 +1,19 @@
 {
-  "identifier": "desktop-capability",
+  "identifier": "desktop",
   "platforms": [
     "macOS",
     "windows",
     "linux"
   ],
+  "windows": [
+    "main"
+  ],
   "permissions": [
-    "global-shortcut:default"
+    "global-shortcut:default",
+    "opener:default",
+    "drpc:default",
+    "downloader:default",
+    "fs:default",
+    "notification:default"
   ]
 }

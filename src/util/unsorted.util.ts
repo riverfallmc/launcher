@@ -1,6 +1,10 @@
-export function cn(x: string, y: string = "") {
-  return `${x} ${y}`;
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
 }
+
 
 export function formatGemsBalance(balance: number): string {
   const cases = ["гем", "гема", "гемов"];

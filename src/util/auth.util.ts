@@ -1,9 +1,16 @@
+import { AppManager } from "./tauri.util";
+
 interface AuthSaved {
   username: string,
   password: string;
 };
 
 export class AuthUtil {
+  static logout() {
+    this.removeSavedData();
+    AppManager.authorization();
+  }
+
   static setSavedData(data: AuthSaved) {
     localStorage.setItem("savedUser", JSON.stringify(data));
   }

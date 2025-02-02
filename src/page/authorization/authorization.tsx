@@ -52,7 +52,6 @@ function AuthorizationTitle() {
   )
 }
 
-// TODO @ Сделать окошко для двуфактороной аутентификации
 function AuthorizationForm() {
   const authSavedData = AuthUtil.getSavedData();
 
@@ -100,21 +99,19 @@ function AuthorizationForm() {
       setTimeout(() => {
         onSubmit();
       }, 500);
-  })
+  }, [])
 
   return (
     <>
-      <div className="space-y-3 w-[22.5rem]">
-        <Input type="text" placeholder="Никнейм" id="username" value={authSavedData?.username}/>
-        <Input type="password" placeholder="Пароль" id="password" value={authSavedData?.password}/>
+      <form onSubmit={e => {e.preventDefault(); onSubmit()}} className="space-y-3 w-[22.5rem]">
+        <Input type="text" placeholder="Никнейм" id="username" autoFocus defaultValue={authSavedData?.username}/>
+        <Input type="password" placeholder="Пароль" id="password" defaultValue={authSavedData?.password}/>
         <div className="flex space-x-2 items-center">
           <Input defaultChecked={true} type="checkbox" id="remember_me"/>
           <label htmlFor="remember_me" className="text-sm text-neutral-500">Заходить автоматически</label>
         </div>
-        <button onClick={onSubmit} className="bg-blue-500 hover:bg-blue-600 transition py-3 w-full rounded-lg">Войти</button>
-      </div>
-
-      {/* <ConfirmTwoFactorAuth/> */}
+        <button type="submit" className="bg-blue-500 hover:bg-blue-600 transition py-3 w-full rounded-lg">Войти</button>
+      </form>
     </>
   )
 }

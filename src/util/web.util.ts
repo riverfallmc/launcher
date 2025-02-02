@@ -18,7 +18,7 @@ interface User {
 
 export class WebUtil {
   static getWebsiteUrl(uri: string = "") {
-    return process.env.NODE_ENV === "production" ? `https://riverfall.ru/${uri}` : `http://localhost:1024/${uri}`;
+    return process.env.NODE_ENV === "production" ? `https://riverfall.ru/${uri}` : `https://localhost/${uri}`;
   }
 
   static async setSession(session: Session) {

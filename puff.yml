@@ -1,0 +1,13 @@
+data:
+  projectName: Riverfall.ru launcher
+  authors: ["smokingplaya", "riverfall.ru"]
+  description: Helpful scripts for build launcher
+
+configuration:
+  shell: zsh
+
+tasks:
+  default:
+    commands:
+      - clear
+      - bun run tauri dev

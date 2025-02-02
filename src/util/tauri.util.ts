@@ -1,36 +1,52 @@
 import { invoke } from "@tauri-apps/api/core";
 import { relaunch, exit } from "@tauri-apps/plugin-process";
 import { getCurrentWindow } from '@tauri-apps/api/window';
-import { GameManager } from "./game.util";
 import ErrorView from "@/page/error/error";
+import { notify } from "./notify.util";
+import { openUrl } from "@tauri-apps/plugin-opener";
+import { WebUtil } from "./web.util";
+import { Server } from "./server.util";
+import { ClientStorage } from "./client.util";
+import { GameManager } from "./game.util";
 
-export interface GameProcess {
-  /** PID */
-  id: number,
-  /** Название процесса (например javaw.exe) */
+export interface ProcessInfo {
+  pid: number,
   name: string;
 }
 
 export class InvokeManager {
-  // TODO @ Добавить эту команду в Tauri
+  static async env(variable: string): Promise<string> {
+    return invoke("env", { var: variable });
+  }
+
+  static async unrar(path: string, name: string): Promise<void> {
+    return invoke("unrar", { path, name });
+  }
+
+  // process
+
   static async play(
-    client: string,
-    ip: string
-  ): Promise<GameProcess> {
-    return await invoke<GameProcess>("connect", { client, ip });
+    server: Server
+  ): Promise<ProcessInfo> {
+    const session = WebUtil.getSession();
+    const user = WebUtil.getUser();
+
+    return invoke("play", {
+      username: user?.username,
+      path: await ClientStorage.getClientPath(server.client),
+      jwt: session?.jwt,
+      ip: server.ip
+    });
   }
 
-  // TODO @ Добавить эту команду в Tauri
-  static async isGameRunning(
-    { id, name }: GameProcess
-  ): Promise<boolean> {
-    return await invoke<boolean>("is_process_run", { id, name });
+  static async isProcessExist({ pid, name }: { pid: number, name: string; }): Promise<boolean> {
+    return invoke("is_process_exist", { pid, name });
   }
 
-  // TODO @ Добавить эту команду в Tauri
-  // Закрытие процесса по pid
-  static async close(id: number) {
-    return await invoke("close", { id });
+  static async close(
+    pid: number
+  ) {
+    return await invoke("close", { pid });
   }
 }
 
@@ -50,16 +66,25 @@ export class AppManager {
     return await this.window.minimize();
   }
 
+  static async show() {
+    await this.window.show();
+    await this.window.setFocus();
+  }
+
   static showError(message: string) {
     console.error(message);
 
     ErrorView.setError(message);
   }
 
-  static async minimizeToTray() {
-    if (process.env.NODE_ENV)
-      setTimeout(this.window.show, 1000);
+  static async openUrl(uri: string = "") {
+    return await openUrl(WebUtil.getWebsiteUrl(uri));
+  }
 
+  static async minimizeToTray() {
+    //if (process.env.NODE_ENV)
+    //  setTimeout(this.window.show, 1000);
+    notify("Лаунчер был свёрнут в трей");
     return await this.window.hide();
   }
 

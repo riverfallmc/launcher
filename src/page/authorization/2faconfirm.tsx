@@ -1,8 +1,8 @@
+import React from "react";
 import Input from "@/component/input";
 import { AppManager } from "@/util/tauri.util";
 import { formatError } from "@/util/unsorted.util";
 import { WebUtil } from "@/util/web.util";
-import React from "react";
 
 interface State {
   username?: string;
@@ -33,11 +33,15 @@ export default class ConfirmTwoFactorAuth extends React.Component<{}, State> {
       return;
 
     try {
-      const res = await fetch(WebUtil.getWebsiteUrl(`api/auth/2fa/confirm?u=${username}&c=${code}`), {
-        method: "POST"
+      const res = await fetch(WebUtil.getWebsiteUrl(`api/auth/2fa/login?username=${username}`), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ code })
       });
 
-      const body: {is_error?: boolean, message: string} = await res.json();
+      const body: { is_error?: boolean, message: string } = await res.json();
 
       if (res.status != 200)
         throw new Error(body.message);
@@ -81,11 +85,10 @@ export default class ConfirmTwoFactorAuth extends React.Component<{}, State> {
             <span className="text-2xl font-semibold">Двуфакторная аутентификация</span>
             <span className="font-semibold text-neutral-300 text-sm leading-4 max-w-72">Для дальнейшего входа в аккаунт, введите ниже код из вашего приложения для двуфакторной аутентификации (Google Authenticator, Яндекс Ключ, и т.п)</span>
             {/* @ts-ignore */}
-            <div className="flex space-x-3">
-              <Input id="otp" type="otp" className="bg-blue-500" placeholder="Код из приложения"/>
-              {/** TODO отправка на Enter  */}
-              <button onClick={() => ConfirmTwoFactorAuth.auth()} className="px-8 bg-blue-500 hover:bg-blue-600 transition rounded-lg">Войти</button>
-            </div>
+            <form action="" onSubmit={e => {e.preventDefault(); ConfirmTwoFactorAuth.auth()}} className="flex space-x-3">
+              <Input id="otp" type="otp" autoFocus placeholder="Код из приложения"/>
+              <button type="submit" className="px-8 bg-blue-500 hover:bg-blue-600 transition rounded-lg">Войти</button>
+            </form>
           </div>
         </div>
       </div>

@@ -1,18 +1,18 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "serenitymc_launcher",
+  "productName": "riverfall_launcher",
   "version": "0.3.3",
-  "identifier": "ru.serenitymc.launcher",
+  "identifier": "ru.riverfall.launcher",
   "build": {
-    "beforeDevCommand": "bun run dev",
+    "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "bun run build",
+    "beforeBuildCommand": "npm run build",
     "frontendDist": "../dist"
   },
   "app": {
     "windows": [
       {
-        "title": "серенити",
+        "title": "Riverfall",
         "width": 1000,
         "height": 650,
         "decorations": false,
@@ -22,7 +22,9 @@
       }
     ],
     "security": {
-      "csp": null
+      "csp": null,
+      "capabilities": [
+      ]
     }
   },
   "bundle": {

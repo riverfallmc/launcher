@@ -1,32 +1,27 @@
-import { GameProcess, InvokeManager } from "./tauri.util";
+import { Server } from "./server.util";
+import { InvokeManager, ProcessInfo } from "./tauri.util";
 
 export class GameManager {
-  static game: GameProcess | null;
+  static game?: ProcessInfo;
 
   static async isGameRunning(): Promise<boolean> {
     if (!this.game)
       return false;
 
-    return await InvokeManager.isGameRunning(this.game);
-  };
+    return InvokeManager.isProcessExist(this.game);
+  }
 
-  static async play(
-    client: string,
-    ip: string
-  ) {
+  static async play(server: Server) {
     if (await this.isGameRunning())
-      throw new Error("У вас уже запущена игра");
+      throw new Error("Вы уже играете на нашем сервере!");
 
-    this.game = await InvokeManager.play(client, ip);
-  };
+    this.game = await InvokeManager.play(server);
+  }
 
   static async close() {
     if (!await this.isGameRunning())
-      throw new Error("Невозможно закрыть игру: Игра не запущена");
+      return;
 
-    ///@ts-ignore игнорим this.game can be 'null' потому-что this.isGameRunning уже проверяет это
-    await InvokeManager.close(this.game.id);
-
-    this.game = null;
+    await InvokeManager.close(this.game!.pid);
   }
 }

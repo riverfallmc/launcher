@@ -16,7 +16,6 @@ function Updater() {
     })()
   }, [])
 
-  // TODO @ Пересмотреть дизайн
   return (
     <>
       <Background src="src/asset/background/updater.png"/>

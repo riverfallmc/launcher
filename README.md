@@ -1,4 +1,4 @@
-# Лаунчер SerenityMC
+# Лаунчер Riverfall
 Написан на базе технологии [Tauri](https://tauri.app/).
 
 # Сборка

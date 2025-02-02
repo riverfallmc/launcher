@@ -5,7 +5,7 @@ import { ServerList } from "./component/server";
 
 function Launcher() {
   return (
-    <div data-tauri-drag-region className="flex flex-col flex-shrink h-screen">
+    <div data-tauri-drag-region className="flex flex-col flex-shrink h-screen max-h-screen">
       <Background/>
 
       <Titlebar/>

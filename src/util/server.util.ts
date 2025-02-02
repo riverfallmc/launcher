@@ -1,26 +1,25 @@
-import { GameManager } from "./game.util";
-import { AppManager } from "./tauri.util";
-import { formatError } from "./unsorted.util";
+import { WebUtil } from "./web.util";
 
-export interface ServerData {
-  id: number,
-  name: string,
-  is_enabled: boolean,
-  players: number,
-  ip: string,
-  client: string,
-  max_players: number;
+interface Online {
+  current: number,
+  max: number;
 };
 
-export interface ServerExtendedData {
+export interface Server {
   id: number,
-}
+  name: string,
+  enabled: boolean,
+  client: string,
+  online: Online,
+  ip: string;
+};
 
 export class ServerManager {
-  static apiEntrypointBase = "api/server";
+  private static apiEntrypointBase = "api/server/server";
 
-  static async getServerList(): Promise<ServerData[]> {
-    return [];
+  static async getServerList(): Promise<Server[]> {
+    const res = await fetch(WebUtil.getWebsiteUrl(`${this.apiEntrypointBase}s`));
+    return await res.json();
   };
 
   /**
@@ -28,34 +27,10 @@ export class ServerManager {
    * @param id Айди сервера
    * @returns Информация о сервере
    */
-  static async getServerData(
+  static async getServer(
     id: number
-  ): Promise<ServerData> {
-    return;
-  };
-
-  /**
-   * Запрашивает у веб-сервера расширенную информацию о игровом сервере
-   * @param id Айди сервера
-   * @returns Расширенная информация о сервере
-   */
-  static async getServerExtendedData(
-    id: number
-  ): Promise<ServerExtendedData> {
-    return;
-  };
-
-  /**
-   * Запускает клиент и подключается к серверу
-   * @param server Сервер, к которому будет произведено подключение
-  */
-  static async play(
-    server: ServerData
-  ) {
-    try {
-      await GameManager.play(server.client, server.ip);
-    } catch (err) {
-      AppManager.showError(formatError(err));
-    }
+  ): Promise<Server[]> {
+    const res = await fetch(WebUtil.getWebsiteUrl(`${this.apiEntrypointBase}?id=${id}`));
+    return await res.json();
   };
 }

@@ -1,7 +1,7 @@
 [package]
 name = "launcher"
-version = "0.3.3"
-description = "SerenityMC's Launcher"
+version = "0.3.4"
+description = "Riverfall's Launcher"
 authors = ["smokingplaya"]
 edition = "2021"
 
@@ -26,13 +26,16 @@ tauri-plugin-os = "2"
 tauri-plugin-process = "2"
 tauri-plugin-http = "2"
 tauri-plugin-notification = "2"
+tauri-plugin-opener = "2.0.0"
+tauri-plugin-drpc = "*"
+tauri-plugin-downloader = { path="/home/smokkkin/projects/riverfallmc/tauri-plugin-downloader" }
 hashbrown = "0.15.0"
-reqwest = { version = "0.12.9", features = ["blocking"] }
+reqwest = { version = "0.12.9", features = ["blocking", "json"] }
 tokio = "1.41.0"
 zip = "2.2.0"
 # Project modules
 mc_version_parser = {git = "https://github.com/smokingplaya/mc-version-parser"} # https://github.com/smokingplaya/mc-version-parser
-tauri = { version = "2", features = [] }
+tauri = { version = "2", features = ["tray-icon"] }
 
 [features]
 custom-protocol = []
