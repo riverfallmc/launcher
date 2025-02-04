@@ -45,8 +45,6 @@ pub(crate) async fn play(
     client
   ).await?;
 
-  log::info!("{:?}", arguments);
-
   // Запускаем процесс
   let mut child = java.start()
     .args(arguments)

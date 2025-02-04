@@ -14,8 +14,8 @@ const activity = new Activity()
       .setLargeText("t.me/riverfallmc")
   );
 
-(async () => {
+export async function configureDiscord() {
   await start("1292519587945906249");
   await destory();
   await setActivity(activity);
-})();
+}

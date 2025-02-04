@@ -4,11 +4,13 @@ import {
   sendNotification,
 } from '@tauri-apps/plugin-notification';
 
-let permissionGranted = await isPermissionGranted();
+let permissionGranted = false;
 
-if (!permissionGranted) {
-  const permission = await requestPermission();
-  permissionGranted = permission === 'granted';
+export async function configureNotifications() {
+  permissionGranted = await isPermissionGranted();
+
+  if (!permissionGranted)
+    permissionGranted = await requestPermission() === 'granted';
 }
 
 export function notify(
@@ -17,5 +19,5 @@ export function notify(
   if (!permissionGranted)
     return console.log("Недостаточно разрешений для отправки уведомления");
 
-  sendNotification({ title: 'Лаунчер Riverfall', body });
+  sendNotification({ title: 'Лаунчер Riverfall', body, icon: "icons/icon.ico" });
 }

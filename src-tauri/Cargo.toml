@@ -1,6 +1,6 @@
 [package]
 name = "launcher"
-version = "0.3.4"
+version = "0.3.6"
 description = "Riverfall's Launcher"
 authors = ["smokingplaya"]
 edition = "2021"
@@ -35,7 +35,7 @@ tokio = "1.41.0"
 zip = "2.2.0"
 # Project modules
 mc_version_parser = {git = "https://github.com/smokingplaya/mc-version-parser"} # https://github.com/smokingplaya/mc-version-parser
-tauri = { version = "2", features = ["tray-icon"] }
+tauri = { version = "2", features = ["tray-icon", "image-png"] }
 
 [features]
 custom-protocol = []

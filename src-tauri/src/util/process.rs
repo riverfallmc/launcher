@@ -34,7 +34,6 @@ impl ProcessTrait for Child {
         .for_each(|message| {
           let msg = message.unwrap();
           buffer.push(msg.clone());
-          println!("{msg}");
         });
     }
 

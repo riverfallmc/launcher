@@ -2,12 +2,13 @@ import { listen } from '@tauri-apps/api/event';
 import { start, destroy } from "guest-js";
 import { AppManager } from './tauri.util';
 
-(async () => {
+export async function configureDownloader() {
   try {
     await destroy();
   } catch (_) { }
+
   await start();
-})();
+}
 
 // Слушаем событие
 listen('dwnerror', event => {

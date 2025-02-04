@@ -76,13 +76,6 @@ export class ClientStorage {
   }
 }
 
-// ClientStorage.install("magicrpg");
-try {
-  await InvokeManager.unrar("/home/smokkkin/projects/test.zip", "anal");
-} catch (err) {
-  console.log(err);
-}
-
 export class ClientManager {
   static apiEntrypointBase = "api/server/client";
 

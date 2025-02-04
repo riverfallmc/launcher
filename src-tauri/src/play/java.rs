@@ -108,8 +108,6 @@ impl Java {
     let path = OutputReader::from(output)
       .to_string();
 
-    log::debug!("Java path -> {path}");
-
     Ok(path)
   }
 
@@ -123,8 +121,6 @@ impl Java {
 
     let path = OutputReader::from(output)
       .to_string();
-
-    log::debug!("Java path -> {path}");
 
     Ok(path)
   }

@@ -1,4 +1,3 @@
-use reqwest::header;
 use serde::{Serialize, Deserialize};
 use crate::util::url::join_url;
 
@@ -9,7 +8,7 @@ struct TokenBody {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub(crate) struct SessionData {
-  pub username: String,
+  #[serde(rename="selectedProfile")]
   pub uuid: String,
   #[serde(rename="accessToken")]
   pub access_token: String
@@ -18,15 +17,10 @@ pub(crate) struct SessionData {
 pub(crate) async fn request(
   jwt: String
 ) -> anyhow::Result<SessionData> {
-  let bearer = format!("Bearer {jwt}");
-
-  println!("{bearer}");
-
   let data = reqwest::Client::new()
     .post(join_url("api/session/login"))
-    .header(header::AUTHORIZATION, bearer.clone())
     .json(&TokenBody {
-      token: bearer
+      token: jwt
     })
     .send()
     .await?
