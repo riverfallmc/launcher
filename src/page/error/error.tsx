@@ -33,7 +33,7 @@ export default class ErrorView extends React.Component<{}, {error?: string}> {
             className="absolute inset-0 rounded-lg bg-cover bg-center filter saturate-0"
             style={{
               backgroundImage:
-                "linear-gradient(to right, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)), url(src/asset/background/error.jpg)",
+                "linear-gradient(to right, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)), url(/assets/background/error.jpg)",
             }}
           ></div>
 
@@ -43,7 +43,7 @@ export default class ErrorView extends React.Component<{}, {error?: string}> {
             <span className="text-neutral-400 font-normal">{this.state.error}</span>
           </div>
 
-          <img className="relative z-10 h-24" src="src/asset/scene/cat.png" />
+          <img className="relative z-10 h-24" src="/assets/scene/cat.png" />
         </div>
       </div>
     );

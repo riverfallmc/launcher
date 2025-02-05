@@ -3,7 +3,6 @@ import { TrayIcon, TrayIconOptions } from "@tauri-apps/api/tray";
 import { AppManager } from "./tauri.util";
 import { WebUtil } from "./web.util";
 import { openUrl } from '@tauri-apps/plugin-opener';
-import { formatError } from "./unsorted.util";
 
 export async function configureTray() {
   const menu = await Menu.new({
@@ -36,6 +35,6 @@ export async function configureTray() {
 
     await TrayIcon.new(options);
   } catch (err) {
-    AppManager.showError(formatError(err));
+    AppManager.showError(err);
   }
 }

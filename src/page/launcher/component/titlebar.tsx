@@ -39,7 +39,7 @@ function LogoLinks() {
 }
 
 function Riverfall() {
-  return <img className="w-auto h-12" src="src/asset/riverfall.png"/>
+  return <img className="w-auto h-12" src="/assets/riverfall.png"/>
 }
 
 function WebLink(
@@ -112,7 +112,7 @@ const User = forwardRef<HTMLDivElement, UserProps>((props, ref) => {
       className={`flex items-center`}
     >
       <button className="flex justify-center items-center space-x-3 px-3 hover:bg-neutral-800 transition rounded-lg py-2">
-        <Avatar className="h-10" username={user.username} />
+        <Avatar className="h-11" username={user.username} />
         <div className="flex flex-col space-y-1 leading-3">
           <span>{user.username}</span>
           <span className="flex text-xs font-normal text-neutral-400">

@@ -27,15 +27,16 @@ tauri-plugin-process = "2"
 tauri-plugin-http = "2"
 tauri-plugin-notification = "2"
 tauri-plugin-opener = "2.0.0"
-tauri-plugin-drpc = "*"
+tauri-plugin-drpc = "0.1.3"
 tauri-plugin-downloader = { path="/home/smokkkin/projects/riverfallmc/tauri-plugin-downloader" }
 hashbrown = "0.15.0"
 reqwest = { version = "0.12.9", features = ["blocking", "json"] }
-tokio = "1.41.0"
+tokio = { version = "1.41.0", features = ["process"] }
 zip = "2.2.0"
 # Project modules
 mc_version_parser = {git = "https://github.com/smokingplaya/mc-version-parser"} # https://github.com/smokingplaya/mc-version-parser
 tauri = { version = "2", features = ["tray-icon", "image-png"] }
+chrono = "0.4.39"
 
 [features]
 custom-protocol = []

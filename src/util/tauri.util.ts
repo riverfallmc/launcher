@@ -1,13 +1,14 @@
+import ErrorView from "@/page/error/error";
 import { invoke } from "@tauri-apps/api/core";
 import { relaunch, exit } from "@tauri-apps/plugin-process";
 import { getCurrentWindow } from '@tauri-apps/api/window';
-import ErrorView from "@/page/error/error";
 import { notify } from "./notify.util";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { WebUtil } from "./web.util";
 import { Server } from "./server.util";
 import { ClientStorage } from "./client.util";
 import { GameManager } from "./game.util";
+import { formatError } from "./unsorted.util";
 
 export interface ProcessInfo {
   pid: number,
@@ -23,6 +24,10 @@ export class InvokeManager {
     return invoke("unrar", { path, name });
   }
 
+  static async exists(path: string): Promise<boolean> {
+    return invoke("exists", { path });
+  }
+
   // process
 
   static async play(
@@ -35,12 +40,13 @@ export class InvokeManager {
       username: user?.username,
       path: await ClientStorage.getClientPath(server.client),
       jwt: session?.jwt,
-      ip: server.ip
+      ip: server.enabled ? server.ip : null
     });
   }
 
   static async isProcessExist({ pid, name }: { pid: number, name: string; }): Promise<boolean> {
-    return invoke("is_process_exist", { pid, name });
+    console.log(pid);
+    return invoke("is_process_exist", { pid });
   }
 
   static async close(
@@ -71,10 +77,11 @@ export class AppManager {
     await this.window.setFocus();
   }
 
-  static showError(message: string) {
-    console.error(message);
+  static showError(message: any) {
+    const formatted = formatError(message);
 
-    ErrorView.setError(message);
+    console.error(formatted);
+    ErrorView.setError(formatted);
   }
 
   static async openUrl(uri: string = "") {

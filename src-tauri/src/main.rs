@@ -1,10 +1,12 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 use tauri::Manager as _;
 
+mod fs;
 mod env;
 mod unrar;
 mod play;
 mod util;
+mod logger;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -35,6 +37,7 @@ async fn main() -> anyhow::Result<()> {
         .expect("unable focus window");
     }))
     .invoke_handler(tauri::generate_handler![
+      fs::exists,
       env::env,
       unrar::unrar,
       play::play,

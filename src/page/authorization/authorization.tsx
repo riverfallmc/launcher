@@ -3,8 +3,7 @@ import Link from "@/component/link";
 import Background from "@/component/window/background";
 import { AuthUtil } from "@/util/auth.util";
 import { AppManager } from "@/util/tauri.util";
-import { formatError } from "@/util/unsorted.util";
-import { WebUtil } from "@/util/web.util";
+import { Session, WebSender, WebUtil } from "@/util/web.util";
 import { useEffect } from "react";
 import ConfirmTwoFactorAuth from "./2faconfirm";
 
@@ -27,7 +26,7 @@ function BlockHints() {
           left: "-205px",
           bottom: "-40px",
           rotate: "3deg"
-        }} src="src/asset/scene/flyisland.png"></img>
+        }} src="/assets/scene/flyisland.png"></img>
       </div>
     </div>
   )
@@ -55,6 +54,7 @@ function AuthorizationTitle() {
 function AuthorizationForm() {
   const authSavedData = AuthUtil.getSavedData();
 
+  // отправка (авторизация)
   const onSubmit = async () => {
     const shouldSave = (document.getElementById("remember_me") as HTMLInputElement)?.checked;
     const user = {
@@ -63,42 +63,39 @@ function AuthorizationForm() {
     };
 
     try {
-      const res = await fetch(WebUtil.getWebsiteUrl("api/auth/login"), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(user)
-      });
-
-      const body: {is_error?: boolean, message: string} = await res.json();
-
-      if (res.status != 200)
-        throw new Error(body.message);
+      const body = await WebSender.sendPost<Session>(WebUtil.getWebsiteUrl("api/auth/login"), user);
 
       if (shouldSave)
-        AuthUtil.setSavedData(user);
+        AuthUtil.setSavedData({...user, refresh: body.refresh_token});
       else
         AuthUtil.removeSavedData();
 
-      if (body.message && body.message.toLowerCase().includes("2fa"))
+      if ("message" in body && (body.message as string).toLowerCase().includes("2fa"))
         return ConfirmTwoFactorAuth.setUsername(user.username);
 
-      ///@ts-ignore саси хуй0))))0)0
       await WebUtil.setSession(body);
 
       AppManager.launcher();
     } catch (err: unknown) {
-      AppManager.showError(formatError(err));
+      AppManager.showError(err);
     }
   }
 
   useEffect(() => {
-    if (authSavedData)
-      // на найсычах
-      setTimeout(() => {
-        onSubmit();
-      }, 500);
+    (async () => {
+      if (!authSavedData)
+        return;
+
+      try {
+        const session = await WebSender.sendPost<Session>(WebUtil.getWebsiteUrl("api/auth/refresh"), { refresh_jwt: authSavedData.refresh });
+
+        await WebUtil.setSession(session);
+
+        AppManager.launcher();
+      } catch (err) {
+        AppManager.showError(err);
+      }
+    })();
   }, [])
 
   return (

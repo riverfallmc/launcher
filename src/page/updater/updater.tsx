@@ -18,7 +18,7 @@ function Updater() {
 
   return (
     <>
-      <Background src="src/asset/background/updater.png"/>
+      <Background src="/assets/background/updater.png"/>
       <div className="p-6 flex flex-col h-screen">
         <div data-tauri-drag-region className="h-full flex justify-center items-center">
           <Loader/>

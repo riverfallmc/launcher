@@ -1,7 +1,7 @@
 import Background from "@/component/window/background";
 import Titlebar from "./component/titlebar";
 import Content from "./component/content";
-import { ServerList } from "./component/server";
+import { ServerList } from "./component/server/list";
 
 function Launcher() {
   return (

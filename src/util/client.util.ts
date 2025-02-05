@@ -1,12 +1,9 @@
 import { WebUtil } from "./web.util";
 import { appDataDir, join } from "@tauri-apps/api/path";
-import { exists } from "@tauri-apps/plugin-fs";
 import { download } from "guest-js/downloader";
 import { AppManager, InvokeManager } from "./tauri.util";
-import { formatError } from "./unsorted.util";
 import { listen } from "@tauri-apps/api/event";
-
-const url = "";
+import { Server as IServer } from "./server.util";
 
 export interface Client {
   id: number,
@@ -20,6 +17,9 @@ export interface Client {
 export enum ClientState {
   Null,
   Install,
+  Installation,
+  IntegrityCheck,
+  Disabled,
   Play
 }
 
@@ -28,7 +28,7 @@ listen("dwnok", async event => {
   try {
     await InvokeManager.unrar(await ClientStorage.getClientPath(name), name);
   } catch (err) {
-    AppManager.showError(formatError(err));
+    AppManager.showError(err);
   }
 });
 
@@ -47,6 +47,10 @@ export class ClientStorage {
     return join(basePath, "clients", name);
   }
 
+  static async getClientDir(name: string): Promise<string> {
+    return join("clients", name);
+  }
+
   static async getClientArchive(name: string): Promise<string> {
     return join(await this.getClientPath(name), `${name}.zip`);
   }
@@ -55,7 +59,7 @@ export class ClientStorage {
     const basePath = await this.getClientPath(name);
 
     for (const item of this.checkTo)
-      if (!await exists(await join(basePath, item)))
+      if (!await InvokeManager.exists(await join(basePath, item)))
         return false;
 
     return true;
@@ -64,15 +68,11 @@ export class ClientStorage {
   static async install(
     name: string
   ) {
-    try {
-      await download({
-        name,
-        save: await this.getClientArchive(name),
-        url //WebUtil.getWebsiteUrl("/client/${name}.rar")
-      });
-    } catch (err) {
-      AppManager.showError(formatError(err));
-    }
+    await download({
+      name,
+      save: await this.getClientArchive(name),
+      url: WebUtil.getWebsiteUrl("client/${name}.rar")
+    });
   }
 }
 
@@ -102,11 +102,11 @@ export class ClientManager {
     return text;
   }
 
-  static async getState(name: string): Promise<ClientState> {
+  static async getState(server: IServer): Promise<ClientState> {
     let installed = false;
     try {
-      installed = await ClientStorage.isInstalled(name);
+      installed = await ClientStorage.isInstalled(server.client);
     } catch (_) { }
-    return installed ? ClientState.Play : ClientState.Install;
+    return installed ? (server.enabled ? ClientState.Play : ClientState.Disabled) : ClientState.Install;
   }
 }

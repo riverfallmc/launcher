@@ -5,9 +5,10 @@
 /// 2. Проверяет версию Java
 
 use core::str;
-use std::{path::{Path, PathBuf}, process::Command, str::Split};
+use std::{path::{Path, PathBuf}, str::Split};
 use anyhow::Context;
 use serde::{Deserialize, Serialize};
+use tokio::process::Command;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub(crate) struct Java {
@@ -16,11 +17,12 @@ pub(crate) struct Java {
 
 #[allow(unused)]
 impl Java {
-  pub fn new() -> anyhow::Result<Java> {
-    let java = Java::find_path()?;
+  pub async fn new() -> anyhow::Result<Java> {
+    let java = Java::find_path()
+      .await?;
     // let java = "/home/smokingplaya/.tlauncher/mojang_jre/java-runtime-alpha/linux/java-runtime-alpha/bin/java".to_string();
 
-    if Command::new(&java).output().is_ok() {
+    if Command::new(&java).output().await.is_ok() {
       return Ok(Java {
         path: Path::new(&java).to_path_buf()
       });
@@ -33,11 +35,12 @@ impl Java {
     self.path.clone()
   }
 
-  pub fn min_version(
+  pub async fn min_version(
     &self,
     min: u8
   ) -> anyhow::Result<()> {
-    let version = self.get_version()?;
+    let version = self.get_version()
+      .await?;
 
     // лол
     if min > version {
@@ -66,7 +69,7 @@ impl Java {
   }
 
   /// Возвращает версию найденной Java
-  fn get_version(&self) -> anyhow::Result<u8> {
+  async fn get_version(&self) -> anyhow::Result<u8> {
     let java = self.path
       .to_str()
       .context("Unable to get java path")?;
@@ -74,6 +77,7 @@ impl Java {
     let output = Command::new(java)
       .arg("-version")
       .output()
+      .await
       .context("Failed to get java version")?;
 
     let output_str = String::from_utf8_lossy(&output.stderr);
@@ -112,12 +116,13 @@ impl Java {
   }
 
   #[cfg(not(target_os = "windows"))]
-  fn find_path() -> anyhow::Result<String> {
+  async fn find_path() -> anyhow::Result<String> {
     use crate::util::process::OutputReader;
 
     let output = Command::new("which")
       .args(["java"]) // Да, мне так можно
-      .output()?;
+      .output()
+      .await?;
 
     let path = OutputReader::from(output)
       .to_string();

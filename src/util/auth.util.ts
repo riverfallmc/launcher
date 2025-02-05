@@ -2,7 +2,8 @@ import { AppManager } from "./tauri.util";
 
 interface AuthSaved {
   username: string,
-  password: string;
+  password: string,
+  refresh: string;
 };
 
 export class AuthUtil {

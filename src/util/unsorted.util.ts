@@ -5,7 +5,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-
 export function formatGemsBalance(balance: number): string {
   const cases = ["гем", "гема", "гемов"];
   const mod10 = balance % 10;
@@ -27,8 +26,10 @@ export function formatError(
 
   if (error instanceof Error)
     message = error.message;
-  else
+  else {
+    console.log(error);
     message = "Неизвестная ошибка: " + error;
+  }
 
   return message;
 }

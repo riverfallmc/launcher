@@ -1,10 +1,10 @@
-use std::process::{Command, Stdio};
+use std::{path::Path, process::{Command, Stdio}};
 use anyhow::anyhow;
 use arguments::Arguments;
 use clientinfo::get_client_info;
 use java::Java;
 use serde::{Deserialize, Serialize};
-use crate::util::{self, pathbuf::PathBufToString, process::ProcessTrait, tauri::AnyhowResult};
+use crate::{logger::spawn_logger, util::{pathbuf::PathBufToString, tauri::AnyhowResult}};
 
 pub(crate) mod java;
 pub(crate) mod arguments;
@@ -30,10 +30,12 @@ pub(crate) async fn play(
   // VersionData
   let data = client.open_data(&path)?;
 
-  let java = Java::new()?;
+  let java = Java::new()
+    .await?;
   // Проверяем что на компе установлена нужная джава
   // Ибо мы ленивые бояре, которые не хотят ставить джаву вместе с клиентом
-  java.min_version(client.min_java_version)?;
+  java.min_version(client.min_java_version)
+    .await?;
 
   // Готовый вариант аргументов для запуска процесса
   let arguments = arguments::generate(
@@ -46,23 +48,22 @@ pub(crate) async fn play(
   ).await?;
 
   // Запускаем процесс
-  let mut child = java.start()
+  let child = java.start()
     .args(arguments)
     .stdout(Stdio::piped())
     .stderr(Stdio::piped())
     .spawn()
-    .unwrap();
+    .map_err(|e| anyhow!(e))?;
 
-  if let Err(err) = child.read_stderr() {
-    log::error!("Java exception error: {err:?}");
+  let pid = child.id()
+    .unwrap_or_default();
 
-    child.read_stdout()?;
-
-    return Err(util::tauri::TauriCommandError::Anyhow(err));
-  }
+  spawn_logger(child, Path::new(&path)
+    .join("logs")
+    .to_string()?)?;
 
   Ok(ProcessInfo {
-    pid: child.id(),
+    pid,
     path: java.get_path().to_string()?
   })
 }
@@ -75,7 +76,9 @@ pub(crate) async fn is_process_exist(pid: u32) -> AnyhowResult<bool> {
     Command::new("ps").arg("-p").arg(pid.to_string()).output()
   }.map_err(|e| anyhow!("{e}"))?;
 
-  Ok(String::from_utf8_lossy(&output.stdout).contains(&pid.to_string()))
+  let out = String::from_utf8_lossy(&output.stdout);
+
+  Ok(out.contains(&pid.to_string()) && !out.contains("defunct"))
 }
 
 #[tauri::command]

@@ -9,5 +9,23 @@ configuration:
 tasks:
   default:
     commands:
-      - clear
       - bun run tauri dev
+  buildwin32:
+    commands:
+      - npm run tauri build -- --runner cargo-xwin --target x86_64-pc-windows-msvc
+  add:
+    description: Add crate to tauri
+    arguments:
+      - name: crate
+    commands:
+      - cd src-tauri; cargo add ${crate}
+  clippy:
+    description: Runs clippy
+    commands:
+      - cd src-tauri; cargo clippy
+  r:
+    description: Run launcher, runs clippy before it
+    commands:
+      - clear
+      - puff clippy
+      - puff

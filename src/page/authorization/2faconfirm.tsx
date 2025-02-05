@@ -1,8 +1,8 @@
 import React from "react";
 import Input from "@/component/input";
 import { AppManager } from "@/util/tauri.util";
-import { formatError } from "@/util/unsorted.util";
-import { WebUtil } from "@/util/web.util";
+import { Session, WebSender, WebUtil } from "@/util/web.util";
+import { AuthUtil } from "@/util/auth.util";
 
 interface State {
   username?: string;
@@ -33,26 +33,20 @@ export default class ConfirmTwoFactorAuth extends React.Component<{}, State> {
       return;
 
     try {
-      const res = await fetch(WebUtil.getWebsiteUrl(`api/auth/2fa/login?username=${username}`), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ code })
-      });
+      const session = await WebSender.sendPost<Session>(WebUtil.getWebsiteUrl(`api/auth/2fa/login?username=${username}`), { code });
 
-      const body: { is_error?: boolean, message: string } = await res.json();
+      const user = AuthUtil.getSavedData();
 
-      if (res.status != 200)
-        throw new Error(body.message);
+      if (user)
+        AuthUtil.setSavedData({...user, refresh: session.refresh_token })
 
       ConfirmTwoFactorAuth.setUsername();
-      //@ts-ignore
-      await WebUtil.setSession(body);
+
+      await WebUtil.setSession(session);
 
       AppManager.launcher();
     } catch (err) {
-      AppManager.showError(formatError(err))
+      AppManager.showError(err)
     }
   }
 
@@ -75,11 +69,11 @@ export default class ConfirmTwoFactorAuth extends React.Component<{}, State> {
             className="absolute inset-0 rounded-lg bg-cover bg-center filter saturate-0"
             style={{
               backgroundImage:
-                "linear-gradient(to right, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)), url(src/asset/background/2fa.jpg)",
+                "linear-gradient(to right, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)), url(/assets/background/2fa.jpg)",
             }}
           />
 
-          <img className="relative z-10 h-24" src="src/asset/scene/fox.png" />
+          <img className="relative z-10 h-24" src="/assets/scene/fox.png" />
 
           <div className="relative z-10 flex flex-col leading-4 space-y-2">
             <span className="text-2xl font-semibold">Двуфакторная аутентификация</span>
