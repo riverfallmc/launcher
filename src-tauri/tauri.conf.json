@@ -30,6 +30,7 @@
   },
   "bundle": {
     "active": true,
+    "createUpdaterArtifacts": true,
     "targets": "all",
     "icon": [
       "icons/32x32.png",
@@ -38,5 +39,14 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "TODO",
+      "endpoints": [
+        "https://github.com/riverfallmc/launcher-builds/releases/latest/download/Riverfall.Launcher_{{current_version}}_{{arch}}",
+        "https://github.com/riverfallmc/launcher-builds/releases/latest/download/latest.json"
+      ]
+    }
   }
 }

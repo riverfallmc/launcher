@@ -1,9 +1,9 @@
 #![allow(unused)]
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone)]
 pub(crate) struct Message<T: Serialize + Clone> {
-  r#type: String,
-  body: T
+    r#type: String,
+    body: T,
 }

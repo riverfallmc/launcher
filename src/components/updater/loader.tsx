@@ -1,6 +1,6 @@
-import "./anim.css";
+import "@/components/css/anim.css";
 
-function Loader() {
+export function Loader() {
   return (
     <div className="flex flex-col justify-center items-center space-y-6">
       <LoadingSpinner logoSrc="/assets/riverfall-logo.png"/>
@@ -36,5 +36,3 @@ const LoadingSpinner = ({ logoSrc }: { logoSrc: string }) => {
     </div>
   );
 };
-
-export default Loader;

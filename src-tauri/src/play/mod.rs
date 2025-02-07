@@ -1,97 +1,100 @@
-use std::{path::Path, process::{Command, Stdio}};
+use crate::{
+    logger::spawn_logger,
+    util::{pathbuf::PathBufToString, tauri::AnyhowResult},
+};
 use anyhow::anyhow;
 use arguments::Arguments;
 use clientinfo::get_client_info;
 use java::Java;
 use serde::{Deserialize, Serialize};
-use crate::{logger::spawn_logger, util::{pathbuf::PathBufToString, tauri::AnyhowResult}};
+use std::{
+    path::Path,
+    process::{Command, Stdio},
+};
 
-pub(crate) mod java;
 pub(crate) mod arguments;
+pub(crate) mod clientinfo;
+pub(crate) mod java;
 pub(crate) mod session_manager;
 pub(crate) mod variables;
-pub(crate) mod clientinfo;
 
 #[derive(Deserialize, Serialize)]
 pub struct ProcessInfo {
-  pid: u32,
-  path: String
+    pid: u32,
+    path: String,
 }
 
 #[tauri::command]
 pub(crate) async fn play(
-  username: String,
-  jwt: String,
-  path: String,
-  ip: Option<String>
+    username: String,
+    jwt: String,
+    path: String,
+    ip: Option<String>,
 ) -> AnyhowResult<ProcessInfo> {
-  // Клиент
-  let client = get_client_info(&path)?;
-  // VersionData
-  let data = client.open_data(&path)?;
+    // Клиент
+    let client = get_client_info(&path)?;
+    // VersionData
+    let data = client.open_data(&path)?;
 
-  let java = Java::new()
-    .await?;
-  // Проверяем что на компе установлена нужная джава
-  // Ибо мы ленивые бояре, которые не хотят ставить джаву вместе с клиентом
-  java.min_version(client.min_java_version)
-    .await?;
+    let java = Java::new().await?;
+    // Проверяем что на компе установлена нужная джава
+    // Ибо мы ленивые бояре, которые не хотят ставить джаву вместе с клиентом
+    java.min_version(client.min_java_version).await?;
 
-  // Готовый вариант аргументов для запуска процесса
-  let arguments = arguments::generate(
-    username,
-    jwt,
-    Arguments {ip},
-    &path,
-    data,
-    client
-  ).await?;
+    // Готовый вариант аргументов для запуска процесса
+    let arguments =
+        arguments::generate(username, jwt, Arguments { ip }, &path, data, client).await?;
 
-  // Запускаем процесс
-  let child = java.start()
-    .args(arguments)
-    .stdout(Stdio::piped())
-    .stderr(Stdio::piped())
-    .spawn()
-    .map_err(|e| anyhow!(e))?;
+    // Запускаем процесс
+    let child = java
+        .start()
+        .args(arguments)
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .map_err(|e| anyhow!(e))?;
 
-  let pid = child.id()
-    .unwrap_or_default();
+    let pid = child.id().unwrap_or_default();
 
-  spawn_logger(child, Path::new(&path)
-    .join("logs")
-    .to_string()?)?;
+    spawn_logger(child, Path::new(&path).join("logs").to_string()?)?;
 
-  Ok(ProcessInfo {
-    pid,
-    path: java.get_path().to_string()?
-  })
+    Ok(ProcessInfo {
+        pid,
+        path: java.get_path().to_string()?,
+    })
 }
 
 #[tauri::command]
 pub(crate) async fn is_process_exist(pid: u32) -> AnyhowResult<bool> {
-  let output = if cfg!(target_os = "windows") {
-    Command::new("tasklist").arg("/FI").arg(format!("PID eq {}", pid)).output()
-  } else {
-    Command::new("ps").arg("-p").arg(pid.to_string()).output()
-  }.map_err(|e| anyhow!("{e}"))?;
+    let output = if cfg!(target_os = "windows") {
+        Command::new("tasklist")
+            .arg("/FI")
+            .arg(format!("PID eq {}", pid))
+            .output()
+    } else {
+        Command::new("ps").arg("-p").arg(pid.to_string()).output()
+    }
+    .map_err(|e| anyhow!("{e}"))?;
 
-  let out = String::from_utf8_lossy(&output.stdout);
+    let out = String::from_utf8_lossy(&output.stdout);
 
-  Ok(out.contains(&pid.to_string()) && !out.contains("defunct"))
+    Ok(out.contains(&pid.to_string()) && !out.contains("defunct"))
 }
 
 #[tauri::command]
 pub(crate) async fn close(pid: u32) -> AnyhowResult<()> {
-  let status = if cfg!(target_os = "windows") {
-    Command::new("taskkill").args(["/PID", &pid.to_string(), "/F"]).status()
-  } else {
-    Command::new("kill").arg("-9").arg(pid.to_string()).status()
-  }.map_err(|e| anyhow!("{e}"))?;
+    let status = if cfg!(target_os = "windows") {
+        Command::new("taskkill")
+            .args(["/PID", &pid.to_string(), "/F"])
+            .status()
+    } else {
+        Command::new("kill").arg("-9").arg(pid.to_string()).status()
+    }
+    .map_err(|e| anyhow!("{e}"))?;
 
-  if status.success() {
-    Ok(())
-  } else {
-    Err(anyhow!("Failed to terminate process").into())
-  }
+    if status.success() {
+        Ok(())
+    } else {
+        Err(anyhow!("Failed to terminate process").into())
+    }
 }
