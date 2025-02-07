@@ -59,7 +59,7 @@ jobs:
         run: cargo install tauri-cli --locked
 
       - name: Build Tauri app
-        run: cargo tauri build --target all
+        run: cargo tauri build
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
