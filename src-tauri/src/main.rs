@@ -8,6 +8,33 @@ mod play;
 mod util;
 mod logger;
 
+fn is_win10() -> bool {
+  let info =  os_info::get();
+
+  // если не винда
+  if info.os_type() != os_info::Type::Windows {
+    return false
+  }
+
+  let version = info.version()
+    .to_string();
+
+  let version_data = version
+    .split(".")
+    .collect::<Vec<&str>>();
+
+  if version_data.len() != 3 {
+    return false;
+  }
+
+  let patch: u32 = version_data.last()
+    .unwrap()
+    .parse()
+    .unwrap();
+
+  patch < 22000
+}
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
   if cfg!(debug_assertions) {
@@ -49,7 +76,10 @@ async fn main() -> anyhow::Result<()> {
         .get_webview_window("main")
         .expect("no main window");
 
-      main_window.open_devtools();
+      // workaround of https://github.com/tauri-apps/tauri/issues/11654
+      if is_win10() {
+        return Ok(())
+      }
 
       let _ = main_window.set_shadow(true);
 

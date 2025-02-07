@@ -16,9 +16,9 @@
         "width": 1000,
         "height": 650,
         "decorations": false,
-        "resizable": true,
-        "shadow": true,
+        "resizable": false,
         "center": true,
+        "shadow": false,
         "userAgent": "Riverfall Official Launcher/0.3.6"
       }
     ],

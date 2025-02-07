@@ -33,10 +33,11 @@ hashbrown = "0.15.0"
 reqwest = { version = "0.12.9", features = ["blocking", "json"] }
 tokio = { version = "1.41.0", features = ["process"] }
 zip = "2.2.0"
+chrono = "0.4.39"
 # Project modules
 mc_version_parser = {git = "https://github.com/smokingplaya/mc-version-parser"} # https://github.com/smokingplaya/mc-version-parser
 tauri = { version = "2", features = ["tray-icon", "image-png", "devtools"] }
-chrono = "0.4.39"
+os_info = "3.9.2"
 
 [features]
 custom-protocol = []

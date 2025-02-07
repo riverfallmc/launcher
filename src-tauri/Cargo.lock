@@ -2488,6 +2488,7 @@ dependencies = [
  "lazy_static",
  "log",
  "mc_version_parser",
+ "os_info",
  "reqwest",
  "serde",
  "serde_json",

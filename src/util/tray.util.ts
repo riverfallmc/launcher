@@ -30,7 +30,7 @@ export async function configureTray() {
       menu,
       title: "Riverfall",
       tooltip: "Лаунчер Riverfall",
-      icon: "icons/icon.ico"
+      icon: "icons/icon.png"
     };
 
     await TrayIcon.new(options);
