@@ -20,8 +20,8 @@ export class InvokeManager {
     return invoke("env", { var: variable });
   }
 
-  static async unrar(path: string, name: string): Promise<void> {
-    return invoke("unrar", { path, name });
+  static async unzip(path: string, name: string): Promise<void> {
+    return await invoke("unzip", { path, name });
   }
 
   static async exists(path: string): Promise<boolean> {
@@ -44,7 +44,7 @@ export class InvokeManager {
     });
   }
 
-  static async isProcessExist({ pid, name }: { pid: number, name: string; }): Promise<boolean> {
+  static async isProcessExist({ pid }: { pid: number, name: string; }): Promise<boolean> {
     console.log(pid);
     return invoke("is_process_exist", { pid });
   }

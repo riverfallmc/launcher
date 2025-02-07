@@ -1,7 +1,7 @@
 import "@/main.css";
 import React from "react";
-import {BrowserRouter, Route, Routes} from "react-router";
 import ReactDOM from "react-dom/client";
+import {BrowserRouter, Route, Routes} from "react-router";
 import Updater from "./page/updater/updater";
 import Authorization from "./page/authorization/authorization";
 import Launcher from "./page/launcher/launcher";
@@ -15,10 +15,10 @@ import { configureDownloader } from "util/downloader.util";
 import { configureNotifications } from "./util/notify.util";
 
 (async () => {
-  await configureTray();
-  await configureNotifications();
-  await configureDownloader();
-  await configureDiscord();
+ await configureTray();
+ await configureNotifications();
+ await configureDownloader();
+ await configureDiscord();
 })()
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
@@ -40,3 +40,13 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     </ThemeProvider>
   </React.StrictMode>,
 );
+
+// function FullBlack() {
+//   return <div className="bg-black w-screen h-screen absolute"/>
+// }
+
+// ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+//   <React.StrictMode>
+//     <FullBlack/>
+//   </React.StrictMode>
+// )

@@ -83,7 +83,7 @@ function AuthorizationForm() {
 
   useEffect(() => {
     (async () => {
-      if (!authSavedData)
+      if (!authSavedData || !authSavedData.refresh)
         return;
 
       try {

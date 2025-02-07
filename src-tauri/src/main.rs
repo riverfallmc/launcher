@@ -3,7 +3,7 @@ use tauri::Manager as _;
 
 mod fs;
 mod env;
-mod unrar;
+mod unzip;
 mod play;
 mod util;
 mod logger;
@@ -39,7 +39,7 @@ async fn main() -> anyhow::Result<()> {
     .invoke_handler(tauri::generate_handler![
       fs::exists,
       env::env,
-      unrar::unrar,
+      unzip::unzip,
       play::play,
       play::is_process_exist,
       play::close,
@@ -48,6 +48,8 @@ async fn main() -> anyhow::Result<()> {
       let main_window = app
         .get_webview_window("main")
         .expect("no main window");
+
+      main_window.open_devtools();
 
       let _ = main_window.set_shadow(true);
 

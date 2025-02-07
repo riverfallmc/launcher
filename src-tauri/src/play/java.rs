@@ -102,12 +102,13 @@ impl Java {
   }
 
   #[cfg(target_os = "windows")]
-  fn find_path() -> anyhow::Result<String> {
+  async fn find_path() -> anyhow::Result<String> {
     use crate::util::process::OutputReader;
 
     let output = Command::new("powershell")
       .args(["-Command", "(Get-Command javaw).Source"]) // Да, мне так можно
-      .output()?;
+      .output()
+      .await?;
 
     let path = OutputReader::from(output)
       .to_string();

@@ -9,22 +9,28 @@ export function ServerList() {
   const [list, setList] = useState<IServer[]>([]);
   const [online, setOnline] = useState(0);
 
-  const updateServerList = (list: IServer[]) => {
-    list.sort((a, b) => {
+  const updateServerList = async () => {
+    const serverList = await ServerManager.getServerList();
+    serverList.sort((a, b) => {
       if (a.enabled !== b.enabled)
         return b.enabled ? 1 : -1;
 
       return b.online.current - a.online.current;
     });
 
-    setList(list);
-    setOnline(list.reduce((sum, server) => sum + server.online.current, 0))
+    setList(serverList);
+
+    if (selected)
+      setSelected(serverList.find(s => s.id === selected.id));
+
+    setOnline(serverList.reduce((sum, server) => server.enabled ? sum + server.online.current : sum, 0))
   };
 
   useEffect(() => {
     (async () => {
       try {
-        updateServerList(await ServerManager.getServerList())
+        await updateServerList();
+        setInterval(async () => await updateServerList(), (2 * 60) * 1000) // 2 минуты
       } catch (err) {
         AppManager.showError(err);
       }
@@ -55,10 +61,7 @@ export function ServerList() {
         </div>
       </div>
 
-      {
-        selected &&
-          <ServerSelected server={selected} />
-      }
+      <ServerSelected server={selected} />
     </div>
   );
 }

@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('/fonts/sfprodisplay.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,6 +14,11 @@
   color: white;
   font-family: "SF Pro Display";
   font-weight: 500;
+  overflow: hidden;
+}
+
+body {
+  overflow: hidden;
 }
 
 .back-blur {

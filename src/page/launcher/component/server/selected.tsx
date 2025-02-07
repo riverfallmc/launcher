@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Client, ClientManager, ClientState } from "@/util/client.util";
+import { Client, ClientManager, ClientState, ClientStorage } from "@/util/client.util";
 import { Server as IServer } from "@/util/server.util";
 import { ModList } from "./mods";
 import Table from "@/component/table";
@@ -66,10 +66,24 @@ function getUseButton(state: ClientState): UseButton {
   }
 }
 
-async function useButtonAction(state: ClientState, server: IServer) {
+async function useButtonAction(
+  state: ClientState,
+  server: IServer,
+  setIsDownload: React.Dispatch<React.SetStateAction<boolean>>
+) {
   switch (state) {
     case ClientState.Null: return;
     case ClientState.Install:
+      console.debug("Install");
+      try {
+        console.debug("await");
+        ClientStorage.install(server.client) // await
+        console.debug("ted");
+      } catch(e) {
+        AppManager.showError(e);
+      }
+      console.debug("trueee");
+      setIsDownload(true);
       return;
     case ClientState.Installation:
       return; // Вы точно хотите отменить загрузку?
@@ -84,24 +98,59 @@ async function useButtonAction(state: ClientState, server: IServer) {
   }
 }
 
-export function buttonHandler(state: ClientState, server: IServer) {
+export function buttonHandler(
+  state: ClientState,
+  server: IServer,
+  setIsDownload: React.Dispatch<React.SetStateAction<boolean>>
+) {
   try {
-    useButtonAction(state, server);
+    useButtonAction(state, server, setIsDownload);
   } catch (e) {
     AppManager.showError(e);
   }
 }
 
-export function ServerSelected({server}: {server: IServer}) {
+export function ServerSelected({server}: {server?: IServer}) {
+  if (!server)
+    return <></>
+
   const [client, setClient] = useState<Client>();
   const [state, setState] = useState<ClientState>(ClientState.Null);
+  const [isDownload, setIsDownload] = useState(false);
   const [useButton, setUseButton] = useState<UseButton>();
 
   useEffect(() => {(async () => setClient(await ClientManager.getClient(server.client)))()}, []);
   useEffect(() => {(async () => setState(await ClientManager.getState(server)))()}, []);
   useEffect(() => setUseButton(getUseButton(state)), [state]);
 
+  useEffect(() => {
+    console.warn("effect", isDownload)
+    if (!isDownload) return;
+
+    let isMounted = true;
+
+    const fetch = async () => {
+      console.log("#1", "fetch");
+      while (isMounted) {
+        console.log("#1", "while");
+      try {
+          console.log(await ClientStorage.installProgress());
+        } catch (error) {
+          console.error("Ошибка загрузки:", error);
+        }
+        await new Promise((resolve) => setTimeout(resolve, 500)); // Подождём 500 мс
+      }
+    };
+
+    fetch();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isDownload]);
+
   listen("dwninstalled", event => {
+    console.log("dwninstalled", event);
     if ((event.payload as { name: string; }).name === server.name)
       setState(ClientState.Play);
   });
@@ -130,7 +179,7 @@ export function ServerSelected({server}: {server: IServer}) {
         <div className="flex gap-x-2">
           <button
             disabled={useButton.disabled}
-            onClick={() => buttonHandler(state, server)}
+            onClick={() => buttonHandler(state, server, setIsDownload)}
             className={cn("transition px-5 py-3 rounded-lg flex gap-x-3 items-center", useButton.className)}
           >
             <Icon className="h-4"/> {useButton.text}

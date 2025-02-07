@@ -3,7 +3,7 @@ use anyhow::{anyhow, Context};
 use tauri::{Emitter, Window};
 use zip::ZipArchive;
 
-fn unrar_cmd(
+fn unzip_cmd(
   window: Window,
   name: String,
   path: String
@@ -12,6 +12,7 @@ fn unrar_cmd(
   let unpack_dir = Path::new(&path)
     .parent()
     .context(anyhow!("unable to get parent directory #1"))?;
+
   let mut archive = ZipArchive::new(file)?;
 
   for i in 0..archive.len() {
@@ -37,11 +38,11 @@ fn unrar_cmd(
 }
 
 #[tauri::command]
-pub fn unrar(
+pub fn unzip(
   window: Window,
   name: String,
   path: String
 ) -> Result<(), String> {
-  unrar_cmd(window, name, path)
+  unzip_cmd(window, name, path)
     .map_err(|e| e.to_string())
 }
