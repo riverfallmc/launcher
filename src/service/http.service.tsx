@@ -3,7 +3,8 @@ export class HttpService {
     let response = await fetch(url, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${authorization}`
+        "Authorization": `Bearer ${authorization}`,
+        "Content-Type": "application/json"
       },
       body: body ? JSON.stringify(body) : undefined
     });

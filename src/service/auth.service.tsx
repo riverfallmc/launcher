@@ -14,12 +14,10 @@ export enum AuthorizationState {
 export class AuthService {
   public static async authorize(
     credentials: Credentials,
-    shouldSave: boolean
   ): Promise<AuthorizationState> {
     let session = await HttpService.post<Session>(getWebsite("api/auth/login"), credentials);
 
-    if (shouldSave)
-      setCredentials(credentials);
+    setCredentials(credentials);
 
     if ("message" in session)
       return AuthorizationState.Need2FA;

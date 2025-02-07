@@ -1,6 +1,7 @@
 export type Credentials = {
   username: string,
-  password: string;
+  password: string,
+  autoLogin: boolean;
 };
 
 const key = "credentials";

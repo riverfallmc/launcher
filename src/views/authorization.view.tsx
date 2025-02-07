@@ -1,11 +1,15 @@
+import { SubmitHandler, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Input from "@/components/input";
 import Link from "@/components/link";
 import { PageView } from "@/components/pageview";
+import { authSchema, authSchemaData } from "@/schema/auth.schema";
 import { AuthorizationState, AuthService } from "@/service/auth.service";
 import { View, ViewService } from "@/service/view.service";
 import { getCredentials } from "@/storage/credentials.storage";
 import { getWebsite } from "@/utils/url.util";
 import { useEffect } from "react";
+import { Window } from "@/components/window";
 
 export function AuthorizationView() {
   return (
@@ -13,6 +17,9 @@ export function AuthorizationView() {
       <div data-tauri-drag-region className="overflow-hidden flex flex-shrink h-screen">
         <Hints />
         <AuthorizationBlock />
+        <Window backgroundImage={"/assets/background/default.jpg"}>
+          sad
+        </Window>
       </div>
     </PageView>
   );
@@ -56,6 +63,35 @@ function AuthorizationTitle() {
 function AuthorizationForm() {
   const savedCredentials = getCredentials();
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<authSchemaData>({
+    resolver: zodResolver(authSchema),
+    defaultValues: {
+      username: savedCredentials?.password || "",
+      password: savedCredentials?.password || "",
+      autoLogin: true
+    }
+  });
+
+  console.log(errors);
+
+  const submitHandler: SubmitHandler<authSchemaData> = async (data) => {
+    try {
+      switch (await AuthService.authorize(data)) {
+        case AuthorizationState.Authorized:
+          return ViewService.setView(View.Launcher);
+        case AuthorizationState.Need2FA:
+          // todo
+      }
+    } catch (err) {
+      console.log(err);
+      // todo
+    }
+  }
+
   useEffect(() => {
     AuthService.authorizeWithRefresh()
       .then(resp => {
@@ -65,11 +101,11 @@ function AuthorizationForm() {
   })
 
   return (
-    <form onSubmit={(e) => e.preventDefault()} className="space-y-3 w-[22.5rem]">
-      <Input type="text" placeholder="Никнейм" id="username" autoFocus defaultValue={savedCredentials?.username} />
-      <Input type="password" placeholder="Пароль" id="password" defaultValue={savedCredentials?.password} />
+    <form onSubmit={handleSubmit(submitHandler)} className="space-y-3 w-[22.5rem]">
+      <input {...register("username")} type="text" placeholder="Никнейм" autoFocus />
+      <input {...register("password")} type="password" placeholder="Пароль" />
       <div className="flex space-x-2 items-center">
-        <Input defaultChecked type="checkbox" id="autoLogin" />
+        <input {...register("autoLogin")} type="checkbox" />
         <label htmlFor="autoLogin" className="text-sm text-neutral-500">
           Заходить автоматически
         </label>

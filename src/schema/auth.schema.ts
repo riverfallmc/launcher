@@ -7,5 +7,7 @@ export const authSchema = z.object({
   password: z.string()
     .min(8, "Минимальная длина пароля 8 символа")
     .max(32, "Максимальная длина пароля 32 символа"),
-  autoLogin: z.boolean().optional(),
+  autoLogin: z.preprocess((val) => val === "true" || val === true, z.boolean()),
 });
+
+export type authSchemaData = z.infer<typeof authSchema>;
