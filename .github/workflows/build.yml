@@ -33,7 +33,10 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           choco install -y nsis
-          choco install -y wix
+          curl -L -o wix.zip https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311-binaries.zip
+          mkdir C:\Wix
+          tar -xf wix.zip -C C:\Wix
+          echo "C:\Wix" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
