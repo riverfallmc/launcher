@@ -1,6 +1,6 @@
 import { WebUtil } from "./web.util";
 import { appDataDir, join } from "@tauri-apps/api/path";
-import { download, Downloadable, status } from "guest-js/downloader";
+import { download, Downloadable, status } from "tauri-plugin-downloader/downloader";
 import { AppManager, InvokeManager } from "./tauri.util";
 import { listen } from "@tauri-apps/api/event";
 import { Server as IServer } from "./server.util";

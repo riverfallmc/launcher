@@ -4807,6 +4807,8 @@ dependencies = [
 [[package]]
 name = "tauri-plugin-downloader"
 version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5fe4a6fb54cf8c18cd698d151284e5986c43939fe2bc4722d529afef52c6e82f"
 dependencies = [
  "ahash",
  "anyhow",

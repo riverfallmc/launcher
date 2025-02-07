@@ -1,5 +1,5 @@
 import { listen } from '@tauri-apps/api/event';
-import { start, destroy } from "guest-js";
+import { start, destroy } from "tauri-plugin-downloader";
 import { AppManager } from './tauri.util';
 
 export async function configureDownloader() {
