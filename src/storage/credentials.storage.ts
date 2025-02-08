@@ -20,3 +20,7 @@ export function getCredentials(): Credentials | null {
 
   return JSON.parse(data);
 }
+
+export function removeCredentials() {
+  localStorage.removeItem(key);
+}

@@ -6,13 +6,13 @@ import { AuthorizationView } from "./views/authorization.view";
 import { UpdaterView } from "./views/updater.view";
 import { LauncherView } from "./views/launcher.view";
 import Titlebar from "./components/titlebar";
+import { ErrorProvider } from "./components/error";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
+    <ErrorProvider>
     {/* <ThemeProvider defaultTheme="dark"> */}
       <Titlebar/>
-
-      {/* <ErrorView/> */}
 
       <BrowserRouter>
         <Routes>
@@ -22,5 +22,6 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
         </Routes>
       </BrowserRouter>
     {/* </ThemeProvider> */}
+    </ErrorProvider>
   </React.StrictMode>,
 );

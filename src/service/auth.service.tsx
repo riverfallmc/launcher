@@ -4,6 +4,7 @@ import { getWebsite } from "@/utils/url.util";
 import { Session } from "@/storage/session.storage";
 import { SessionService } from "./session.service";
 import { getRefresh } from "@/storage/refresh.storage";
+import { View, ViewService } from "./view.service";
 
 export enum AuthorizationState {
   None,
@@ -51,5 +52,11 @@ export class AuthService {
     await SessionService.save(session);
 
     return AuthorizationState.Authorized;
+  }
+
+  public static async logout() {
+    SessionService.clear();
+
+    ViewService.setView(View.Authorization);
   }
 }

@@ -9,3 +9,7 @@ export function setRefresh(
 export function getRefresh(): string | null {
   return localStorage.getItem(key);
 }
+
+export function removeRefresh() {
+  localStorage.removeItem(key);
+}

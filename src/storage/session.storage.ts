@@ -24,3 +24,7 @@ export function getSession(): Session | null {
 
   return JSON.parse(data);
 }
+
+export function removeSession() {
+  localStorage.removeItem(key);
+}

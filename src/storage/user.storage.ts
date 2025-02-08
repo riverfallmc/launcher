@@ -22,3 +22,7 @@ export function getUser(): User | null {
 
   return JSON.parse(data);
 }
+
+export function removeUser() {
+  localStorage.removeItem(key);
+}

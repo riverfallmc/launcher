@@ -1,6 +1,6 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Input from "@/components/input";
+import { Input } from "@/components/input";
 import Link from "@/components/link";
 import { PageView } from "@/components/pageview";
 import { authSchema, authSchemaData } from "@/schema/auth.schema";
@@ -9,7 +9,7 @@ import { View, ViewService } from "@/service/view.service";
 import { getCredentials } from "@/storage/credentials.storage";
 import { getWebsite } from "@/utils/url.util";
 import { useEffect } from "react";
-import { Window } from "@/components/window";
+import { useError } from "@/components/error";
 
 export function AuthorizationView() {
   return (
@@ -17,9 +17,6 @@ export function AuthorizationView() {
       <div data-tauri-drag-region className="overflow-hidden flex flex-shrink h-screen">
         <Hints />
         <AuthorizationBlock />
-        <Window backgroundImage={"/assets/background/default.jpg"}>
-          sad
-        </Window>
       </div>
     </PageView>
   );
@@ -61,22 +58,21 @@ function AuthorizationTitle() {
 }
 
 function AuthorizationForm() {
+  const setError = useError();
   const savedCredentials = getCredentials();
 
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors, isSubmitted }
   } = useForm<authSchemaData>({
     resolver: zodResolver(authSchema),
     defaultValues: {
-      username: savedCredentials?.password || "",
-      password: savedCredentials?.password || "",
+      username: savedCredentials?.username,
+      password: savedCredentials?.password,
       autoLogin: true
     }
   });
-
-  console.log(errors);
 
   const submitHandler: SubmitHandler<authSchemaData> = async (data) => {
     try {
@@ -87,35 +83,41 @@ function AuthorizationForm() {
           // todo
       }
     } catch (err) {
-      console.log(err);
-      // todo
+      console.log("err", err.message);
+      setError(err);
     }
-  }
+  };
 
   useEffect(() => {
     AuthService.authorizeWithRefresh()
       .then(resp => {
         if (resp === AuthorizationState.Authorized)
           ViewService.setView(View.Launcher);
-      })
-  })
+      });
+  }, []);
 
   return (
-    <form onSubmit={handleSubmit(submitHandler)} className="space-y-3 w-[22.5rem]">
-      <input {...register("username")} type="text" placeholder="Никнейм" autoFocus />
-      <input {...register("password")} type="password" placeholder="Пароль" />
-      <div className="flex space-x-2 items-center">
-        <input {...register("autoLogin")} type="checkbox" />
-        <label htmlFor="autoLogin" className="text-sm text-neutral-500">
-          Заходить автоматически
-        </label>
-      </div>
-      <button type="submit" className="bg-blue-500 hover:bg-blue-600 transition py-3 w-full rounded-lg">
-        Войти
-      </button>
-    </form>
+    <>
+      <form onSubmit={handleSubmit(submitHandler)} action="" className="space-y-3 w-[22.5rem]">
+        <Input {...register("username")} type="text" placeholder="Никнейм" autoFocus />
+        <Input {...register("password")} type="password" placeholder="Пароль" />
+        {isSubmitted && errors && (
+          <p className="text-red-500 text-sm">{Object.values(errors)[0]?.message}</p>
+        )}
+        <div className="flex space-x-2 items-center">
+          <Input {...register("autoLogin")} id="autoLogin" type="checkbox" />
+          <label htmlFor="autoLogin" className="text-sm text-neutral-500 cursor-pointer">
+            Заходить автоматически
+          </label>
+        </div>
+        <button type="submit" className="bg-blue-500 hover:bg-blue-600 transition py-3 w-full rounded-lg">
+          Войти
+        </button>
+      </form>
+    </>
   );
 }
+
 
 function OtherLink(props: React.AnchorHTMLAttributes<HTMLAnchorElement>) {
   return <Link {...props} className="text-neutral-500"></Link>;

@@ -1,9 +1,9 @@
-use anyhow::Context;
 /// Модуль который отвечает за все
 /// что связано с джавой
 ///
 /// 1. Ищет путь до установленной Java
 /// 2. Проверяет версию Java
+use anyhow::Context;
 use core::str;
 use serde::{Deserialize, Serialize};
 use std::{

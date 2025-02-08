@@ -6,6 +6,10 @@ import { Loader } from "@/components/updater/loader";
 import { Copyright } from "@/components/copyright";
 import { View, ViewService } from "@/service/view.service";
 
+function openAuthorization() {
+  ViewService.setView(View.Authorization)
+}
+
 export function UpdaterView() {
   useEffect(() => {
     check()
@@ -17,9 +21,9 @@ export function UpdaterView() {
           console.log("Обновления не найдены");
         }
 
-        ViewService.setView(View.Authorization);
+        openAuthorization();
       })
-      .catch(() => ViewService.setView(View.Authorization))
+      .catch(() => openAuthorization())
   })
 
   return (
