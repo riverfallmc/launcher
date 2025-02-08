@@ -7,6 +7,12 @@ import { UpdaterView } from "./views/updater.view";
 import { LauncherView } from "./views/launcher.view";
 import Titlebar from "./components/titlebar";
 import { ErrorProvider } from "./components/error";
+import { setup } from "./utils/setup.util";
+import { configure as notifications } from "./service/notify.service";
+
+setup(
+  notifications
+);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>

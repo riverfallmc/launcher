@@ -1,10 +1,11 @@
+import { close, minimize } from "@/service/application.service";
 import { MdClose, MdMinimize } from "react-icons/md";
 
 function Titlebar() {
   return (
     <div data-tauri-drag-region className="absolute z-50 w-full flex justify-end">
-      <TitlebarButton onClick={() => {}}><MdMinimize className="w-4 h-4" /></TitlebarButton>
-      <TitlebarButton onClick={() => {}}><MdClose className="w-4 h-4" /></TitlebarButton>
+      <TitlebarButton onClick={minimize}><MdMinimize className="w-4 h-4" /></TitlebarButton>
+      <TitlebarButton onClick={close}><MdClose className="w-4 h-4" /></TitlebarButton>
     </div>
   )
 }

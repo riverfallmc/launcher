@@ -1,42 +1,29 @@
-import { ReactNode, useEffect, useState } from "react";
-import { createPortal } from "react-dom";
+import { ReactNode } from "react";
+import { motion } from "framer-motion";
+import { cn } from "@/utils/class.util";
 
-export interface WindowProps {
-  backgroundImage: string;
-  children: ReactNode;
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-export function Window({ backgroundImage, children, isOpen, onClose }: WindowProps) {
-  const [visible, setVisible] = useState(false);
-  const container = document.createElement("div");
-
-  useEffect(() => {
-    if (isOpen) {
-      document.body.appendChild(container);
-      setTimeout(() => setVisible(true), 10);
-    } else {
-      setVisible(false);  
-      // setTimeout(() => document.body.removeChild(container), 300);
-    }
-  }, [isOpen]);
-
-  if (!isOpen) return null;
-
-  return createPortal(
-    <div
-      className={`fixed inset-0 flex items-center justify-center bg-neutral-950/80 backdrop-blur z-50 transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`}
-      onClick={onClose}
-    >
-      <div
-        className={`relative rounded-lg p-10 overflow-hidden transform transition-transform duration-300 ${visible ? 'scale-100' : 'scale-95'}`}
-        onClick={(e) => e.stopPropagation()}
+export function Window(
+  { backgroundImage, children, onClose, className }: { backgroundImage: string, children?: ReactNode, onClose: () => void, className?: string }
+) {
+  return (
+    <div className="fixed inset-0 flex items-center justify-center back-blur z-50">
+      <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onClose} />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
+        className={cn("relative flex items-center px-12 py-8 gap-x-8 bg-white rounded-2xl", className)}
       >
-        <img tauri-drag-region src={backgroundImage} alt="" className="absolute inset-0 w-full h-full object-cover opacity-50" />
-        <div tauri-drag-region className="relative z-10">{children}</div>
-      </div>
-    </div>,
-    container
+        <div
+          className="absolute inset-0 rounded-lg bg-cover bg-center filter saturate-0"
+          style={{
+            backgroundImage:
+              `linear-gradient(to right, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)), url(${backgroundImage})`,
+          }}
+        />
+
+        {children}
+      </motion.div>
+    </div>
   );
 }

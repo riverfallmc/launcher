@@ -34,7 +34,7 @@ export class AuthService {
   }
 
   public static async authorizeTwoFactor(
-    code: number
+    code: string
   ) {
     let credentials = getCredentials();
 
@@ -42,7 +42,7 @@ export class AuthService {
       throw new Error("Данные пользователя не были найдены");
 
     try {
-      let session = await HttpService.post<Session>(getWebsite(`api/auth/2fa/login?username${credentials.username}`), { code });
+      let session = await HttpService.post<Session>(getWebsite(`api/auth/2fa/login?username=${credentials.username}`), { code });
 
       await SessionService.save(session);
     } catch (err) {

@@ -8,9 +8,10 @@ import { AuthorizationState, AuthService } from "@/service/auth.service";
 import { View, ViewService } from "@/service/view.service";
 import { getCredentials } from "@/storage/credentials.storage";
 import { getWebsite } from "@/utils/url.util";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useError } from "@/components/error";
 import { caughtError } from "@/utils/error.util";
+import { TwoFactorWindow } from "@/components/window/twofactor";
 
 export function AuthorizationView() {
   return (
@@ -61,6 +62,7 @@ function AuthorizationTitle() {
 function AuthorizationForm() {
   const setError = useError();
   const savedCredentials = getCredentials();
+  const [waitForTwoFactor, setWaitForTwoFactor] = useState(false);
 
   const {
     register,
@@ -81,11 +83,9 @@ function AuthorizationForm() {
 
       switch (response) {
         case AuthorizationState.Authorized:
-          console.log("#1")
           return ViewService.setView(View.Launcher);
         case AuthorizationState.Need2FA:
-          console.log("HUI")
-          // todo
+          return setWaitForTwoFactor(true);
       }
     } catch (err) {
       setError(caughtError(err).message);
@@ -118,6 +118,10 @@ function AuthorizationForm() {
           Войти
         </button>
       </form>
+
+      {
+        waitForTwoFactor && <TwoFactorWindow onClick={() => setWaitForTwoFactor(false)}/>
+      }
     </>
   );
 }

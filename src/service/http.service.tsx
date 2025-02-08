@@ -40,4 +40,41 @@ export class HttpService {
       throw caughtError(err);
     }
   }
+
+  static async get<T extends Object>(url: string, authorization?: string): Promise<Awaited<T>> {
+    try {
+      let headers: Record<string, string> = {};
+
+      if (authorization) {
+        headers["Authorization"] = `Bearer ${authorization}`;
+      }
+
+      let response = await fetch(url, {
+        method: "GET",
+        headers,
+      });
+
+      if (!response.ok) {
+        let errorMessage = `Ошибка ${response.status}: ${response.statusText}`;
+
+        try {
+          const errorData = await response.json();
+          if (errorData?.message) {
+            errorMessage = errorData.message;
+          }
+        } catch {
+          const text = await response.text();
+          if (text) {
+            errorMessage += ` - ${text}`;
+          }
+        }
+
+        throw new Error(errorMessage);
+      }
+
+      return await response.json();
+    } catch (err) {
+      throw caughtError(err);
+    }
+  }
 }

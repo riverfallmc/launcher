@@ -11,3 +11,11 @@ export const authSchema = z.object({
 });
 
 export type authSchemaData = z.infer<typeof authSchema>;
+
+export const OTPSchema = z.object({
+  code: z.string()
+    .min(6, "OTP должен быть длинной в 6 символов")
+    .max(6, "OTP должен быть длинной в 6 символов")
+});
+
+export type OTPSchemaData = z.infer<typeof OTPSchema>;
