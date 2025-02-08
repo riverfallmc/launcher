@@ -1,5 +1,3 @@
-import { Server as IServer, ServerManager } from "@/util/server.util";
-import { AppManager } from "@/util/tauri.util";
 import { useEffect, useState } from "react";
 import { Server } from "./server";
 import { ServerSelected } from "./selected";

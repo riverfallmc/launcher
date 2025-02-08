@@ -1,3 +1,6 @@
+import Content from "@/components/launcher/content";
+import { ServerList } from "@/components/launcher/server/list";
+// import { ServerList } from "@/components/launcher/list";
 import { LauncherTopBar } from "@/components/launcher/topbar";
 import { PageView } from "@/components/pageview";
 
@@ -7,9 +10,9 @@ export function LauncherView() {
       <div data-tauri-drag-region className="flex flex-col flex-shrink h-screen max-h-screen">
         <LauncherTopBar/>
 
-        {/* <Content>
+        <Content>
           <ServerList/>
-        </Content> */}
+        </Content>
     </div>
     </PageView>
   )

@@ -4,7 +4,7 @@ import { forwardRef, ReactNode, useEffect, useState } from "react";
 import { IconType } from "react-icons/lib";
 import { RiTelegram2Fill } from "react-icons/ri";
 import { FaDiscord } from "react-icons/fa6";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/shadcn/dropdown-menu";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { AuthService } from "@/service/auth.service";
 import { getWebsite, openUrl } from "@/utils/url.util";
@@ -12,6 +12,7 @@ import { cn } from "@/utils/class.util";
 import { getUser } from "@/storage/user.storage";
 import { getSession } from "@/storage/session.storage";
 import { formatBalance } from "@/utils/format.util";
+import { HttpService } from "@/service/http.service";
 
 export function LauncherTopBar() {
   return (
@@ -85,25 +86,23 @@ const User = forwardRef<HTMLDivElement, UserProps>((props, ref) => {
     return <div></div>;
 
   const requestBalance = async () => {
-    const res = await fetch(
-      getWebsite("api/donate/balance?id=" + user.id),
-      {
-        method: "GET",
-        headers: {
-          Authorization: session.jwt,
-        },
-      }
-    );
+    try {
+      let body = await HttpService.get<{ balance: number }>(`api/donate/balance?id=${user.id}`, session.jwt);
+      setBalance(body.balance);
+    } catch (_) {}
 
-    const body = await res.json();
-    setBalance(body.balance);
+    // } catch (err) {
+    // setError(caughtError(err).message);
+    // }
   };
 
   useEffect(() => props.trigger(() => requestBalance), [props.trigger]);
 
   useEffect(() => {
     (async () => {
-      await requestBalance();
+      try {
+        await requestBalance();
+      } catch (_) {}
     })();
   }, []);
 

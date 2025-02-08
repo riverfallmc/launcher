@@ -8,10 +8,12 @@ import { LauncherView } from "./views/launcher.view";
 import Titlebar from "./components/titlebar";
 import { ErrorProvider } from "./components/error";
 import { setup } from "./utils/setup.util";
-import { configure as notifications } from "./service/notify.service";
+import { configure as notifications } from "@/service/notify.service";
+import { configure as discord } from "@/service/discord.service";
 
 setup(
-  notifications
+  notifications,
+  discord
 );
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
