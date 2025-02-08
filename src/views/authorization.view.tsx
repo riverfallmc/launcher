@@ -10,6 +10,7 @@ import { getCredentials } from "@/storage/credentials.storage";
 import { getWebsite } from "@/utils/url.util";
 import { useEffect } from "react";
 import { useError } from "@/components/error";
+import { caughtError } from "@/utils/error.util";
 
 export function AuthorizationView() {
   return (
@@ -76,15 +77,18 @@ function AuthorizationForm() {
 
   const submitHandler: SubmitHandler<authSchemaData> = async (data) => {
     try {
-      switch (await AuthService.authorize(data)) {
+      let response = await AuthService.authorize(data);
+
+      switch (response) {
         case AuthorizationState.Authorized:
+          console.log("#1")
           return ViewService.setView(View.Launcher);
         case AuthorizationState.Need2FA:
+          console.log("HUI")
           // todo
       }
     } catch (err) {
-      console.log("err", err.message);
-      setError(err);
+      setError(caughtError(err).message);
     }
   };
 
