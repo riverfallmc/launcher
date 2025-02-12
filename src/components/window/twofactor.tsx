@@ -41,7 +41,7 @@ export function TwoFactorWindow(props: Props) {
       <img className="relative z-10 h-24" src="/assets/scene/fox.png" />
       <div className="relative z-10 flex flex-col leading-4 space-y-2">
         <span className="text-2xl font-semibold">Двуфакторная аутентификация</span>
-        <span className="font-semibold text-neutral-300 text-sm leading-4 max-w-72">Для дальнейшего входа в аккаунт, введите ниже код из вашего приложения для двуфакторной аутентификации (Google Authenticator, Яндекс Ключ, и т.п)</span>
+        <span className="text-neutral-400 text-sm leading-5 max-w-72">Для дальнейшего входа в аккаунт, введите ниже код из вашего приложения для двуфакторной аутентификации (Google Authenticator, Яндекс Ключ, и т.п)</span>
 
         <form onSubmit={handleSubmit(data => login(data.code))} className="flex space-x-3">
           <Input {...register("code")} type="otp" autoFocus placeholder="Код из приложения"/>

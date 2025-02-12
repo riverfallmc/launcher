@@ -11,6 +11,6 @@ export function getAvatar(username: string): string {
   return getWebsite(`api/session/skin/${username}.png`);
 }
 
-export async function openUrl(uri: string = "") {
-  return await urlOpen(getWebsite(uri));
+export async function openUrl(url: string = "", withOutWebsite = true) {
+  return await urlOpen(withOutWebsite ? getWebsite(url) : url);
 }

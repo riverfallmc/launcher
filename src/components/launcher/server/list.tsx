@@ -2,6 +2,7 @@ import { useError } from "@/components/error";
 import { Server as IServer, ServerService } from "@/service/game/server.service";
 import { useEffect, useState } from "react";
 import { Server } from "./server";
+import { ServerSelected } from "./selected";
 
 export function ServerList() {
   const setError = useError();
@@ -15,19 +16,22 @@ export function ServerList() {
     return <EmptyServerList/>
 
   return (
-    <div className="size-full flex flex-shrink">
-      <div className="w-[50%] grid grid-cols-3 gap-2 flex-1 overflow-auto">
+    <div className="size-full flex gap-x-4">
+      <div className="w-md flex-shrink-0 grid grid-cols-2 gap-3 overflow-auto">
         {list.map(server => (
           <Server
             key={server.id}
             background="/assets/background/default.jpg"
-            onClick={() =>
-              selected == server ? setSelected(undefined) : setSelected(server)
-            }
+            onClick={() => {
+              setSelected(prev => (prev?.id === server.id ? undefined : server));
+            }}
             {...server}
           />
         ))}
       </div>
+
+      {selected &&
+        <ServerSelected server={selected}/>}
     </div>
   )
 }

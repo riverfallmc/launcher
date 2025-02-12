@@ -1,10 +1,14 @@
 import { caughtError } from "@/utils/error.util";
 
 export class HttpService {
-  static async post<T extends Object>(url: string, body?: Object, authorization?: string): Promise<Awaited<T>> {
+  static async post<T extends Object>(
+    url: string,
+    body?: Object,
+    authorization?: string,
+  ): Promise<Awaited<T>> {
     try {
       let headers: Record<string, string> = {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       };
 
       if (authorization) {
@@ -14,7 +18,7 @@ export class HttpService {
       let response = await fetch(url, {
         method: "POST",
         headers,
-        body: body ? JSON.stringify(body) : undefined
+        body: body ? JSON.stringify(body) : undefined,
       });
 
       if (!response.ok) {
@@ -41,7 +45,10 @@ export class HttpService {
     }
   }
 
-  static async get<T extends Object>(url: string, authorization?: string): Promise<Awaited<T>> {
+  static async get<T extends Object>(
+    url: string,
+    authorization?: string,
+  ): Promise<Awaited<T>> {
     try {
       let headers: Record<string, string> = {};
 

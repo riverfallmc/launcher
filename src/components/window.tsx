@@ -6,8 +6,8 @@ export function Window(
   { backgroundImage, children, onClose, className }: { backgroundImage: string, children?: ReactNode, onClose: () => void, className?: string }
 ) {
   return (
-    <div className="fixed inset-0 flex items-center justify-center back-blur z-50">
-      <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onClose} />
+    <div autoFocus className="fixed inset-0 flex items-center justify-center back-blur z-50">
+      <div className="absolute inset-0 bg-black opacity-50" onClick={onClose} />
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}

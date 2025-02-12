@@ -11,3 +11,10 @@ export function formatBalance(balance: number): string {
 
   return `${balance} ${cases[caseIndex]}`;
 }
+
+export function formatBytes(bytes: number): string {
+  if (bytes < 900 * 1024 * 1024) {
+    return `${(bytes / (1024 * 1024)) | 0}Mb`;
+  }
+  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)}Gb`;
+}

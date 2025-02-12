@@ -1,27 +1,27 @@
-import { Server } from "./server.util";
-import { InvokeManager, ProcessInfo } from "./tauri.util";
+import { isProcessExist, play, close, ProcessInfo } from "@/api/process.api";
+import { Server } from "./server.service";
 
-export class GameManager {
+export class GameService {
   static game?: ProcessInfo;
 
   static async isGameRunning(): Promise<boolean> {
     if (!this.game)
       return false;
 
-    return InvokeManager.isProcessExist(this.game);
+    return isProcessExist(this.game);
   }
 
   static async play(server: Server) {
     if (await this.isGameRunning())
       throw new Error("Вы уже играете на нашем сервере!");
 
-    this.game = await InvokeManager.play(server);
+    this.game = await play(server);
   }
 
   static async close() {
     if (!await this.isGameRunning())
       return;
 
-    await InvokeManager.close(this.game!.pid);
+    await close(this.game!.pid);
   }
 }

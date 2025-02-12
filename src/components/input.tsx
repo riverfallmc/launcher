@@ -24,7 +24,7 @@ const Text = forwardRef<HTMLInputElement, Props>(function Text({ className, ...p
     <input
       ref={ref}
       {...props}
-      className={cn("w-full py-4 px-5 bg-neutral-700/10 rounded-lg outline outline-1 outline-none placeholder:text-neutral-500", className)}
+      className={cn("w-full py-4 px-5 bg-neutral-700/10 rounded-lg outline-1 outline-none placeholder:text-neutral-500", className)}
     />
   );
 });

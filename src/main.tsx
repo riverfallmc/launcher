@@ -8,28 +8,31 @@ import { LauncherView } from "./views/launcher.view";
 import Titlebar from "./components/titlebar";
 import { ErrorProvider } from "./components/error";
 import { setup } from "./utils/setup.util";
+
 import { configure as notifications } from "@/service/notify.service";
 import { configure as discord } from "@/service/discord.service";
+import { configure as tray } from "@/service/tray.service";
 
 setup(
   notifications,
-  discord
+  discord,
+  tray
 );
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <ErrorProvider>
-    {/* <ThemeProvider defaultTheme="dark"> */}
-      <Titlebar/>
+      {/* <ThemeProvider defaultTheme="dark"> */}
+      <Titlebar />
 
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<UpdaterView/>}/>
-          <Route path="/authorization" element={<AuthorizationView/>}/>
-          <Route path="/launcher" element={<LauncherView/>}/>
+          <Route path="/" element={<UpdaterView />} />
+          <Route path="/authorization" element={<AuthorizationView />} />
+          <Route path="/launcher" element={<LauncherView />} />
         </Routes>
       </BrowserRouter>
-    {/* </ThemeProvider> */}
+      {/* </ThemeProvider> */}
     </ErrorProvider>
   </React.StrictMode>,
 );

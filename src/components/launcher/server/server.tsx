@@ -12,20 +12,20 @@ export function Server(props: ServerProps) {
       {/* Основной компонент */}
       <div
         onClick={() => props.onClick(props)}
-        className={`group w-48 h-32 cursor-pointer relative overflow-hidden rounded-lg`}
+        className={`group h-32 cursor-pointer relative overflow-hidden rounded-md`}
       >
         <div
           className="w-full h-full bg-cover bg-center transition-transform duration-300 group-hover:scale-125"
           style={{
             backgroundImage: `url(${props.background})`
           }}/>
-        <div className="absolute inset-0 bg-black/75"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-neutral-600 via-transparent to-white opacity-30"></div>
+        <div className="absolute inset-0 bg-black/75 group-hover:bg-black/0"></div>
+        <div className="absolute inset-0 object-gradient opacity-40 transition-opacity group-hover:opacity-0"></div>
 
         {/* Контент */}
-        <div className="absolute inset-0 flex justify-center items-center gap-x-1.5">
+        <div className="absolute inset-0 flex justify-center items-center gap-x-2.5">
           <img src="/assets/block/workbench.png" className="w-6" />
-          <span className="uppercase font-normal">{props.name}</span>
+          <span className="uppercase">{props.name}</span>
         </div>
 
         <div className="absolute inset-0">

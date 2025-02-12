@@ -18,7 +18,7 @@ export function notify(
   body: string
 ) {
   if (!permissionGranted)
-    return console.log("Недостаточно разрешений для отправки уведомления");
+    return console.error("Недостаточно разрешений для отправки уведомления");
 
-  sendNotification({ title: 'Лаунчер Riverfall', body, icon: "icons/icon.ico" });
+  sendNotification({ title: 'Лаунчер Riverfall', body });
 }

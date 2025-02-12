@@ -12,9 +12,9 @@
     "global-shortcut:default",
     "opener:default",
     "drpc:default",
-    "downloader:default",
     "fs:default",
     "notification:default",
-    "updater:default"
+    "updater:default",
+    "upload:default"
   ]
 }
