@@ -17,7 +17,7 @@ export type Downloadable = {
   progress?: Progress;
 };
 
-const url = "https://downloader.disk.yandex.ru/disk/36ed58b6a0852f861992ef2ddddc0edb40675d829d1899b87166c71a97c4db16/67ad29c6/Tdh9a4KXp2hZWyppIkXfIhcwTeXK1xfITKxBWNx4Si90UgR6FdjCsPtcVpnDpzQnWyMJUe62eQFYXuzAe3YFUA%3D%3D?uid=0&filename=mods.zip&disposition=attachment&hash=V6uqKFQx3jRxuYTo4jREx0D1B8q830T2y93M6s9edtFUVqWBMrg5PggtJ4UIaQsGq/J6bpmRyOJonT3VoXnDag%3D%3D%3A&limit=0&content_type=application%2Fzip&owner_uid=1759160497&fsize=97992449&hid=291c678fc3a25d216305aa42f16f22c3&media_type=compressed&tknv=v2"
+const url = "https://downloader.disk.yandex.ru/disk/a1879e0127c2f0c874a7fcba816437264ee9b4f65fa1f5532d8f85cfdc3bc933/67ad7523/Tdh9a4KXp2hZWyppIkXfImFqHz6mFc67-ZNZj8GcxU69uwhlfmSg6NXYh8bAbIPwO1xWdA8tiIKDsoCjNm8XIQ%3D%3D?uid=0&filename=classic_fabric_1201.zip&disposition=attachment&hash=uu0ZmbkRbvcwRSb8YatWFxcCIPkXGRX/QWEbdDifXSKQ9XBw8jfs3wT91YdmBfloq/J6bpmRyOJonT3VoXnDag%3D%3D%3A&limit=0&content_type=application%2Fzip&owner_uid=1759160497&fsize=666717334&hid=1b9c3fb4e769d2ac22b6beba5f538861&media_type=compressed&tknv=v2";
 
 export class ClientDownloadService {
   protected static currentDownloadable: Downloadable;

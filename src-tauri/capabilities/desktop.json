@@ -11,6 +11,20 @@
   "permissions": [
     "global-shortcut:default",
     "opener:default",
+    {
+      "identifier": "opener:allow-open-path",
+      "allow": [
+        {
+          "path": "$APPDATA"
+        },
+        {
+          "path": "$APPDATA/*"
+        },
+        {
+          "path": "$APPDATA/clients/*"
+        }
+      ]
+    },
     "drpc:default",
     "fs:default",
     "notification:default",

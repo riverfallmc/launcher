@@ -27,7 +27,7 @@ export function TwoFactorWindow(props: Props) {
   const login = async (code: string) => {
     try {
       await AuthService.authorizeTwoFactor(code);
-      await ViewService.setView(View.Launcher);
+      ViewService.setView(View.Launcher);
     } catch (err) {
       setError("code", {
         type: "validate",

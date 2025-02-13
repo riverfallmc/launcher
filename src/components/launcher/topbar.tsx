@@ -21,6 +21,7 @@ import { getUser } from "@/storage/user.storage";
 import { getSession } from "@/storage/session.storage";
 import { formatBalance } from "@/utils/format.util";
 import { HttpService } from "@/service/http.service";
+import { AboutWindow } from "../window/about";
 
 export function LauncherTopBar() {
   return (
@@ -142,40 +143,53 @@ User.displayName = "User";
 
 function UserMenu() {
   const [updateBalanceState, setUpdateBalanceState] = useState<() => {}>();
+  const [shouldShowAbout, setShouldShowAbout] = useState(false);
 
   const updateBalance = () => {
     if (updateBalanceState) updateBalanceState();
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <User trigger={setUpdateBalanceState} />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="bg-neutral-800 text-white">
-        <DropdownMenuLabel>Пользователь</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem
-            className="font-normal gap-x-1.5"
-            onClick={async () => await openUrl("profile")}
-          >
-            Профиль <FiExternalLink />
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className="font-normal"
-            onClick={() => updateBalance()}
-          >
-            Обновить баланс
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className="font-normal"
-            onClick={() => AuthService.logout()}
-          >
-            Выйти
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <User trigger={setUpdateBalanceState} />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="bg-neutral-800 text-white">
+          <DropdownMenuLabel>Пользователь</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem
+              className="font-normal gap-x-1.5"
+              onClick={async () => await openUrl("profile")}
+            >
+              Профиль <FiExternalLink />
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="font-normal"
+              onClick={() => updateBalance()}
+            >
+              Обновить баланс
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="font-normal"
+              onClick={() => setShouldShowAbout(true)}
+            >
+              О программе
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="font-normal"
+              onClick={() => AuthService.logout()}
+            >
+              Выйти
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {
+        shouldShowAbout && <AboutWindow onClose={() => setShouldShowAbout(false)}/>
+      }
+    </>
   );
 }

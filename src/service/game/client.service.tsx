@@ -2,8 +2,9 @@ import { HttpService } from "../http.service";
 import { getWebsite } from "@/utils/url.util";
 import { caughtError } from "@/utils/error.util";
 import { Server as IServer } from "./server.service";
-import { appDataDir, join } from "@tauri-apps/api/path";
+import { appDataDir, join, resolveResource } from "@tauri-apps/api/path";
 import { exists } from "@/api/tauri.api";
+import { openPath } from "@tauri-apps/plugin-opener";
 
 export type Client = {
   id: number,
@@ -43,6 +44,12 @@ export class ClientService {
     } catch (err) {
       setError(caughtError(err).message);
     }
+  }
+
+  static async openFolder(name: string) {
+    let path = await this.getClientPath(name);
+
+    await openPath(path);
   }
 
   static formatModloaderName(name: string): string {

@@ -23,6 +23,8 @@ import { unzip } from "@/api/process.api";
 import { notify } from "@/service/notify.service";
 import { formatBytes } from "@/utils/format.util";
 import { DownloadStatus } from "./downloadstatus";
+import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
+import { DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/shadcn/dropdown-menu";
 
 interface UseButton {
   text: string;
@@ -94,7 +96,9 @@ async function useButtonAction(
         }, setError);
 
         setStatus("Достаём данные из архива...");
+
         await unzip(savedIn, server.client);
+
         setStatus(undefined);
         setDownloadable(null);
         notify(`Клиент для сервера ${server.name} установлен!`);
@@ -195,9 +199,38 @@ export function ServerSelected({ server }: { server: IServer }) {
           {state !== ClientState.Null &&
             state !== ClientState.Install &&
             state !== ClientState.Installation && (
-              <button className="hover:text-neutral-500 transition aspect-square h-full rounded-lg flex items-center justify-center">
-                <IoIosOptions className="w-5 h-5" />
-              </button>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <button className="hover:text-neutral-500 cursor-pointer transition aspect-square h-full rounded-lg flex items-center justify-center">
+                    <IoIosOptions className="w-5 h-5" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-neutral-800 text-white">
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem
+                      className="font-normal gap-x-1.5"
+                    >
+                      Проверить целостность файлов
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="font-normal"
+                    >
+                      Настройки клиента
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="font-normal"
+                      onClick={() => ClientService.openFolder(client.name)}
+                    >
+                      Открыть папку клиента
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="font-normal"
+                    >
+                      Удалить
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
         </div>
       </div>
