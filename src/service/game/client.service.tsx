@@ -2,7 +2,7 @@ import { HttpService } from "../http.service";
 import { getWebsite } from "@/utils/url.util";
 import { caughtError } from "@/utils/error.util";
 import { Server as IServer } from "./server.service";
-import { appDataDir, join, resolveResource } from "@tauri-apps/api/path";
+import { appDataDir, join } from "@tauri-apps/api/path";
 import { exists } from "@/api/tauri.api";
 import { openPath } from "@tauri-apps/plugin-opener";
 

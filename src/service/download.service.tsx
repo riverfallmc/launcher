@@ -23,7 +23,8 @@ const url = "https://downloader.disk.yandex.ru/disk/e97879c2b2a50145cb3812cccc5c
 export class ClientDownloadService {
   protected static currentDownloadable: Downloadable;
 
-  protected static async getDownloadUrl(name: string): Promise<string> {
+  // TODO
+  protected static async getDownloadUrl(_name: string): Promise<string> {
     return url;
     // return `${await ClientService.getClientPath(name)}/${name}.zip`
   }
