@@ -8,7 +8,7 @@ export function ModList({ list }: { list: string[] }) {
           <button
             onClick={() => openUrl("https://modrinth.com/mods?q=" + encodeURIComponent(mod), false)}
             key={index}
-            className="py-2 cursor-pointer px-3 bg-white/10 hover:bg-white/20 transition rounded-md">
+            className="py-2 cursor-pointer px-6 bg-white/10 hover:bg-white/20 text-neutral-300 transition rounded-md">
             {mod}
           </button>
         ))}

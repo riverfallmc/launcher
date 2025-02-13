@@ -24,7 +24,7 @@ import { notify } from "@/service/notify.service";
 import { formatBytes } from "@/utils/format.util";
 import { DownloadStatus } from "./downloadstatus";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
-import { DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/shadcn/dropdown-menu";
+import { DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/shadcn/dropdown-menu";
 
 interface UseButton {
   text: string;

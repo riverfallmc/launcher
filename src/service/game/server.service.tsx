@@ -11,7 +11,9 @@ export type Server = {
     current: number,
     max: number;
   },
-  ip: string;
+  ip: string,
+  icon: string,
+  background: string;
 }
 
 export class ServerService {

@@ -4,6 +4,9 @@ import { TrayIcon, TrayIconOptions } from "@tauri-apps/api/tray";
 import { openUrl } from '@tauri-apps/plugin-opener';
 import { GameService } from "./game/game.service";
 import { exit } from "@tauri-apps/plugin-process";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+
+const window = getCurrentWindow();
 
 export async function configure() {
   const menu = await Menu.new({
@@ -16,11 +19,14 @@ export async function configure() {
       {
         id: "open",
         text: "Показать",
-        action: async () => await show(),
+        action: async () => {
+          await window.show();
+          await window.setFocus();
+        },
       },
       {
         id: "quit",
-        text: "Выйти",
+        text: "Закрыть лаунчер",
         action: async () => {
           GameService.close()
             .finally(exit)

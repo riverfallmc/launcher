@@ -17,7 +17,8 @@ export type Downloadable = {
   progress?: Progress;
 };
 
-const url = "https://downloader.disk.yandex.ru/disk/a1879e0127c2f0c874a7fcba816437264ee9b4f65fa1f5532d8f85cfdc3bc933/67ad7523/Tdh9a4KXp2hZWyppIkXfImFqHz6mFc67-ZNZj8GcxU69uwhlfmSg6NXYh8bAbIPwO1xWdA8tiIKDsoCjNm8XIQ%3D%3D?uid=0&filename=classic_fabric_1201.zip&disposition=attachment&hash=uu0ZmbkRbvcwRSb8YatWFxcCIPkXGRX/QWEbdDifXSKQ9XBw8jfs3wT91YdmBfloq/J6bpmRyOJonT3VoXnDag%3D%3D%3A&limit=0&content_type=application%2Fzip&owner_uid=1759160497&fsize=666717334&hid=1b9c3fb4e769d2ac22b6beba5f538861&media_type=compressed&tknv=v2";
+// TODO
+const url = "https://downloader.disk.yandex.ru/disk/e97879c2b2a50145cb3812cccc5c2dea81d95fa5bd3b09bc83ab5167d69cb224/67ae2670/Tdh9a4KXp2hZWyppIkXfIp7wdZc0eoqn5EiXKSWi43EfmAptX_ZF2rSZzaJQWQ0haoJZiZgZK6LGo1uUX2zf-g%3D%3D?uid=0&filename=siberia.zip&disposition=attachment&hash=jEUxhx9zgBGOkh0XC1dCf/qca5AcMN37fSluQYKtFN1g6ptOasH10eC7u1W49R7Iq/J6bpmRyOJonT3VoXnDag%3D%3D%3A&limit=0&content_type=application%2Fzip&owner_uid=1759160497&fsize=675283414&hid=0e24c5ebf1acb854ef50724fb05923fd&media_type=compressed&tknv=v2"
 
 export class ClientDownloadService {
   protected static currentDownloadable: Downloadable;
