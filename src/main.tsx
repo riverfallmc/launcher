@@ -12,12 +12,19 @@ import { setup } from "./utils/setup.util";
 import { configure as notifications } from "@/service/notify.service";
 import { configure as discord } from "@/service/discord.service";
 import { configure as tray } from "@/service/tray.service";
+import { SessionService } from "./service/session.service";
+import { getSession } from "./storage/session.storage";
 
 setup(
   notifications,
   discord,
   tray
 );
+
+setTimeout(() => {
+  // todo remove
+  SessionService.validateSession(getSession())
+}, 1500);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
