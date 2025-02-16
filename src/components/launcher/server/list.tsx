@@ -42,8 +42,7 @@ export function ServerList() {
         </div>
       </div>
 
-      {selected &&
-        <ServerSelected server={selected}/>}
+      <ServerSelected server={selected}/>
     </div>
   )
 }

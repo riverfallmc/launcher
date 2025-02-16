@@ -123,7 +123,10 @@ async function useButtonAction(
   }
 }
 
-export function ServerSelected({ server }: { server: IServer }) {
+export function ServerSelected({ server }: { server?: IServer }) {
+  if (!server)
+    return <></>;
+
   const setError = useError();
   const [client, setClient] = useState<Client>();
   const [useButton, setUseButton] = useState<UseButton>();
@@ -141,14 +144,13 @@ export function ServerSelected({ server }: { server: IServer }) {
 
   // запрашиваем у server сервиса игровой клиент
   useEffect(() => {
-    (async () =>
-      setClient(await ClientService.getClient(setError, server.client)))();
-  }, []);
+    (async () => setClient(await ClientService.getClient(setError, server.client)))();
+  }, [server]);
 
   // инициализируем ClientState
   useEffect(() => {
     (async () => setState(await ClientService.getState(server)))();
-  }, []);
+  }, [server]);
 
   // проверяем на то что уже что-то в очереди есть
   useEffect(() => {
@@ -156,7 +158,7 @@ export function ServerSelected({ server }: { server: IServer }) {
 
     if (download)
       setDownloadable(download);
-  }, [])
+  }, [server])
 
   if (!client || !useButton) return <></>;
 
@@ -202,7 +204,7 @@ export function ServerSelected({ server }: { server: IServer }) {
             state !== ClientState.Install &&
             state !== ClientState.Installation && (
               <DropdownMenu>
-                <DropdownMenuTrigger>
+                <DropdownMenuTrigger asChild>
                   <button className="hover:text-neutral-500 cursor-pointer transition aspect-square h-full rounded-lg flex items-center justify-center">
                     <IoIosOptions className="w-5 h-5" />
                   </button>

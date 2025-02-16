@@ -22,7 +22,6 @@ setup(
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <ErrorProvider>
-      {/* <ThemeProvider defaultTheme="dark"> */}
       <Titlebar />
 
       <BrowserRouter>
@@ -32,7 +31,6 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
           <Route path="/launcher" element={<LauncherView />} />
         </Routes>
       </BrowserRouter>
-      {/* </ThemeProvider> */}
     </ErrorProvider>
   </React.StrictMode>,
 );

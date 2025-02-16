@@ -5,6 +5,7 @@ import { Server as IServer } from "./server.service";
 import { appDataDir, join } from "@tauri-apps/api/path";
 import { exists } from "@/api/tauri.api";
 import { openPath } from "@tauri-apps/plugin-opener";
+import { Cache } from "@/utils/cache.util";
 
 export type Client = {
   id: number,
@@ -25,11 +26,20 @@ export enum ClientState {
 }
 
 export class ClientService {
+  static cache: Cache<Client> = new Cache();
+
   static async getClients(
     setError: (_: string) => void
-  ): Promise<Client[] | undefined> {
+  ): Promise<Awaited<Client[] | undefined>> {
+    if (!this.cache.isEmpty())
+      return this.cache.getStorage();
+
     try {
-      return HttpService.get<Client[]>(getWebsite("api/server/clients"));
+      let clients = await HttpService.get<Client[]>(getWebsite("api/server/clients"));
+
+      this.cache.set(clients);
+
+      return clients;
     } catch (err) {
       setError(caughtError(err).message);
     }
@@ -37,10 +47,21 @@ export class ClientService {
 
   static async getClient(
     setError: (_: string) => void,
-    id: string
-  ): Promise<Client | undefined> {
+    name: string
+  ): Promise<Awaited<Client> | undefined> {
+    if (this.cache) {
+      let finded = this.cache.find("name", name);
+
+      if (finded)
+        return finded;
+    }
+
     try {
-      return HttpService.get<Client>(getWebsite(`api/server/client?name=${id}`));
+      let server = await HttpService.get<Client>(getWebsite(`api/server/client?name=${name}`));
+
+      this.cache.push(server);
+
+      return server;
     } catch (err) {
       setError(caughtError(err).message);
     }
