@@ -25,6 +25,7 @@ import { formatBytes } from "@/utils/format.util";
 import { DownloadStatus } from "./downloadstatus";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import { DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/shadcn/dropdown-menu";
+import { close } from "@/service/application.service";
 
 interface UseButton {
   text: string;
@@ -97,7 +98,7 @@ async function useButtonAction(
 
         setStatus("Достаём данные из архива...");
 
-        await unzip(savedIn, server.client);
+        await unzip(savedIn);
 
         setStatus(undefined);
         setDownloadable(null);
@@ -114,6 +115,7 @@ async function useButtonAction(
     case ClientState.Play:
       try {
         await GameService.play(server);
+        await close();
       } catch (err) {
         setError(caughtError(err).message);
       }

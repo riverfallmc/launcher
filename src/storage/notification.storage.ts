@@ -1,4 +1,4 @@
-const key = "refresh";
+const key = "trayNotify";
 
 export function addTrayNotification() {
   return localStorage.setItem(key, (getTrayNotification() + 1).toString());

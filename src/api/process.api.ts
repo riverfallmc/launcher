@@ -13,8 +13,8 @@ export async function env(variable: string): Promise<string> {
   return invoke("env", { var: variable });
 }
 
-export async function unzip(path: string, name: string): Promise<void> {
-  return await invoke("unzip", { path, name });
+export async function unzip(path: string): Promise<void> {
+  return await invoke("unzip", { path });
 }
 
 export async function exists(path: string): Promise<boolean> {

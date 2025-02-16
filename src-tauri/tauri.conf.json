@@ -42,7 +42,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "TODO",
+      "pubkey": "todo",
       "endpoints": [
         "https://github.com/riverfallmc/launcher-builds/releases/latest/download/Riverfall.Launcher_{{current_version}}_{{arch}}",
         "https://github.com/riverfallmc/launcher-builds/releases/latest/download/latest.json"
