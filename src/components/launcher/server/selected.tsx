@@ -149,14 +149,14 @@ export function ServerSelected({ server }: { server?: IServer }) {
 
   // инициализируем ClientState
   useEffect(() => {
-    (async () => setState(await ClientService.getState(server)))();
+    (async () => setState(ClientState.Installation))(); // await ClientService.getState(server)
   }, [server]);
 
   // проверяем на то что уже что-то в очереди есть
   useEffect(() => {
     let download = ClientDownloadService.getDownloading();
 
-    if (download)
+    if (download && download.name === server.client)
       setDownloadable(download);
   }, [server])
 

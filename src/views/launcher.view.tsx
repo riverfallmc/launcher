@@ -9,7 +9,7 @@ import { minutes } from "@/utils/data.util";
 
 export function LauncherView() {
   // проверяем раз в 5 минут статус нашего jwt
-  setTimeout(async () => {
+  setInterval(async () => {
     let result = await SessionService.validateSession();
 
     if (!result) {
