@@ -149,7 +149,7 @@ export function ServerSelected({ server }: { server?: IServer }) {
 
   // инициализируем ClientState
   useEffect(() => {
-    (async () => setState(ClientState.Installation))(); // await ClientService.getState(server)
+    (async () => setState(await ClientService.getState(server)))();
   }, [server]);
 
   // проверяем на то что уже что-то в очереди есть

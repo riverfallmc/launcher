@@ -1,5 +1,6 @@
 import { cn } from "@/utils/class.util";
-import { getAvatar } from "@/utils/url.util";
+import { getProfile } from "@/utils/url.util";
+import { useEffect, useState } from "react";
 
 interface AvatarProps {
   username: string;
@@ -7,7 +8,20 @@ interface AvatarProps {
 }
 
 function Avatar({ username, className }: AvatarProps) {
-  const skinUrl = getAvatar(username);
+  const [skin, setSkin] = useState("/assets/steve-default.png");
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const newSkin = await getProfile(username);
+
+        if (!newSkin.SKIN)
+          return;
+
+        setSkin(newSkin.SKIN.url);
+      } catch (e) {console.error(e)};
+    })();
+  }, []);
 
   return (
     <div
@@ -17,7 +31,7 @@ function Avatar({ username, className }: AvatarProps) {
         style={{
           width: "100%",
           height: "100%",
-          backgroundImage: `url(${skinUrl})`,
+          backgroundImage: `url(${skin})`,
           backgroundSize: "800% 800%",
           backgroundPosition: "14.1% 14.3%", // почему 14% когда 100/8=12.5%? хуй знает типо
           imageRendering: "crisp-edges",
