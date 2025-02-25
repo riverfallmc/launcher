@@ -18,7 +18,7 @@ env_logger = "0.11.5"
 lazy_static = "1.5.0"
 discord-rich-presence = "0.2.5"
 dotenv = "0.15.0"
-tauri = { version = "2", features = ["tray-icon", "image-png", "devtools"] }
+tauri = { version = "2", features = ["tray-icon", "image-png"] }
 tauri-plugin-fs = "2"
 tauri-plugin-shell = "2"
 tauri-plugin-clipboard-manager = "2.0.1"

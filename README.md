@@ -4,6 +4,8 @@
 
 <h1 align="center">Лаунчер</h1>
 
+![launcher showcase](./assets/launcher.png)
+
 <!-- <h3 align="center">
 <div align="center">
   <img src="https://img.shields.io/github/release/riverfall/launcher.svg">

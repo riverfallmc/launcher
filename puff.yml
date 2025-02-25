@@ -6,23 +6,44 @@ data:
 configuration:
   shell: zsh
 
+# should be configured
+variables:
+  tauri-public: ~/.tauri/myapp.key.pub
+  tauri-private: ~/.tauri/myapp.key
+  tauri-private-pass: ../keys/tauri/pass
+
 tasks:
   default:
+    description: Runs launcher in dev mode
     commands:
       - bun run tauri dev
+
+  setup_build_vars:
+    description: Set TAURI_SIGNING_PRIVATE_KEY, TAURI_SIGNING_PRIVATE_KEY_PASSWORD, TAURI_SIGNING_PUBLIC_KEY vars
+    commands:
+      - echo "Copy and execute this"
+      - echo ""
+      - echo export TAURI_SIGNING_PUBLIC_KEY="\"$(cat ${tauri-public})\"";
+      - echo export TAURI_SIGNING_PRIVATE_KEY="\"$(cat ${tauri-private})\"";
+      - echo export TAURI_SIGNING_PRIVATE_KEY_PASSWORD="\"$(cat ${tauri-private-pass})\"";
+
   buildwin32:
+    description: Builds launcher on windows
     commands:
       - npm run tauri build -- --runner cargo-xwin --target x86_64-pc-windows-msvc
+
   add:
     description: Add crate to tauri
     arguments:
       - name: crate
     commands:
       - cd src-tauri && cargo add ${crate}
+
   clippy:
     description: Runs clippy
     commands:
       - cd src-tauri; cargo clippy
+
   r:
     description: Run launcher, runs clippy before it
     commands:
