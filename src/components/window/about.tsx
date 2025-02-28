@@ -17,7 +17,7 @@ export function AboutWindow(
     (async () => {
       setVersion(await getVersion());
     })()
-  })
+  }, [])
 
   return createPortal(
     <Window onClose={onClose}>

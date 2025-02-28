@@ -13,7 +13,7 @@ export function Window(
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className={cn("relative flex items-center px-12 py-8 gap-x-8 bg-neutral-900 rounded-2xl", className)}
+        className={cn("relative flex items-center px-8 py-6 gap-x-8 bg-neutral-900 rounded-2xl", className)}
       >
         {
           backgroundImage && <Background img={backgroundImage} />

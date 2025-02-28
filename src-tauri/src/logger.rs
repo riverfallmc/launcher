@@ -40,6 +40,9 @@ pub(crate) fn spawn_logger(mut child: Child, path: String) -> anyhow::Result<()>
 
     log::info!("logger initialized for process {} (log: {})", pid, log_path);
 
+    let _ = file.write_all(b"riverfall.ru client logger\n")
+      .await;
+
     while let Ok(Some(line)) = reader.next_line().await {
       let _ = file.write_all(format!("{}\n", line).as_bytes()).await;
     }

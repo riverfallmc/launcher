@@ -24,7 +24,7 @@ export function UpdaterView() {
         openAuthorization();
       })
       .catch(() => openAuthorization())
-  })
+  }, [])
 
   return (
     <PageView backgroundImage="/assets/background/updater.png">

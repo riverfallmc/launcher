@@ -6,6 +6,7 @@ import { appDataDir, join } from "@tauri-apps/api/path";
 import { exists } from "@/api/tauri.api";
 import { openPath } from "@tauri-apps/plugin-opener";
 import { Cache } from "@/utils/cache.util";
+import { removeDir } from "@/api/tauri.api";
 
 export type Client = {
   id: number,
@@ -107,4 +108,8 @@ export class ClientService {
 
     return true;
   };
+
+  static async remove(name: string) {
+    return removeDir(await this.getClientPath(name))
+  }
 }

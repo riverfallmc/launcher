@@ -26,6 +26,7 @@ import { DownloadStatus } from "./downloadstatus";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import { DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/shadcn/dropdown-menu";
 import { close } from "@/service/application.service";
+import { DeleteWindow } from "@/components/window/delete";
 
 interface UseButton {
   text: string;
@@ -128,6 +129,7 @@ export function ServerSelected({ server }: { server?: IServer }) {
     return <></>;
 
   const setError = useError();
+  const [showDeleteWindow, setShowDeleteWindow] = useState(false);
   const [client, setClient] = useState<Client>();
   const [useButton, setUseButton] = useState<UseButton>();
   const [state, setState] = useState<ClientState>(ClientState.Null);
@@ -172,72 +174,79 @@ export function ServerSelected({ server }: { server?: IServer }) {
   ];
 
   return (
-    <div className="w-full flex-1 flex flex-col space-y-4 max-h-full">
-      <Table data={serverTable} />
+    <>
+      <div className="w-full flex-1 flex flex-col space-y-4 max-h-full">
+        <Table data={serverTable} />
 
-      <div className="w-full flex-1 overflow-y-auto flex flex-col px-4 space-y-3 justify-between">
-        <div className="overflow-y-auto flex flex-col space-y-3">
-          <span className="text-lg">О сервере</span>
-          <span className="text-neutral-400 font-normal">
-            {client.description || "Нет информации"}
-          </span>
+        <div className="w-full flex-1 overflow-y-auto flex flex-col px-4 space-y-3 justify-between">
+          <div className="overflow-y-auto flex flex-col space-y-3">
+            <span className="text-lg">О сервере</span>
+            <span className="text-neutral-400 font-normal">
+              {client.description || "Нет информации"}
+            </span>
 
-          <span className="text-lg">Модификации</span>
-          <ModList list={client.mods} />
-        </div>
-        <div className="flex gap-x-4 bottom-0">
-          <button
-            disabled={useButton.disabled}
-            onClick={() =>
-              useButtonAction(setError, state, server, setDownloadable, setDownloadStatus)
-            }
-            className={cn(
-              "transition enabled:cursor-pointer px-5 py-3 rounded-lg flex gap-x-3 items-center",
-              useButton.className,
-            )}
-          >
-            <Icon className="h-4" /> {useButton.text}
-          </button>
-          {downloadable && downloadable.progress &&
-            <DownloadStatus status={downloadStatus || "Скачиваем..."} progress={(downloadable.progress.progressTotal / downloadable.progress.total) * 100} />}
-          {state !== ClientState.Null &&
-            state !== ClientState.Install &&
-            state !== ClientState.Installation && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="hover:text-neutral-500 cursor-pointer transition aspect-square h-full rounded-lg flex items-center justify-center">
-                    <IoIosOptions className="w-5 h-5" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-neutral-800 text-white">
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem
-                      className="font-normal gap-x-1.5"
-                    >
-                      Проверить целостность файлов
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      className="font-normal"
-                    >
-                      Настройки клиента
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      className="font-normal"
-                      onClick={() => ClientService.openFolder(client.name)}
-                    >
-                      Открыть папку клиента
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      className="font-normal"
-                    >
-                      Удалить
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
+            <span className="text-lg">Модификации</span>
+            <ModList list={client.mods} />
+          </div>
+          <div className="flex gap-x-4 bottom-0">
+            <button
+              disabled={useButton.disabled}
+              onClick={() =>
+                useButtonAction(setError, state, server, setDownloadable, setDownloadStatus)
+              }
+              className={cn(
+                "transition enabled:cursor-pointer px-5 py-3 rounded-lg flex gap-x-3 items-center",
+                useButton.className,
+              )}
+            >
+              <Icon className="h-4" /> {useButton.text}
+            </button>
+            {downloadable && downloadable.progress &&
+              <DownloadStatus status={downloadStatus || "Скачиваем..."} progress={(downloadable.progress.progressTotal / downloadable.progress.total) * 100} />}
+            {state !== ClientState.Null &&
+              state !== ClientState.Install &&
+              state !== ClientState.Installation && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="hover:text-neutral-500 cursor-pointer transition aspect-square h-full rounded-lg flex items-center justify-center">
+                      <IoIosOptions className="w-5 h-5" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="bg-neutral-800 text-white">
+                    <DropdownMenuGroup>
+                      {/* <DropdownMenuItem
+                        className="font-normal gap-x-1.5"
+                      >
+                        Проверить целостность файлов
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="font-normal"
+                      >
+                        Настройки клиента
+                      </DropdownMenuItem> */}
+                      <DropdownMenuItem
+                        className="font-normal"
+                        onClick={() => ClientService.openFolder(client.name)}
+                      >
+                        Открыть папку клиента
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => setShowDeleteWindow(true)}
+                        className="font-normal"
+                      >
+                        Удалить
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+          </div>
         </div>
       </div>
-    </div>
+
+      {
+        showDeleteWindow && <DeleteWindow setClientState={setState} client={client.name} onClose={() => setShowDeleteWindow(false)}/>
+      }
+    </>
   );
 }

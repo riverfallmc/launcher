@@ -107,8 +107,7 @@ const User = forwardRef<HTMLDivElement, UserProps>(({ trigger, ...buttonProps },
   const requestBalance = async () => {
     try {
       let body = await HttpService.get<{ balance: number }>(
-        `api/donate/balance?id=${user.id}`,
-        session.jwt,
+        getWebsite(`api/donate/balance/${user.username}`),
       );
       setBalance(body.balance);
     } catch (_) {}
@@ -128,7 +127,7 @@ const User = forwardRef<HTMLDivElement, UserProps>(({ trigger, ...buttonProps },
     <div ref={ref} className="flex items-center">
       <button {...buttonProps} className="group cursor-pointer flex justify-center items-center space-x-3 px-3 hover:bg-neutral-800 transition rounded-lg py-2">
         <Avatar className="h-11" username={user.username} />
-        <div className="flex flex-col space-y-1 leading-3">
+        <div className="flex flex-col text-left space-y-1 leading-3">
           <span>{user.username}</span>
           <span className="flex text-xs font-normal text-neutral-400">
             Баланс: {formatBalance(balance)}

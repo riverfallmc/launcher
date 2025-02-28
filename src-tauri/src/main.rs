@@ -58,6 +58,7 @@ async fn main() -> anyhow::Result<()> {
     }))
     .invoke_handler(tauri::generate_handler![
       fs::exists,
+      fs::remove_dir,
       env::env,
       unzip::unzip,
       play::play,
