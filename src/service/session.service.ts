@@ -14,9 +14,9 @@ type JWTPayload = {
 
 export class SessionService {
   static async save(
-    session: Session
+    session: Session,
   ) {
-    setUser(await UserService.getUser(session.user_id, session.jwt));
+    setUser(await UserService.getUser(session.global_id, session.jwt));
     setRefresh(session.refresh_token);
     setSession(session);
   }

@@ -2,8 +2,7 @@ import Link from "@/components/link";
 import Avatar from "@/components/avatar";
 import { forwardRef, ReactNode, useEffect, useState } from "react";
 import { IconType } from "react-icons/lib";
-import { RiTelegram2Fill } from "react-icons/ri";
-import { FaDiscord } from "react-icons/fa6";
+import { FaUserFriends } from "react-icons/fa";
 import { FiExternalLink } from "react-icons/fi";
 import {
   DropdownMenu,
@@ -46,9 +45,8 @@ function LogoLinks() {
   return (
     <Layout className="space-x-6">
       <Riverfall />
-      <WebLink disableblank="true" href="/launcher">
-        Главная
-      </WebLink>
+
+      <WebLink disableblank="true" href="/launcher">Главная</WebLink>
       <WebLink href={getWebsite()}>Сайт</WebLink>
       <WebLink href={getWebsite("donate")}>Донат</WebLink>
     </Layout>
@@ -75,8 +73,7 @@ function WebLink(props: {
 function SocialMedia() {
   return (
     <Layout className="space-x-3">
-      <WebButton href={getWebsite("telegram")} Icon={RiTelegram2Fill} />
-      <WebButton href={getWebsite("discord")} Icon={FaDiscord} />
+      <WebButton href={getWebsite("discord")} Icon={FaUserFriends} />
     </Layout>
   );
 }

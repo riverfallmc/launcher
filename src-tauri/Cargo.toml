@@ -1,6 +1,6 @@
 [package]
 name = "launcher"
-version = "0.3.7"
+version = "0.3.8"
 description = "Riverfall's Launcher"
 authors = ["smokingplaya"]
 edition = "2021"
@@ -37,6 +37,7 @@ tokio = { version = "1.41.0", features = ["process"] }
 zip = "2.2.0"
 chrono = "0.4.39"
 mc_version_parser = {git = "https://github.com/smokingplaya/mc-version-parser"}
+tauri-plugin-websocket = "2"
 
 [features]
 custom-protocol = []

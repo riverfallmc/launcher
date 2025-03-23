@@ -1,7 +1,7 @@
 {
   "name": "launcher",
   "private": true,
-  "version": "0.3.7",
+  "version": "0.3.8",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -28,6 +28,7 @@
     "@tauri-apps/plugin-shell": "~2.2.0",
     "@tauri-apps/plugin-updater": "~2.5.0",
     "@tauri-apps/plugin-upload": "~2.2.1",
+    "@tauri-apps/plugin-websocket": "~2",
     "axios": "^1.7.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

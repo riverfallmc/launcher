@@ -3,6 +3,7 @@ import { getWebsite } from "@/utils/url.util";
 import { caughtError } from "@/utils/error.util";
 import { Server as IServer } from "./server.service";
 import { appDataDir, join } from "@tauri-apps/api/path";
+import { mkdir } from "@tauri-apps/plugin-fs";
 import { exists } from "@/api/tauri.api";
 import { openPath } from "@tauri-apps/plugin-opener";
 import { Cache } from "@/utils/cache.util";
@@ -88,8 +89,14 @@ export class ClientService {
     return installed ? (server.enabled ? ClientState.Play : ClientState.Disabled) : ClientState.Install;
   }
 
-  static async getLauncherPath(): Promise<string> {
-    return appDataDir();
+  static async getLauncherPath(): Promise<Awaited<string>> {
+    const dir = await appDataDir();
+
+    try {
+      await mkdir(dir);
+    } catch(_) {};
+
+    return dir;
   }
 
   // /home/smokkkin/.riverfall/clients/${name}

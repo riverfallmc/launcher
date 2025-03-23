@@ -53,7 +53,7 @@ pub(crate) async fn generate(
     // которые будут подставлены в аргументы
     // процесса джавы
     let variables = GameArguments {
-        website: get_session_server_url().to_string(),
+        website: get_session_server_url(),
         natives_directory: client.get_folder(dir)?.join("natives").to_string()?,
         launcher_name: "java-minecraft-launcher".to_string(),
         launcher_version: "1.6.84-j".to_string(),

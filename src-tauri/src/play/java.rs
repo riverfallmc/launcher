@@ -21,7 +21,6 @@ pub(crate) struct Java {
 impl Java {
     pub async fn new() -> anyhow::Result<Java> {
         let java = Java::find_path().await?;
-        // let java = "/home/smokingplaya/.tlauncher/mojang_jre/java-runtime-alpha/linux/java-runtime-alpha/bin/java".to_string();
 
         if Command::new(&java).output().await.is_ok() {
             return Ok(Java {

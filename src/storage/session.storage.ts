@@ -5,6 +5,8 @@ export type Session = {
   last_activity: string,
   refresh_token: string,
   user_id: number,
+  // айди игрока в user-service
+  global_id: number,
   useragent: string;
 };
 
