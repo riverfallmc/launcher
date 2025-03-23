@@ -30,7 +30,7 @@ tasks:
   buildwin32:
     description: Builds launcher on windows
     commands:
-      - npm run tauri build -- --runner cargo-xwin --target x86_64-pc-windows-msvc
+      - bun run tauri build -- --runner cargo-xwin --target x86_64-pc-windows-msvc
 
   add:
     description: Add crate to tauri
