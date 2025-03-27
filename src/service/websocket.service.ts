@@ -118,14 +118,18 @@ export function useWssListener<K extends `${WebSocketEventType}`>(
 
 export async function configure() {
   // todo production
-  const ws = await WebSocket.connect(`ws://localhost:1487/${getSession()?.global_id}`, {
+  const ws = await WebSocket.connect(`ws://192.168.0.13:1487/${getSession()?.global_id}`, {
     headers: {
       "Authorization": getSession()!.jwt
     },
   });
 
+  console.log(ws);
+
   ws.addListener((msg) => {
     const { data, type }: { data: string, type: "Binary" | "Ping" | "Pong" | "Text" | "Close"; } = typeof msg === "string" ? JSON.parse(msg as string) : msg;
+
+    console.log(msg);
 
     switch (type) {
       case "Close":

@@ -2,7 +2,7 @@ import Link from "@/components/link";
 import Avatar from "@/components/avatar";
 import { forwardRef, ReactNode, useEffect, useState } from "react";
 import { IconType } from "react-icons/lib";
-import { FaTelegramPlane, FaUserFriends } from "react-icons/fa";
+import { FaTelegramPlane } from "react-icons/fa";
 import { FiExternalLink } from "react-icons/fi";
 import {
   DropdownMenu,
@@ -22,8 +22,6 @@ import { formatBalance } from "@/utils/format.util";
 import { HttpService } from "@/service/http.service";
 import { AboutWindow } from "../window/about";
 import { FaDiscord } from "react-icons/fa6";
-
-//@ts-ignore <-- todo
 import RiverfallColorful from "@/assets/riverfall_colorful.svg";
 import { useFriend } from "./friendlist";
 

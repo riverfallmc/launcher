@@ -159,7 +159,7 @@ function Block({ title, list }: { title: string, list: UserProfile[] }) {
 
       <div className="flex flex-col space-y-1">
         {
-          list.map(user => <User user={user}/>)
+          list.map(user => <User key={user.id} user={user}/>)
         }
       </div>
     </div>

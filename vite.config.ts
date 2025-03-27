@@ -1,9 +1,9 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import svgr from "vite-plugin-svgr";
 import path from "path";
-import svgr from 'vite-plugin-svgr';
 
-export default defineConfig(async () => ({
+export default defineConfig({
   resolve: {
     alias: {
       "@": path.join(__dirname, "./src"),
@@ -14,12 +14,9 @@ export default defineConfig(async () => ({
     }
   },
 
-  plugins: [react(), svgr({
-    include: '**/*.svg',
-    svgrOptions: {
-      exportType: 'default',
-    },
-  })],
+  plugins: [svgr({
+    include: "**/*.svg",
+  }), react()],
   clearScreen: false,
   server: {
     port: 1420,
@@ -27,9 +24,6 @@ export default defineConfig(async () => ({
     watch: {
       // 3. tell vite to ignore watching `src-tauri`
       ignored: ["**/src-tauri/**"],
-    },
-    fs: {
-      cachedChecks: false
     }
   },
-}));
+});

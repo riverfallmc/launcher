@@ -1,15 +1,8 @@
-import { env } from "@/api/process.api";
 import { HttpService } from "@/service/http.service";
 import { openUrl as urlOpen } from "@tauri-apps/plugin-opener";
 
-// todo @ remove env()
-let anus = "192.168.0.13";
-(async () => {
-  anus = await env("LOCAL_SERVER")
-})()
-
 export function getWebsite(uri: string = "") {
-  return `https://${anus}/${uri}` || (process.env.NODE_ENV === "production" ? `https://riverfall.ru/${uri}` : `https://192.168.0.13/${uri}`);
+  return (process.env.NODE_ENV === "production" ? `https://riverfall.ru/${uri}` : `https://192.168.0.13/${uri}`);
 }
 
 interface Texture {
