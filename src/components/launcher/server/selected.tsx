@@ -25,7 +25,6 @@ import { formatBytes } from "@/utils/format.util";
 import { DownloadStatus } from "./downloadstatus";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import { DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/shadcn/dropdown-menu";
-import { close } from "@/service/application.service";
 import { DeleteWindow } from "@/components/window/delete";
 
 interface UseButton {
@@ -48,13 +47,13 @@ function getUseButton(state: ClientState): UseButton {
       return {
         text: "Установить",
         icon: FaDownload,
-        className: "bg-orange-700 hover:bg-orange-800",
+        className: "bg-pink-700 hover:bg-pink-800",
       };
     case ClientState.Installation:
       return {
         text: "Установка",
         icon: FiLoader,
-        className: "bg-orange-700 hover:bg-red-900",
+        className: "bg-pink-700 hover:bg-pink-900",
       };
     case ClientState.IntegrityCheck:
       return {
@@ -109,14 +108,15 @@ async function useButtonAction(
       }
       return;
     case ClientState.Installation:
+      // todo
       return; // Вы точно хотите отменить загрузку?
     case ClientState.IntegrityCheck:
+      // будет в следующих обновлениях, мб
       return; // Вы точно хотите отменить проверку?
     case ClientState.Disabled:
     case ClientState.Play:
       try {
         await GameService.play(server);
-        await close();
       } catch (err) {
         setError(caughtError(err).message);
       }
@@ -132,7 +132,7 @@ export function ServerSelected({ server }: { server?: IServer }) {
   const [showDeleteWindow, setShowDeleteWindow] = useState(false);
   const [client, setClient] = useState<Client>();
   const [useButton, setUseButton] = useState<UseButton>();
-  const [state, setState] = useState<ClientState>(ClientState.Null);
+  const [state, setState] = useState<ClientState>(ClientState.Installation);
   const [downloadable, _setDownloadable] = useState<Downloadable | null>();
   const [downloadStatus, setDownloadStatus] = useState<string>();
 

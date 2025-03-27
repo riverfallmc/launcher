@@ -1,6 +1,7 @@
 import Content from "@/components/launcher/content";
+import { FriendList, FriendProvider } from "@/components/launcher/friendlist";
+import { Invite } from "@/components/launcher/invites";
 import { ServerList } from "@/components/launcher/server/list";
-// import { ServerList } from "@/components/launcher/list";
 import { LauncherTopBar } from "@/components/launcher/topbar";
 import { PageView } from "@/components/pageview";
 import { SessionService } from "@/service/session.service";
@@ -21,12 +22,21 @@ export function LauncherView() {
   return (
     <PageView>
       <div data-tauri-drag-region className="flex flex-col flex-shrink h-screen max-h-screen">
-        <LauncherTopBar/>
+        <FriendProvider>
+          <LauncherTopBar/>
+          <FriendList/>
+        </FriendProvider>
 
         <Content>
           <ServerList/>
         </Content>
-    </div>
+      </div>
+
+      <div className="absolute inset-0 flex justify-end p-4 pointer-events-none z-10">
+        <div className="flex flex-col justify-end">
+          <Invite/>
+        </div>
+      </div>
     </PageView>
   )
 }

@@ -1,5 +1,8 @@
 import WebSocket from '@tauri-apps/plugin-websocket';
 import { getSession } from '@/storage/session.storage';
+import { FriendsService } from './friends.service';
+import { UserProfile } from '@/storage/user.storage';
+import { useEffect } from 'react';
 
 enum WebSocketEventType {
   // Дефолтные ивенты WebSocket
@@ -10,6 +13,12 @@ enum WebSocketEventType {
 
   // Пришла заявка в друзья
   FRIEND_REQUEST = "FRIEND_REQUEST",
+  // Игрок принят в друзья
+  FRIEND_ADD = "FRIEND_ADD",
+  // Игрок отменил заявку в друзья,
+  FRIEND_CANCEL = "FRIEND_CANCEL",
+  // Игрок удален из друзей
+  FRIEND_REMOVE = "FRIEND_REMOVE",
   // Друг зашел в сеть
   FRIEND_ONLINE = "FRIEND_ONLINE",
   // Друг вышел из сети
@@ -25,22 +34,20 @@ enum WebSocketEventType {
   INVITE = "INVITE"
 }
 
-type BodyWithId = {
-  id: number;
-};
-
-interface BodyWithServer extends BodyWithId {
-  server_id: number;
-}
-
 type EventBody = {
-  [WebSocketEventType.Close]: { code: number, reason: string; },
-  [WebSocketEventType.FRIEND_REQUEST]: BodyWithId,
-  [WebSocketEventType.FRIEND_ONLINE]: BodyWithId,
-  [WebSocketEventType.FRIEND_OFFLINE]: BodyWithId,
-  [WebSocketEventType.FRIEND_DISCONNECT]: BodyWithId,
-  [WebSocketEventType.FRIEND_JOIN_SERVER]: BodyWithServer,
-  [WebSocketEventType.INVITE]: BodyWithServer;
+  [WebSocketEventType.FRIEND_REQUEST]: UserProfile,
+  [WebSocketEventType.FRIEND_ADD]: UserProfile,
+
+  [WebSocketEventType.FRIEND_CANCEL]: { id: number; };
+  [WebSocketEventType.FRIEND_REMOVE]: { id: number; };
+
+  [WebSocketEventType.FRIEND_ONLINE]: { id: number; },
+  [WebSocketEventType.FRIEND_OFFLINE]: { id: number; },
+
+  [WebSocketEventType.FRIEND_DISCONNECT]: { id: number; },
+  [WebSocketEventType.FRIEND_JOIN_SERVER]: { id: number, server: number; },
+
+  [WebSocketEventType.INVITE]: { id: number, server: number; };
 };
 
 type WebSocketEvent = {
@@ -50,24 +57,87 @@ type WebSocketEvent = {
   };
 }[keyof EventBody];
 
+function handleWebsocketMessage(message: WebSocketEvent) {
+  const { data, type } = message;
+
+  window.dispatchEvent(new CustomEvent("wssMessage", { detail: message }));
+
+  switch (type) {
+    case WebSocketEventType.FRIEND_REMOVE:
+      return FriendsService.delete(data.id);
+
+    case WebSocketEventType.FRIEND_CANCEL:
+      return FriendsService.delete(data.id);
+
+    case WebSocketEventType.FRIEND_ONLINE:
+      return FriendsService.updateStatus(data.id, "Online");
+
+    case WebSocketEventType.FRIEND_OFFLINE:
+      return FriendsService.updateStatus(data.id, "Offline");
+
+    case WebSocketEventType.FRIEND_DISCONNECT:
+      return FriendsService.updateStatus(data.id, "Online");
+
+    case WebSocketEventType.FRIEND_JOIN_SERVER:
+      return FriendsService.updateStatus(data.id, "Playing", data.server);
+
+    case WebSocketEventType.INVITE:
+      return;
+
+    case WebSocketEventType.FRIEND_REQUEST:
+      return FriendsService.add(data, "Incoming");
+
+    default:
+      return FriendsService.add(data);
+  }
+}
+
+// этот дженерик это пиздец
+// сама эта функция это пиздец
+// просто пиздец...
+export function useWssListener<K extends `${WebSocketEventType}`>(
+  eventName: K,
+  // @ts-ignore пошел нахуй
+  callback: (data: EventBody[K]) => void
+) {
+  useEffect(() => {
+    const listener = (event: Event) => {
+      const { data, type } = (event as CustomEvent).detail as WebSocketEvent;
+
+      if (type === eventName) {
+        // @ts-ignore пошел нахуй
+        callback(data);
+      }
+    };
+
+    window.addEventListener("wssMessage", listener);
+
+    return () => window.removeEventListener("wssMessage", listener);
+  }, []);
+}
+
 export async function configure() {
-  const ws = await WebSocket.connect('ws://localhost:1400/1', {
+  // todo production
+  const ws = await WebSocket.connect(`ws://localhost:1487/${getSession()?.global_id}`, {
     headers: {
       "Authorization": getSession()!.jwt
-    }
+    },
   });
 
   ws.addListener((msg) => {
-    const { data, type }: WebSocketEvent = typeof msg === "string" ? JSON.parse(msg as string) : msg;
+    const { data, type }: { data: string, type: "Binary" | "Ping" | "Pong" | "Text" | "Close"; } = typeof msg === "string" ? JSON.parse(msg as string) : msg;
 
     switch (type) {
-      case (WebSocketEventType.Close):
-        console.log(`Соединение было закрыто: ${data.reason}`);
-      // todo
-    }
+      case "Close":
+        return console.log(`Соединение было закрыто: ${JSON.parse(data).reason}`);
 
-    console.log('Received Message:', msg.data);
+      case "Text":
+        return handleWebsocketMessage(JSON.parse(data));
+
+      default:
+        console.log("Skipping WebSocket message");
+    }
   });
 
-  ws.disconnect();
+  // ws.disconnect();
 }

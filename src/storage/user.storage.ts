@@ -7,6 +7,24 @@ export type User = {
   registered_at: string;
 };
 
+export type UserProfileStatus = "Online" | "Playing" | "Offline";
+
+export type UserFriendRequest = "Incoming" | "Outcoming";
+
+export interface UserProfile {
+  id: number,
+  username: string,
+  rank: string,
+  status: {
+    status: UserProfileStatus,
+    server?: number,
+    last_seen_at?: string;
+  },
+  registered_at: string;
+  // custom
+  request: UserFriendRequest;
+}
+
 const key = "user";
 
 export function setUser(

@@ -14,10 +14,10 @@ export function Progress({ value, max = 100, ...rest }: Props) {
   return (
     <div
       {...rest}
-      className={cn("w-full bg-orange-50 rounded-md overflow-hidden", rest.className)}
+      className={cn("w-full bg-neutral-700 rounded-md overflow-hidden", rest.className)}
     >
       <motion.div
-        className="h-full bg-orange-600 rounded-md"
+        className="h-full bg-pink-600/60 rounded-md"
         initial={{ width: "0%" }}
         animate={{ width: `${percentage}%` }}
         transition={{ duration: 0.5, ease: "easeOut" }}

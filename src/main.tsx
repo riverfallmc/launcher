@@ -12,12 +12,14 @@ import { setup } from "./utils/setup.util";
 import { configure as websocket } from "@/service/websocket.service";
 import { configure as notifications } from "@/service/notify.service";
 import { configure as discord } from "@/service/discord.service";
+import { configure as friends } from "@/service/friends.service";
 import { configure as tray } from "@/service/tray.service";
 
 setup(
   websocket,
   notifications,
   discord,
+  friends,
   tray,
 );
 

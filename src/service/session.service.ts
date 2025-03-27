@@ -9,8 +9,8 @@ import { AuthorizationState, AuthService } from "./auth.service";
 type JWTPayload = {
   sub: string,
   exp: number,
-  refresh: false
-}
+  refresh: false;
+};
 
 export class SessionService {
   static async save(
@@ -39,7 +39,7 @@ export class SessionService {
 
     let encoded = atob(payload);
 
-    let data: JWTPayload = JSON.parse(encoded)
+    let data: JWTPayload = JSON.parse(encoded);
 
     // если со временем всё в порядке, то возвращаем true, типо всё ок
     if (data.exp > (getTimestamp() + minutes(10)))
@@ -50,9 +50,9 @@ export class SessionService {
     try {
       switch (await AuthService.authorizeWithRefresh()) {
         case AuthorizationState.Authorized:
-          return true
+          return true;
         default:
-          return false
+          return false;
       }
     } catch (err) {
       console.error(err);

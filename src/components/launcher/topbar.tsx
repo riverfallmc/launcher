@@ -2,7 +2,7 @@ import Link from "@/components/link";
 import Avatar from "@/components/avatar";
 import { forwardRef, ReactNode, useEffect, useState } from "react";
 import { IconType } from "react-icons/lib";
-import { FaUserFriends } from "react-icons/fa";
+import { FaTelegramPlane, FaUserFriends } from "react-icons/fa";
 import { FiExternalLink } from "react-icons/fi";
 import {
   DropdownMenu,
@@ -21,6 +21,11 @@ import { getSession } from "@/storage/session.storage";
 import { formatBalance } from "@/utils/format.util";
 import { HttpService } from "@/service/http.service";
 import { AboutWindow } from "../window/about";
+import { FaDiscord } from "react-icons/fa6";
+
+//@ts-ignore <-- todo
+import RiverfallColorful from "@/assets/riverfall_colorful.svg";
+import { useFriend } from "./friendlist";
 
 export function LauncherTopBar() {
   return (
@@ -42,26 +47,31 @@ function Layout(props: { children: ReactNode; className?: string }) {
 }
 
 function LogoLinks() {
+  const { openFriendList } = useFriend();
+
   return (
     <Layout className="space-x-6">
       <Riverfall />
 
-      <WebLink disableblank="true" href="/launcher">Главная</WebLink>
-      <WebLink href={getWebsite()}>Сайт</WebLink>
-      <WebLink href={getWebsite("donate")}>Донат</WebLink>
+      {/* <WebLink disableblank="true" href="/launcher">Главная</WebLink> */}
+      {/* <WebLink href={getWebsite()}>Сайт</WebLink> */}
+      {/* <WebLink href={getWebsite("donate")}>Донат</WebLink> */}
+      <WebLink onClick={() => openFriendList()}>Друзья</WebLink>
     </Layout>
   );
 }
 
 function Riverfall() {
-  return <img className="w-auto h-12" src="/assets/riverfall.png" />;
+  return <RiverfallColorful className="w-auto h-11"/>
 }
 
-function WebLink(props: {
-  children: ReactNode;
-  href: string;
-  disableblank?: string;
-}) {
+interface WebLinkProps
+  extends React.AnchorHTMLAttributes<HTMLAnchorElement>
+{
+  disableblank?: string
+}
+
+function WebLink(props: WebLinkProps) {
   return (
     <Link
       {...props}
@@ -73,7 +83,8 @@ function WebLink(props: {
 function SocialMedia() {
   return (
     <Layout className="space-x-3">
-      <WebButton href={getWebsite("discord")} Icon={FaUserFriends} />
+      <WebButton href={getWebsite("discord")} Icon={FaDiscord} />
+      <WebButton href={getWebsite("telegram")} Icon={FaTelegramPlane} />
     </Layout>
   );
 }
@@ -82,7 +93,7 @@ function WebButton({ Icon, href }: { Icon: IconType; href: string }) {
   return (
     <a href={href} target="_blank">
       <button
-        className="aspect-square h-9 rounded-md bg-neutral-800 flex justify-center items-center text-neutral-400 hover:text-white transition"
+        className="aspect-square cursor-pointer h-9 rounded-md bg-neutral-800 flex justify-center items-center text-neutral-400 hover:text-white transition"
         children={<Icon />}
       />
     </a>

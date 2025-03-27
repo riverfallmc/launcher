@@ -38,7 +38,6 @@ export async function play(
 }
 
 export async function isProcessExist({ pid }: { pid: number, name: string; }): Promise<boolean> {
-  console.log(pid);
   return invoke("is_process_exist", { pid });
 }
 
