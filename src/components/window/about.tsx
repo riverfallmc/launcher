@@ -4,7 +4,7 @@ import { openUrl } from "@/utils/url.util";
 import { FiExternalLink } from "react-icons/fi";
 import { playSound } from "@/api/sound.api";
 import { getVersion } from "@tauri-apps/api/app";
-import Pixelfall from "@/assets/pixelfall.svg";
+import RiverfallLogo from "@/assets/pixelfall.svg";
 import { useEffect, useState } from "react";
 
 export function AboutWindow(
@@ -22,7 +22,7 @@ export function AboutWindow(
     <Window onClose={onClose}>
       <div className="flex flex-col gap-y-8">
         <div className="flex gap-x-3">
-          <Pixelfall onClick={() => playSound("/sounds/fart.mp3")} className="aspect-square cursor-pointer fill-pink-300 w-16"/>
+          <RiverfallLogo onClick={() => playSound("/sounds/fart.mp3")} className="aspect-square cursor-pointer fill-pink-300 w-16"/>
           <div className="flex flex-col justify-center gap-y-1">
             <span className="text-xl font-semibold whitespace-nowrap">Лаунчер Riverfall</span>
             <span className="flex gap-x-1 text-neutral-500">2025 © smokingplaya, <Link/></span>
