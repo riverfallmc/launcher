@@ -8,6 +8,7 @@ mod play;
 mod unzip;
 mod util;
 mod watcher;
+mod tray;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -57,6 +58,8 @@ async fn main() -> anyhow::Result<()> {
         .get_webview_window("main")
         .expect("no main window")
         .set_shadow(true)?;
+
+      tray::setup_tray_icon(app)?;
 
       Ok(())
     })

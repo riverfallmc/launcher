@@ -11,14 +11,12 @@ import { setup } from "./utils/setup.util";
 
 import { configure as notifications } from "@/service/notify.service";
 import { DiscordService } from "@/service/discord/discord.service";
-import { configure as tray } from "@/service/tray.service";
 
 setup(
   notifications,
   async () => {
     await DiscordService.spawn();
   },
-  tray,
 );
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
