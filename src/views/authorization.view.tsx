@@ -12,8 +12,15 @@ import { useEffect, useState } from "react";
 import { useError } from "@/components/error";
 import { caughtError } from "@/utils/error.util";
 import { TwoFactorWindow } from "@/components/window/twofactor";
+import { DiscordService } from "@/service/discord/discord.service";
 
 export function AuthorizationView() {
+  useEffect(() => {
+    (async () => {
+      await DiscordService.updateActivity("Authorization");
+    })();
+  }, [])
+
   return (
     <PageView>
       <div data-tauri-drag-region className="overflow-hidden flex flex-shrink h-screen">

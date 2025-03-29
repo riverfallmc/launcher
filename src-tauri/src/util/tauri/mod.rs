@@ -1,11 +1,9 @@
 use tauri::ipc::InvokeError;
 use thiserror::Error;
 
-pub(crate) mod message;
-
 #[derive(Error, Debug)]
 pub enum TauriCommandError {
-    #[error("Anyhow error: {0}")]
+    #[error("Ошибка: {0}")]
     Anyhow(#[from] anyhow::Error),
 }
 

@@ -4,7 +4,7 @@ import { openUrl } from "@/utils/url.util";
 import { FiExternalLink } from "react-icons/fi";
 import { playSound } from "@/api/sound.api";
 import { getVersion } from "@tauri-apps/api/app";
-import RiverfallLogo from "@/assets/pixelfall.svg";
+import RiverfallLogo from "@/assets/riverfall.svg";
 import { useEffect, useState } from "react";
 
 export function AboutWindow(

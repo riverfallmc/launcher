@@ -7,6 +7,14 @@ import { PageView } from "@/components/pageview";
 import { SessionService } from "@/service/session.service";
 import { View, ViewService } from "@/service/view.service";
 import { minutes } from "@/utils/data.util";
+import { useEffect } from "react";
+
+// штучки
+import { configure as websocket } from "@/service/websocket.service";
+import { configure as friends } from "@/service/friends.service";
+import { setup } from "@/utils/setup.util";
+import { DiscordService } from "@/service/discord/discord.service";
+import { listen } from "@tauri-apps/api/event";
 
 export function LauncherView() {
   // проверяем раз в 5 минут статус нашего jwt
@@ -18,6 +26,21 @@ export function LauncherView() {
       ViewService.setView(View.Authorization);
     }
   }, minutes(5))
+
+  useEffect(() => {
+    setup(
+      websocket,
+      friends
+    );
+
+    (async () => {
+      await DiscordService.updateActivity("Launcher");
+    })();
+
+    listen("game_close", async () => {
+      await DiscordService.updateActivity("Launcher");
+    });
+  }, []);
 
   return (
     <PageView>

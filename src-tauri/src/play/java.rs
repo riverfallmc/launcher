@@ -98,12 +98,15 @@ impl Java {
     async fn find_path() -> anyhow::Result<String> {
         use crate::util::process::OutputReader;
 
-        let output = Command::new("powershell")
-            .args(["-Command", "(Get-Command javaw).Source"]) // Да, мне так можно
+        let output = Command::new("where")
+            .args(["javaw"])
             .output()
             .await?;
 
-        let path = OutputReader::from(output).to_string();
+        let path = OutputReader::from(output)
+            .to_string()
+            .trim()
+            .to_string();
 
         Ok(path)
     }
@@ -113,7 +116,7 @@ impl Java {
         use crate::util::process::OutputReader;
 
         let output = Command::new("which")
-            .args(["java"]) // Да, мне так можно
+            .args(["java"])
             .output()
             .await?;
 

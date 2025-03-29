@@ -2,6 +2,16 @@ import { close as hide } from "@/service/application.service";
 import { isProcessExist, play, close, ProcessInfo } from "@/api/process.api";
 import { Server } from "./server.service";
 import { ClientService } from "./client.service";
+import { DiscordService } from "../discord/discord.service";
+import { listen } from "@tauri-apps/api/event";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+
+const window = getCurrentWindow();
+
+listen("game_close", async () => {
+  await window.show();
+  await window.setFocus();
+});
 
 export class GameService {
   static game?: ProcessInfo;
@@ -24,6 +34,10 @@ export class GameService {
     this.game = await play(server);
 
     this.server = server;
+
+    try {
+      await DiscordService.updateActivity("Playing", server);
+    } catch (_) { };
 
     await hide();
   }

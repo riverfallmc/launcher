@@ -7,6 +7,7 @@ mod logger;
 mod play;
 mod unzip;
 mod util;
+mod watcher;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -36,10 +37,10 @@ async fn main() -> anyhow::Result<()> {
     .plugin(tauri_plugin_shell::init())
     .plugin(tauri_plugin_fs::init())
     .plugin(tauri_plugin_single_instance::init(|app, _, _| {
-        app.get_webview_window("main")
-            .expect("no main window")
-            .set_focus()
-            .expect("unable focus window");
+      app.get_webview_window("main")
+        .expect("no main window")
+        .set_focus()
+        .expect("unable focus window");
     }))
     .invoke_handler(tauri::generate_handler![
       fs::exists,
