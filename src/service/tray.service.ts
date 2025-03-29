@@ -8,6 +8,8 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 
 const window = getCurrentWindow();
 
+let trayIcon: TrayIcon | null = null;
+
 export async function configure() {
   const menu = await Menu.new({
     items: [
@@ -28,8 +30,7 @@ export async function configure() {
         id: "quit",
         text: "Закрыть лаунчер",
         action: async () => {
-          GameService.close()
-            .finally(exit)
+          GameService.close().finally(exit);
         },
       }
     ]
@@ -43,7 +44,11 @@ export async function configure() {
       icon: "icons/icon.png"
     };
 
-    await TrayIcon.new(options);
+    if (trayIcon) {
+      await trayIcon.close();
+    }
+
+    trayIcon = await TrayIcon.new(options);
   } catch (err) {
     console.error(err);
   }
