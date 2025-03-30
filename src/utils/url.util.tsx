@@ -2,7 +2,7 @@ import { HttpService } from "@/service/http.service";
 import { openUrl as urlOpen } from "@tauri-apps/plugin-opener";
 
 export function getWebsite(uri: string = "") {
-  return (process.env.NODE_ENV === "production" ? `https://riverfall.ru/${uri}` : `https://192.168.0.13/${uri}`);
+  return `https://riverfall.ru/${uri}`;
 }
 
 interface Texture {

@@ -1,4 +1,8 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, path::Path};
+
+use anyhow::Result;
+
+use crate::util::pathbuf::PathBufToString;
 
 #[allow(unused)]
 pub(crate) struct PlayArguments<'a> {
@@ -89,18 +93,20 @@ impl GameArguments {
 }
 
 pub trait LibraryPathFormat {
-    fn format(&mut self, client: &str) -> String;
+    fn format(&mut self, client: &Path) -> Result<String>;
 }
 
 impl LibraryPathFormat for String {
-    fn format(&mut self, client: &str) -> String {
-        let parts: Vec<&str> = self.split(':').collect();
-        let subparts: Vec<&str> = parts[0].split('.').collect();
-        let joined_subparts = subparts.join("/");
+  fn format(&mut self, client: &Path) -> Result<String> {
+    let parts: Vec<&str> = self.split(':').collect();
+    let subparts: Vec<&str> = parts[0].split('.').collect();
+    let joined_subparts = subparts.join(std::path::MAIN_SEPARATOR_STR);
 
-        format!(
-            "{client}/{}/{}/{}/{}-{}.jar",
-            joined_subparts, parts[1], parts[2], parts[1], parts[2]
-        )
+    client
+      .join(joined_subparts)
+      .join(parts[1])
+      .join(parts[2])
+      .join(format!("{}-{}.jar", parts[1], parts[2]))
+      .to_string()
     }
 }

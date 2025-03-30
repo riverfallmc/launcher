@@ -40,6 +40,8 @@ pub(crate) async fn play(
   // Готовый вариант аргументов для запуска процесса
   let arguments = arguments::generate(username, jwt, Arguments { ip }, &path, data, client).await?;
 
+  println!("{arguments:?}");
+
   // Запускаем процесс
   let child = java
     .start()

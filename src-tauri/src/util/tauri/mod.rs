@@ -3,7 +3,7 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum TauriCommandError {
-    #[error("Ошибка: {0}")]
+    #[error("{0}")]
     Anyhow(#[from] anyhow::Error),
 }
 

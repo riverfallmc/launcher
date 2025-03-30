@@ -51,7 +51,15 @@ impl ProcessLogger {
       .take()
       .ok_or_else(|| anyhow!("failed to take stdout"))?;
 
+    let stderr = child
+      .lock()
+      .await
+      .stderr
+      .take()
+      .ok_or_else(|| anyhow!("failed to take stdout"))?;
+
     let mut reader = BufReader::new(tokio::io::BufReader::new(stdout)).lines();
+    let mut reader_stderr = BufReader::new(tokio::io::BufReader::new(stderr)).lines();
 
     tokio::spawn(async move {
       let mut file = match tokio_fs::File::create(&log_path).await {
@@ -67,9 +75,24 @@ impl ProcessLogger {
       let _ = file.write_all(b"riverfall.ru client logger\n")
         .await;
 
-      while let Ok(Some(line)) = reader.next_line().await {
-        let _ = file.write_all(format!("{}\n", line).as_bytes()).await;
-      }
+        loop {
+          tokio::select! {
+            line = reader.next_line() => {
+              if let Ok(Some(line)) = line {
+                let _ = file.write_all(format!("{}\n", line).as_bytes()).await;
+              }
+            }
+            line = reader_stderr.next_line() => {
+              if let Ok(Some(line)) = line {
+                let _ = file.write_all(format!("[STDERR] {}\n", line).as_bytes()).await;
+              }
+            }
+          }
+
+          if reader.next_line().await.is_err() && reader_stderr.next_line().await.is_err() {
+            break;
+          }
+        }
 
       let status = match child.lock().await.wait().await {
         Ok(s) => s,
