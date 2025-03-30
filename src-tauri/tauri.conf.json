@@ -18,7 +18,7 @@
         "decorations": false,
         "resizable": false,
         "center": true,
-        "shadow": false,
+        "shadow": true,
         "userAgent": "Riverfall Official Launcher/0.3.8"
       }
     ],
@@ -47,6 +47,16 @@
         "https://github.com/riverfallmc/launcher-builds/releases/latest/download/Riverfall.Launcher_{{current_version}}_{{arch}}",
         "https://github.com/riverfallmc/launcher-builds/releases/latest/download/latest.json"
       ]
+    },
+
+    "deep-link": {
+      "mobile": [
+        { "host": "riverfall.ru" }
+      ],
+
+      "desktop": {
+        "schemes": ["riverfall", "riverfallmc"]
+      }
     }
   }
 }

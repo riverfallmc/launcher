@@ -1,4 +1,4 @@
-import { Activity, Assets, Timestamps } from "tauri-plugin-drpc/activity";
+import { Activity, Assets, Button, Party, Timestamps } from "tauri-plugin-drpc/activity";
 import { Server } from "../game/server.service";
 
 function getTimestamp(): Timestamps {
@@ -34,6 +34,9 @@ export function playing(server: Server): Activity {
     .setDetails("Играет на сервере")
     .setState(server.name)
     .setTimestamps(getTimestamp())
+    .setButton([
+      new Button("Присоединиться", `riverfall://connect?id=${server.id}`)
+    ])
     .setAssets(
       new Assets()
         .setLargeImage("server_" + server.id)

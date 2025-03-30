@@ -22,7 +22,9 @@ struct ErrorResponse {
 
 pub(crate) async fn request(_jwt: String, id: i32, username: &str) -> anyhow::Result<SessionData> {
     let res = reqwest::Client::new()
-        .post(join_url(&format!("api/session/login?id={id}&username={username}")))
+        .post(join_url(&format!(
+            "api/session/login?id={id}&username={username}"
+        )))
         // .json(&TokenBody { token: jwt })
         .send()
         .await?;

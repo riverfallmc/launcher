@@ -7,121 +7,110 @@ use anyhow::Context;
 use core::str;
 use serde::{Deserialize, Serialize};
 use std::{
-  path::{Path, PathBuf},
-  str::Split,
+    path::{Path, PathBuf},
+    str::Split,
 };
 use tokio::process::Command;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub(crate) struct Java {
-  path: PathBuf,
+    path: PathBuf,
 }
 
 #[allow(unused)]
 impl Java {
-  pub async fn new() -> anyhow::Result<Java> {
-    let java = Java::find_path().await?;
+    pub async fn new() -> anyhow::Result<Java> {
+        let java = Java::find_path().await?;
 
-    if Command::new(&java).output().await.is_ok() {
-      return Ok(Java {
-        path: Path::new(&java).to_path_buf(),
-      });
+        if Command::new(&java).output().await.is_ok() {
+            return Ok(Java {
+                path: Path::new(&java).to_path_buf(),
+            });
+        }
+
+        Err(anyhow::anyhow!("Java не была найдена на вашем ПК"))
     }
 
-    Err(anyhow::anyhow!("Java не была найдена на вашем ПК"))
-  }
-
-  pub fn get_path(&self) -> PathBuf {
-    self.path.clone()
-  }
-
-  pub async fn min_version(&self, min: u8) -> anyhow::Result<()> {
-    let version = self.get_version().await?;
-
-    // лол
-    if min > version {
-      return Err(anyhow::anyhow!(
-        "Обновите вашу Java до версии {min}."
-      ));
+    pub fn get_path(&self) -> PathBuf {
+        self.path.clone()
     }
 
-    Ok(())
-  }
+    pub async fn min_version(&self, min: u8) -> anyhow::Result<()> {
+        let version = self.get_version().await?;
 
-  // Вот тут начинается пиздец
+        // лол
+        if min > version {
+            return Err(anyhow::anyhow!("Обновите вашу Java до версии {min}."));
+        }
 
-  fn get_major_version(version: &mut Split<'_, char>) -> anyhow::Result<u8> {
-    let current = version.next().context("Couldn't get the version out")?;
-
-    // Версии с 1.0 - 1.9
-    // Версия 1.1 не будет так воркать.
-    // Ну блять, я не собираюсь 1.1 использовать
-    if (current == "1") {
-      return Self::get_major_version(version);
+        Ok(())
     }
 
-    Ok(current.parse::<u8>()?)
-  }
+    // Вот тут начинается пиздец
 
-  /// Возвращает версию найденной Java
-  async fn get_version(&self) -> anyhow::Result<u8> {
-    let java = self.path.to_str().context("Unable to get java path")?;
+    fn get_major_version(version: &mut Split<'_, char>) -> anyhow::Result<u8> {
+        let current = version.next().context("Couldn't get the version out")?;
 
-    let output = Command::new(java)
-      .arg("-version")
-      .output()
-      .await
-      .context("Failed to get java version")?;
+        // Версии с 1.0 - 1.9
+        // Версия 1.1 не будет так воркать.
+        // Ну блять, я не собираюсь 1.1 использовать
+        if (current == "1") {
+            return Self::get_major_version(version);
+        }
 
-    let output_str = String::from_utf8_lossy(&output.stderr);
+        Ok(current.parse::<u8>()?)
+    }
 
-    let version_line = output_str
-      .lines()
-      .next()
-      .context("Failed to read output from java -version")?;
+    /// Возвращает версию найденной Java
+    async fn get_version(&self) -> anyhow::Result<u8> {
+        let java = self.path.to_str().context("Unable to get java path")?;
 
-    let mut version = version_line
-      .split_whitespace()
-      .find(|s| s.starts_with('"'))
-      .context("Failed to parse version number")?
-      .trim_matches('"')
-      .split('.');
+        let output = Command::new(java)
+            .arg("-version")
+            .output()
+            .await
+            .context("Failed to get java version")?;
 
-    Self::get_major_version(&mut version)
-  }
+        let output_str = String::from_utf8_lossy(&output.stderr);
 
-  pub fn start(&self) -> Command {
-    Command::new(self.path.clone())
-  }
+        let version_line = output_str
+            .lines()
+            .next()
+            .context("Failed to read output from java -version")?;
 
-  #[cfg(target_os = "windows")]
-  async fn find_path() -> anyhow::Result<String> {
-    use crate::util::process::OutputReader;
+        let mut version = version_line
+            .split_whitespace()
+            .find(|s| s.starts_with('"'))
+            .context("Failed to parse version number")?
+            .trim_matches('"')
+            .split('.');
 
-    let output = Command::new("where")
-      .args(["javaw"])
-      .output()
-      .await?;
+        Self::get_major_version(&mut version)
+    }
 
-    let path = OutputReader::from(output)
-      .to_string()
-      .trim()
-      .to_string();
+    pub fn start(&self) -> Command {
+        Command::new(self.path.clone())
+    }
 
-    Ok(path)
-  }
+    #[cfg(target_os = "windows")]
+    async fn find_path() -> anyhow::Result<String> {
+        use crate::util::process::OutputReader;
 
-  #[cfg(not(target_os = "windows"))]
-  async fn find_path() -> anyhow::Result<String> {
-    use crate::util::process::OutputReader;
+        let output = Command::new("where").args(["javaw"]).output().await?;
 
-    let output = Command::new("which")
-      .args(["java"])
-      .output()
-      .await?;
+        let path = OutputReader::from(output).to_string().trim().to_string();
 
-    let path = OutputReader::from(output).to_string();
+        Ok(path)
+    }
 
-    Ok(path)
-  }
+    #[cfg(not(target_os = "windows"))]
+    async fn find_path() -> anyhow::Result<String> {
+        use crate::util::process::OutputReader;
+
+        let output = Command::new("which").args(["java"]).output().await?;
+
+        let path = OutputReader::from(output).to_string();
+
+        Ok(path)
+    }
 }

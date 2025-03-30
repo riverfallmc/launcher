@@ -12,11 +12,24 @@ import { setup } from "./utils/setup.util";
 import { configure as notifications } from "@/service/notify.service";
 import { DiscordService } from "@/service/discord/discord.service";
 
+import { onOpenUrl } from '@tauri-apps/plugin-deep-link';
+import { DeepLinkService } from "./service/deeplink.service";
+
 setup(
+  // notifications
   notifications,
+  // discord
   async () => {
     await DiscordService.spawn();
   },
+  // deep linking
+  async () => {
+    await onOpenUrl(urls => {
+      console.log(urls);
+      for (let url of urls)
+        DeepLinkService.handle(url);
+    })
+  }
 );
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(

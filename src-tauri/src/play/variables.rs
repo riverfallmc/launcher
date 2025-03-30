@@ -97,16 +97,16 @@ pub trait LibraryPathFormat {
 }
 
 impl LibraryPathFormat for String {
-  fn format(&mut self, client: &Path) -> Result<String> {
-    let parts: Vec<&str> = self.split(':').collect();
-    let subparts: Vec<&str> = parts[0].split('.').collect();
-    let joined_subparts = subparts.join(std::path::MAIN_SEPARATOR_STR);
+    fn format(&mut self, client: &Path) -> Result<String> {
+        let parts: Vec<&str> = self.split(':').collect();
+        let subparts: Vec<&str> = parts[0].split('.').collect();
+        let joined_subparts = subparts.join(std::path::MAIN_SEPARATOR_STR);
 
-    client
-      .join(joined_subparts)
-      .join(parts[1])
-      .join(parts[2])
-      .join(format!("{}-{}.jar", parts[1], parts[2]))
-      .to_string()
+        client
+            .join(joined_subparts)
+            .join(parts[1])
+            .join(parts[2])
+            .join(format!("{}-{}.jar", parts[1], parts[2]))
+            .to_string()
     }
 }
