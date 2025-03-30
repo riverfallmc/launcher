@@ -3,10 +3,10 @@ import { ServerService } from "./game/server.service";
 
 export class DeepLinkService {
   public static async handle(url: string) {
-    const uri = url.split("://")[1];
+    const uri = url.split("://")[1].replace("/", "");
     const query = new URLSearchParams(uri.split("?")[1]);
 
-    switch (uri.split("/?")[0]) {
+    switch (uri.split("?")[0]) {
       case "connect":
         if (window.location.pathname !== "/launcher")
           return;
