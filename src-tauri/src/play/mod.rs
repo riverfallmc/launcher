@@ -22,6 +22,7 @@ pub struct ProcessInfo {
 #[tauri::command]
 pub(crate) async fn play(
   window: WebviewWindow,
+  id: i32,
   username: String,
   jwt: String,
   path: String,
@@ -38,7 +39,7 @@ pub(crate) async fn play(
   java.min_version(client.min_java_version).await?;
 
   // Готовый вариант аргументов для запуска процесса
-  let arguments = arguments::generate(username, jwt, Arguments { ip }, &path, data, client).await?;
+  let arguments = arguments::generate(id, username, jwt, Arguments { ip }, &path, data, client).await?;
 
   println!("{arguments:?}");
 

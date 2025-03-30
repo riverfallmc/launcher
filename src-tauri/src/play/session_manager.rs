@@ -20,10 +20,10 @@ struct ErrorResponse {
     message: String,
 }
 
-pub(crate) async fn request(jwt: String) -> anyhow::Result<SessionData> {
+pub(crate) async fn request(_jwt: String, id: i32, username: &str) -> anyhow::Result<SessionData> {
     let res = reqwest::Client::new()
-        .post(join_url("api/session/login"))
-        .json(&TokenBody { token: jwt })
+        .post(join_url(&format!("api/session/login?id={id}&username={username}")))
+        // .json(&TokenBody { token: jwt })
         .send()
         .await?;
     // .error_for_status()?

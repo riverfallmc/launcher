@@ -30,6 +30,7 @@ export async function play(
   const user = getUser();
 
   return invoke("play", {
+    id: user?.id,
     username: user?.username,
     path: await ClientService.getClientPath(server.client),
     jwt: session?.jwt,

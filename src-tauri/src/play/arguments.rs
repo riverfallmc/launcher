@@ -16,6 +16,7 @@ pub(crate) struct Arguments {
 const CLASSPATH_SEPARATOR: &str = if cfg!(target_os = "windows") { ";" } else { ":" };
 
 pub(crate) async fn generate(
+  id: i32,
   username: String,
   jwt: String,
   arguments: Arguments,
@@ -43,7 +44,7 @@ pub(crate) async fn generate(
       .to_string(),
   );
 
-  let session = session_manager::request(jwt).await?;
+  let session = session_manager::request(jwt, id, &username).await?;
 
   // Собираем/подставляем все переменные
   // которые будут подставлены в аргументы
