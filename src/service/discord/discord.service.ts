@@ -9,7 +9,9 @@ export class DiscordService {
   private static readonly clientId = "1292519587945906249";
 
   public static async spawn() {
-    await start(this.clientId);
+    try {
+      await start(this.clientId);
+    } catch (_) { }
   }
 
   // well, yes

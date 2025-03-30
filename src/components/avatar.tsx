@@ -19,7 +19,7 @@ function Avatar({ username, className }: AvatarProps) {
           return;
 
         setSkin(newSkin.SKIN.url);
-      } catch (e) {console.error(e)};
+      } catch (_) {};
     })();
   }, []);
 
@@ -34,7 +34,7 @@ function Avatar({ username, className }: AvatarProps) {
           backgroundImage: `url(${skin})`,
           backgroundSize: "800% 800%",
           backgroundPosition: "14.1% 14.3%", // почему 14% когда 100/8=12.5%? хуй знает типо
-          imageRendering: "crisp-edges",
+          imageRendering: "pixelated",
         }}
       />
     </div>

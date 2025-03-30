@@ -15,7 +15,7 @@ interface SkinCape {
 }
 
 export async function getProfile(username: string): Promise<SkinCape> {
-  return await HttpService.get<SkinCape>(getWebsite(`api/session/profile/${username}`));
+  return HttpService.get<SkinCape>(getWebsite(`api/session/profile/${username}`));
 }
 
 export async function openUrl(url: string = "", withOutWebsite = true) {

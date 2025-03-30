@@ -31,8 +31,7 @@ reqwest = { version = "0.12.9", features = ["blocking", "json"] }
 tokio = { version = "1.41.0", features = ["process"] }
 zip = "2.2.0"
 chrono = "0.4.39"
-# mc_version_parser = {git = "https://github.com/smokingplaya/mc-version-parser"}
-mc_version_parser = { path = "C:/Users/smokkkin/projects/smokingplaya/mc-version-parser" }
+mc_version_parser = { git = "https://github.com/smokingplaya/mc-version-parser" }
 tauri-plugin-websocket = "2"
 
 [features]
