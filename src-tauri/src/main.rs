@@ -1,5 +1,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-use tauri::{Manager as _, Emitter as _};
+use tauri::Manager as _;
 use tauri_plugin_deep_link::DeepLinkExt;
 
 mod env;
@@ -55,9 +55,6 @@ async fn main() -> anyhow::Result<()> {
             play::close,
         ])
         .setup(|app| {
-            let window = app.get_webview_window("main")
-                .expect("хуйня");
-
             app.deep_link()
                 .register("riverfall")?;
 
