@@ -13,6 +13,12 @@ import { ServerService } from "@/service/game/server.service";
 import { HttpService } from "@/service/http.service";
 import { getSession } from "@/storage/session.storage";
 
+const friendBlocksSort = [
+  FriendCategory.Request,
+  FriendCategory.Online,
+  FriendCategory.Offline
+]
+
 interface SearchProps {
   onAction?: (value: string) => void;
 }
@@ -141,9 +147,17 @@ export function FriendList() {
             <Search />
             {/* todo поиск */}
             {
-              Array.from(friends).map(([category, list]) => {
-                return <Block key={category} list={list} title={FriendsService.getCategoryTitle(category)} />;
+              friendBlocksSort.map(category => {
+                const list = friends.get(category);
+
+                if (!list || list.length == 0)
+                  return <></>
+
+                return <Block key={category} list={list} title={FriendsService.getCategoryTitle(category)} />
               })
+              // Array.from(friends).map(([category, list]) => {
+                // return <Block key={category} list={list} title={FriendsService.getCategoryTitle(category)} />;
+              // })
             }
           </motion.div>
         </motion.div>
@@ -201,7 +215,7 @@ function UserActionMenu({ user, children }: { user: UserProfile, children: React
 
   const invite = async () => {
     try {
-      await HttpService.post(getWebsite(`api/user/invite/${user.id}?inviter_id=${getSession()!.global_id}&server=${GameService.getCurrentServer()!.id}`));
+      await HttpService.post(getWebsite(`api/session/invite/${user.id}?sender=${getSession()!.global_id}&server=${GameService.getCurrentServer()!.id}`));
     } catch (err) {
       setError(caughtError(err).message);
     }
