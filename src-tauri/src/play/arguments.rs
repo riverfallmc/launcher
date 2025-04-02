@@ -70,8 +70,8 @@ pub(crate) async fn generate(
         main_class: data.mainClass,
         user_type: "mojang".to_string(),
         version_type: data.r#type,
-        width: "900".to_owned(),
-        height: "550".to_owned(),
+        width: "925".to_owned(),
+        height: "530".to_owned(),
         server_ip: arguments.ip.unwrap_or("".to_string()),
     };
 

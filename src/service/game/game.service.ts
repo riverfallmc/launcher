@@ -5,6 +5,7 @@ import { ClientService } from "./client.service";
 import { DiscordService } from "../discord/discord.service";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { sendWssEvent } from "../websocket.service";
 
 const window = getCurrentWindow();
 
@@ -38,6 +39,12 @@ export class GameService {
     try {
       await DiscordService.updateActivity("Playing", server);
     } catch (_) { };
+
+    try {
+      await sendWssEvent({
+        playing: server.id
+      });
+    } catch (_) { }
 
     await hide();
   }

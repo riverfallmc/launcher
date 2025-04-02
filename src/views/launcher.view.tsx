@@ -10,7 +10,7 @@ import { minutes } from "@/utils/data.util";
 import { useEffect } from "react";
 
 // штучки
-import { configure as websocket } from "@/service/websocket.service";
+import { sendWssEvent, configure as websocket } from "@/service/websocket.service";
 import { configure as friends } from "@/service/friends.service";
 import { setup } from "@/utils/setup.util";
 import { DiscordService } from "@/service/discord/discord.service";
@@ -38,7 +38,15 @@ export function LauncherView() {
     })();
 
     listen("game_close", async () => {
-      await DiscordService.updateActivity("Launcher");
+      try {
+        await DiscordService.updateActivity("Launcher");
+      } catch (_) {}
+
+      try {
+        await sendWssEvent({
+          playing: 0
+        });
+      } catch (_) {}
     });
   }, []);
 

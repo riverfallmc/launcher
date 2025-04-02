@@ -116,9 +116,11 @@ export function useWssListener<K extends `${WebSocketEventType}`>(
   }, []);
 }
 
+let ws: WebSocket;
+
 export async function configure() {
   // todo production
-  const ws = await WebSocket.connect(`ws://riverfall.ru:1487/${getSession()?.global_id}`, {
+  ws = await WebSocket.connect(`ws://riverfall.ru:1487/${getSession()?.global_id}`, {
     headers: {
       "Authorization": getSession()!.jwt
     },
@@ -140,6 +142,15 @@ export async function configure() {
         console.log("Skipping WebSocket message");
     }
   });
-
   // ws.disconnect();
+}
+
+export async function sendWssEvent(event: Object) {
+  if (!ws)
+    return;
+
+  return await ws.send({
+    type: "Text",
+    data: JSON.stringify(event)
+  });
 }
