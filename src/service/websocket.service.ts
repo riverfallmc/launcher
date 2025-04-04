@@ -142,15 +142,17 @@ export async function configure() {
         console.log("Skipping WebSocket message");
     }
   });
-  // ws.disconnect();
 }
 
-export async function sendWssEvent(event: Object) {
+export async function sendWssEvent(type: String, data: Object) {
   if (!ws)
     return;
 
   return await ws.send({
     type: "Text",
-    data: JSON.stringify(event)
+    data: JSON.stringify({
+      type,
+      data
+    })
   });
 }

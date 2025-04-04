@@ -43,8 +43,8 @@ export function LauncherView() {
       } catch (_) {}
 
       try {
-        await sendWssEvent({
-          playing: 0
+        await sendWssEvent("play", {
+          server: 0
         });
       } catch (_) {}
     });

@@ -41,8 +41,8 @@ export class GameService {
     } catch (_) { };
 
     try {
-      await sendWssEvent({
-        playing: server.id
+      await sendWssEvent("play", {
+        server: server.id
       });
     } catch (_) { }
 
