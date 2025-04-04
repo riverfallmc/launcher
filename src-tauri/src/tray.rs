@@ -1,18 +1,21 @@
 use crate::util::url::get_url;
 use std::process::exit;
 use tauri::{
-    menu::{Menu, MenuItem},
+    menu::{Menu, MenuBuilder, MenuItemBuilder},
     tray::{TrayIcon, TrayIconBuilder},
     App, Manager, Result, Wry,
 };
 use tauri_plugin_opener::OpenerExt;
 
 fn build_menu(app: &App) -> Result<Menu<Wry>> {
-    let website = MenuItem::with_id(app, "website", "Открыть сайт", true, None::<&str>)?;
-    let show = MenuItem::with_id(app, "show", "Показать лаунчер", true, None::<&str>)?;
-    let exit = MenuItem::with_id(app, "exit", "Закрыть лаунчер", true, None::<&str>)?;
-
-    Menu::with_items(app, &[&website, &show, &exit])
+    MenuBuilder::new(app)
+        .item(&MenuItemBuilder::new("Показать лаунчер").id("show").build(app)?)
+        .separator()
+        .item(&MenuItemBuilder::new("Открыть сайт").id("website").build(app)?)
+        .item(&MenuItemBuilder::new("Открыть свой профиль").id("profile").build(app)?)
+        .separator()
+        .item(&MenuItemBuilder::new("Выйти из лаунчера").id("exit").build(app)?)
+        .build()
 }
 
 pub(crate) fn setup_tray_icon(app: &App) -> Result<TrayIcon> {
@@ -32,6 +35,11 @@ pub(crate) fn setup_tray_icon(app: &App) -> Result<TrayIcon> {
                 app.get_webview_window("main")
                     .expect("no main window")
                     .show();
+            }
+
+            "profile" => {
+                #[allow(unused)]
+                app.opener().open_url(format!("{}/profile", get_url()), None::<&str>);
             }
 
             "exit" => {
