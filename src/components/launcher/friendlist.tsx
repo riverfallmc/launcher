@@ -88,8 +88,12 @@ export function useFriend() {
 }
 
 export function FriendList() {
-  const { isOpen, hideFriendList } = useFriend();
-  const [friends, setFriends] = useState<Map<FriendCategory, UserProfile[]>>(new Map());
+  const {isOpen, hideFriendList } = useFriend();
+  const [friends, setFriends] = useState<Record<FriendCategory, UserProfile[]>>({
+    [FriendCategory.Request]: [],
+    [FriendCategory.Online]: [],
+    [FriendCategory.Offline]: []
+  });
 
   useEffect(() => {
     const listener = (event: KeyboardEvent) => {
@@ -107,19 +111,23 @@ export function FriendList() {
     const interval = setInterval(() => {
       const friends = FriendsService.getFriends();
 
-      let result = new Map();
+      let result: Record<FriendCategory, UserProfile[]> = {
+        [FriendCategory.Request]: [],
+        [FriendCategory.Online]: [],
+        [FriendCategory.Offline]: []
+      };
 
       for (let user of friends.values()) {
         const category = FriendsService.getCategory(user);
-        const list = result.get(category) || [];
+        const list = result[category];
 
         list.push(user);
 
-        result.set(category, list);
+        result[category] = list;
       }
 
       setFriends(result);
-    }, 500);
+    }, 400);
 
     return () => clearInterval(interval);
   }, [])
@@ -147,17 +155,15 @@ export function FriendList() {
             <Search />
             {/* todo поиск */}
             {
-              friendBlocksSort.map(category => {
-                const list = friends.get(category);
+              friendBlocksSort.map((category) => {
+                const list = friends[category];
 
-                if (!list || list.length == 0)
-                  return <></>
+                if (!list || list.length === 0) return null;
 
-                return <Block key={category} list={list} title={FriendsService.getCategoryTitle(category)} />
+                return list.map((user, index) => (
+                  <Block key={user.id || index} list={list} title={FriendsService.getCategoryTitle(category)} />
+                ));
               })
-              // Array.from(friends).map(([category, list]) => {
-                // return <Block key={category} list={list} title={FriendsService.getCategoryTitle(category)} />;
-              // })
             }
           </motion.div>
         </motion.div>
@@ -184,10 +190,14 @@ function User({ user }: { user: UserProfile }) {
   const [status, setStatus] = useState("");
 
   useEffect(() => {
-    (async () => setStatus(await FriendsService.getStatusLabel(user)))();
-  }, [])
-
-  // todo функционал списка
+    (async () => {
+      try {
+        setStatus(await FriendsService.getStatusLabel(user))
+      } catch (_) {
+        console.error(_)
+      }
+    })();
+  }, [JSON.stringify(user)])
 
   return (
     <UserActionMenu user={user}>

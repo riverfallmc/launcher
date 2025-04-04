@@ -120,7 +120,7 @@ let ws: WebSocket;
 
 export async function configure() {
   // todo production
-  ws = await WebSocket.connect(`ws://riverfall.ru:1487/${getSession()?.global_id}`, {
+  ws = await WebSocket.connect(`ws://riverfall.ru:1401/${getSession()?.global_id}`, {
     headers: {
       "Authorization": getSession()!.jwt
     },

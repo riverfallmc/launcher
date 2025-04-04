@@ -56,6 +56,8 @@ export class FriendsService {
   public static updateStatus(id: number, status: UserProfileStatus, server?: number) {
     const index = this.getFriendIndex(id);
 
+    console.log(`Updating status of ${index} `);
+
     if (index < 0) return;
 
     const user = this.storage[index];
