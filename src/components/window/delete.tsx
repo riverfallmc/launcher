@@ -36,6 +36,7 @@ export function DeleteWindow(
     onClose();
   }
 
+  // todo переделать в DialogWindow
   return createPortal(
     <Window onClose={close}>
       <div className="flex flex-col space-y-3">

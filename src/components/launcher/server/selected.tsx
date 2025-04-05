@@ -96,7 +96,7 @@ async function useButtonAction(
           setStatus(`Скачано ${Math.round((current/total * 100))}% (${formatBytes(current)}/${formatBytes(total)})`)
         }, setError);
 
-        setStatus("Достаём данные из архива...");
+        setStatus("Разархивируем клиент...");
 
         await unzip(savedIn);
 

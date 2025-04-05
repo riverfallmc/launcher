@@ -136,6 +136,7 @@ export function FriendList() {
     <AnimatePresence>
       {isOpen && (
         <motion.div
+          tauri-drag-region
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -144,6 +145,7 @@ export function FriendList() {
           onClick={hideFriendList}
         >
           <motion.div
+            tauri-drag-region
             initial={{ x: 300 }}
             animate={{ x: 0 }}
             exit={{ x: 300 }}
@@ -151,7 +153,7 @@ export function FriendList() {
             className="bg-neutral-900 flex flex-col w-80 h-full py-6 px-7 gap-y-4"
             onClick={(e) => e.stopPropagation()} // предотвращает закрытие при клике на меню
           >
-            <span className="text-2xl">Друзья</span>
+            <span tauri-drag-region className="text-2xl">Друзья</span>
             <Search />
             {/* todo поиск */}
             {
