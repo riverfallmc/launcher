@@ -40,13 +40,13 @@ pub(crate) async fn generate(
         .map(|mut lib| lib.format(&libraries))
         .collect::<anyhow::Result<Vec<String>>>()?;
 
-    libs.push(
-        client
-            .get_jar(dir)?
-            .to_str()
-            .context("Unable to join two paths")?
-            .to_string(),
-    );
+    let version_jar = client
+        .get_jar(dir)?
+        .to_str()
+        .context("Unable to join two paths")?
+        .to_string();
+
+    libs.push(version_jar.clone());
 
     let session = session_manager::request(jwt, id, &username).await?;
 
@@ -72,6 +72,7 @@ pub(crate) async fn generate(
         version_type: data.r#type,
         width: "925".to_owned(),
         height: "530".to_owned(),
+        version_jar,
         server_ip: arguments.ip.unwrap_or("".to_string()),
     };
 

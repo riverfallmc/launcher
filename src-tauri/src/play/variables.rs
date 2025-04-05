@@ -35,6 +35,7 @@ pub(crate) struct GameArguments {
     pub height: String,
     pub server_ip: String,
     pub game_libraries_directory: String,
+    pub version_jar: String
 }
 
 impl GameArguments {
@@ -77,6 +78,7 @@ impl GameArguments {
         hashmap.insert("version_type".to_string(), self.version_type.clone());
         hashmap.insert("width".to_string(), self.width.clone());
         hashmap.insert("height".to_string(), self.height.clone());
+        hashmap.insert("version_jar".to_string(), self.version_jar.clone());
         hashmap.insert(
             "server_ip".to_string(),
             self.server_ip
