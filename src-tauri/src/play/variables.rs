@@ -83,11 +83,11 @@ impl GameArguments {
             "server_ip".to_string(),
             self.server_ip
                 .clone()
-                .split(":")
-                .collect::<Vec<&str>>()
-                .first()
-                .unwrap()
-                .to_string(),
+                // .split(":")
+                // .collect::<Vec<&str>>()
+                // .first()
+                // .unwrap()
+                // .to_string(),
         );
 
         hashmap
