@@ -26,7 +26,7 @@ export function formatLastSeen(timestamp: string): string {
   const diffMonths = Math.floor(diffDays / 30);
   const diffYears = Math.floor(diffDays / 365);
 
-  if (diffMin < 1) return "Был в сети только что";
+  if (diffMin < 1) return "Был в сети минуту назад";
   if (diffMin < 60) return `Был в сети ${diffMin}мин. назад`;
   if (diffHrs < 24) return `Был в сети ${diffHrs}ч. назад`;
   if (diffDays < 30) return `Был в сети ${diffDays}д. назад`;

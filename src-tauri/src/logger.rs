@@ -31,7 +31,7 @@ impl ProcessLogger {
         }
 
         let pid = child.lock().await.id().unwrap_or_default();
-        let log_path = format!("{}/latest.log", path);
+        let log_path = format!("{}/latest.rflog", path);
 
         if let Ok(metadata) = fs::metadata(&log_path) {
             if let Ok(created) = metadata.created() {
@@ -39,7 +39,7 @@ impl ProcessLogger {
                     .format("%Y-%m-%d_%H-%M-%S")
                     .to_string();
 
-                let _ = fs::rename(&log_path, format!("{}/{}.log", path, timestamp));
+                let _ = fs::rename(&log_path, format!("{}/{}.rflog", path, timestamp));
             }
         }
 
@@ -71,18 +71,18 @@ impl ProcessLogger {
 
             log::info!("logger initialized for process {} (log: {})", pid, log_path);
 
-            let _ = file.write_all(b"riverfall.ru client logger\n").await;
+            let _ = file.write_all(b"Riverfall Launcher Log Format:[%s;%s;%s]\n\n").await;
 
             loop {
                 tokio::select! {
                   line = reader.next_line() => {
                     if let Ok(Some(line)) = line {
-                      let _ = file.write_all(format!("{}\n", line).as_bytes()).await;
+                      let _ = file.write_all(format!("[OUT] {}\n", line).as_bytes()).await;
                     }
                   }
                   line = reader_stderr.next_line() => {
                     if let Ok(Some(line)) = line {
-                      let _ = file.write_all(format!("[STDERR] {}\n", line).as_bytes()).await;
+                      let _ = file.write_all(format!("[ERR] {}\n", line).as_bytes()).await;
                     }
                   }
                 }
