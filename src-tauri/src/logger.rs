@@ -12,6 +12,7 @@ use tokio::sync::Mutex;
 pub struct ProcessLogger {
     process: Arc<Mutex<Child>>,
     path: PathBuf,
+    info_line: Option<String>
 }
 
 impl ProcessLogger {
@@ -19,7 +20,13 @@ impl ProcessLogger {
         Self {
             process: child,
             path,
+            info_line: None
         }
+    }
+
+    pub fn info_line(&mut self, line: String) -> &mut Self {
+        self.info_line = Some(line);
+        self
     }
 
     pub async fn spawn(&self) -> Result<()> {
@@ -60,6 +67,8 @@ impl ProcessLogger {
         let mut reader = BufReader::new(tokio::io::BufReader::new(stdout)).lines();
         let mut reader_stderr = BufReader::new(tokio::io::BufReader::new(stderr)).lines();
 
+        let info_line = self.info_line.clone();
+
         tokio::spawn(async move {
             let mut file = match tokio_fs::File::create(&log_path).await {
                 Ok(f) => f,
@@ -71,7 +80,9 @@ impl ProcessLogger {
 
             log::info!("logger initialized for process {} (log: {})", pid, log_path);
 
-            let _ = file.write_all(b"Riverfall Launcher Log Format:[%s;%s;%s]\n\n").await;
+            if let Some(info) = info_line {
+                let _ = file.write_all(info.as_bytes()).await;
+            }
 
             loop {
                 tokio::select! {

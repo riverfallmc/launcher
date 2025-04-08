@@ -1,5 +1,5 @@
 use crate::{
-    util::{pathbuf::PathBufToString, tauri::AnyhowResult},
+    util::{os::get_info, pathbuf::PathBufToString, tauri::AnyhowResult},
     watcher::ProcessWatcher,
 };
 use anyhow::anyhow;
@@ -31,6 +31,7 @@ pub(crate) async fn play(
     id: i32,
     username: String,
     jwt: String,
+    client_name: String,
     path: String,
     ip: Option<String>,
 ) -> AnyhowResult<ProcessInfo> {
@@ -46,7 +47,7 @@ pub(crate) async fn play(
 
     // Готовый вариант аргументов для запуска процесса
     let arguments =
-        arguments::generate(id, username, jwt, Arguments { ip }, &path, data, client).await?;
+        arguments::generate(id, username.clone(), jwt, Arguments { ip }, &path, data, client).await?;
 
     // Запускаем процесс
     let child = java
@@ -70,11 +71,10 @@ pub(crate) async fn play(
     });
 
     let logs = Path::new(&path).join("logs");
+    let os = get_info();
+    let line = format!("Riverfall Launcher Log Format:[{};{};{};{};{}]\n\n", env!("CARGO_PKG_VERSION"), username, os.os, os.version, client_name);
 
-    if let Err(err) = wathcer.enable_logger(logs) {
-        log::error!("Unable to setup logger: {err}");
-    };
-
+    wathcer.enable_logger(logs, line);
     wathcer.spawn_thread().await;
 
     Ok(ProcessInfo {

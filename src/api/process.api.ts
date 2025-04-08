@@ -32,6 +32,7 @@ export async function play(
   return invoke("play", {
     id: user?.id,
     username: user?.username,
+    clientName: server.client,
     path: await ClientService.getClientPath(server.client),
     jwt: session?.jwt,
     ip: server.enabled ? server.ip : null

@@ -34,6 +34,7 @@ chrono = "0.4.39"
 mc_version_parser = { git = "https://github.com/smokingplaya/mc-version-parser" }
 tauri-plugin-websocket = "2"
 tauri-plugin-deep-link = "2"
+sysinfo = "0.34.2"
 
 [features]
 custom-protocol = []

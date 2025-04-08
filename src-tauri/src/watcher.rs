@@ -1,5 +1,4 @@
 use crate::logger::ProcessLogger;
-use anyhow::Result;
 use std::{path::PathBuf, sync::Arc};
 use tokio::{process::Child, sync::Mutex, task::JoinHandle};
 
@@ -31,9 +30,11 @@ impl ProcessWatcher {
         self
     }
 
-    pub fn enable_logger(&mut self, path: PathBuf) -> Result<&Self> {
-        self.logger = Some(ProcessLogger::new(self.process.clone(), path));
-        Ok(self)
+    pub fn enable_logger(&mut self, path: PathBuf, info_line: String) -> &Self {
+        let mut logger = ProcessLogger::new(self.process.clone(), path);
+        logger.info_line(info_line);
+        self.logger = Some(logger);
+        self
     }
 
     async fn handle(self) {
