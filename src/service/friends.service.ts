@@ -11,38 +11,87 @@ export enum FriendCategory {
   Offline // оффлайн
 }
 
+interface FriendsStorage {
+  requests: UserFriendRequest[],
+  friends: UserProfile[];
+}
+
 export class FriendsService {
-  private static storage: UserProfile[] = [];
-
-  public static async fetch() {
-    const friends = await HttpService.get<UserProfile[]>(getWebsite(`api/user/friends/${getSession()?.global_id}`));
-
-    this.storage = friends;
+  private static storage: FriendsStorage = {
+    requests: [],
+    friends: []
   };
 
+  public static async fetch() {
+    // cleaning already existed storage
+    const id = getSession()?.global_id;
+
+    this.storage = {
+      requests: await HttpService.get<UserFriendRequest[]>(getWebsite(`api/user/friends/requests/${id}`)),
+      friends: await HttpService.get<UserProfile[]>(getWebsite(`api/user/friends/${id}`))
+    };
+  };
+
+  public static async accept(user_id: number) {
+    const session = getSession();
+
+    await HttpService.post(getWebsite(`api/user/friends/confirm/${user_id}`), { user_id: session?.global_id });
+  }
+
+  public static async cancel(user_id: number) {
+    const session = getSession();
+
+    await HttpService.post(getWebsite(`api/user/friends/cancel/${user_id}`), { user_id: session?.global_id });
+  }
+
+  public static async removeFriend(user_id: number) {
+    const session = getSession();
+
+    await HttpService.delete(getWebsite(`api/user/friends/${user_id}`), { user_id: session?.global_id });
+  }
+
+  public static addRequest(request: UserFriendRequest) {
+    this.storage.requests.push(request);
+  }
+
+  public static deleteRequest(id: number) {
+    const index = this.getRequestIndex(id);
+
+    if (index < 0) return;
+
+    this.storage.requests.splice(index);
+  }
+
+
+  protected static getRequestIndex(id: number): number {
+    const appUserId = getSession()?.global_id;
+
+    return this.storage.requests.findIndex(record => (record.user_id == appUserId ? record.friend_id : record.user_id) == id);
+  }
+
+  public static getRequests(): UserFriendRequest[] {
+    return this.storage.requests;
+  }
+
   public static getFriends(): UserProfile[] {
-    return this.storage;
+    return this.storage.friends;
   }
 
   protected static getFriendIndex(id: number): number {
-    return this.storage.findIndex(record => record.id == id);
+    return this.storage.friends.findIndex(record => record.id == id);
   }
 
   public static getFriend(id: number): UserProfile | undefined {
-    return this.storage.find(record => record.id == id);
+    return this.storage.friends.find(record => record.id == id);
   }
 
-  public static add(user: UserProfile, request?: UserFriendRequest) {
+  public static add(user: UserProfile) {
     const index = this.getFriendIndex(user.id);
 
-    if (request)
-      user.request = request;
+    if (index >= 0)
+      return this.storage.friends[index] = user;
 
-    if (index >= 0) {
-      return this.storage[index] = user;
-    }
-
-    this.storage.push(user);
+    this.storage.friends.push(user);
   }
 
   public static delete(id: number) {
@@ -50,7 +99,7 @@ export class FriendsService {
 
     if (index < 0) return;
 
-    this.storage.splice(index);
+    this.storage.friends.splice(index);
   }
 
   public static updateStatus(id: number, status: UserProfileStatus, server?: number) {
@@ -60,7 +109,7 @@ export class FriendsService {
 
     if (index < 0) return;
 
-    const user = this.storage[index];
+    const user = this.storage.friends[index];
 
     user.status.status = status;
     user.status.server = server;
@@ -73,9 +122,6 @@ export class FriendsService {
   };
 
   public static getCategory(user: UserProfile): FriendCategory {
-    if (user.request)
-      return FriendCategory.Request;
-
     return user.status.status == "Offline" ? FriendCategory.Offline : FriendCategory.Online;
   }
 

@@ -132,7 +132,7 @@ const User = forwardRef<HTMLDivElement, UserProps>(({ trigger, ...buttonProps },
   return (
     <div ref={ref} className="flex items-center">
       <button {...buttonProps} className="group cursor-pointer flex justify-center items-center space-x-3 px-3 hover:bg-neutral-800 transition rounded-lg py-2">
-        <Avatar className="h-11" username={user.username} />
+        <Avatar className="h-11 rounded-lg" username={user.username} />
         <div className="flex flex-col text-left space-y-1 leading-3">
           <span>{user.username}</span>
           <span className="flex text-xs font-normal text-neutral-400">
@@ -182,6 +182,7 @@ function UserMenu() {
             >
               О программе
             </DropdownMenuItem>
+            <DropdownMenuSeparator/>
             <DropdownMenuItem
               className="font-normal"
               onClick={() => AuthService.logout()}

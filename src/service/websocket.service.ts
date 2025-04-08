@@ -67,7 +67,7 @@ function handleWebsocketMessage(message: WebSocketEvent) {
       return FriendsService.delete(data.id);
 
     case WebSocketEventType.FRIEND_CANCEL:
-      return FriendsService.delete(data.id);
+      return FriendsService.deleteRequest(data.id);
 
     case WebSocketEventType.FRIEND_ONLINE:
       return FriendsService.updateStatus(data.id, "Online");
@@ -85,9 +85,16 @@ function handleWebsocketMessage(message: WebSocketEvent) {
       return;
 
     case WebSocketEventType.FRIEND_REQUEST:
-      return FriendsService.add(data, "Incoming");
+      return FriendsService.addRequest({
+        user_id: data.id,
+        friend_id: getSession()?.global_id as number,
+        status: "Pending",
+        created_at: new Date().toISOString()
+      });
 
     default:
+      FriendsService.deleteRequest(data.id);
+
       return FriendsService.add(data);
   }
 }

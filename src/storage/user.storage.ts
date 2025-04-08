@@ -9,7 +9,12 @@ export type User = {
 
 export type UserProfileStatus = "Online" | "Playing" | "Offline";
 
-export type UserFriendRequest = "Incoming" | "Outcoming";
+export interface UserFriendRequest {
+  user_id: number,
+  friend_id: number,
+  status: "Accepted" | "Pending",
+  created_at: string;
+}
 
 export interface UserProfile {
   id: number,
@@ -21,8 +26,6 @@ export interface UserProfile {
     last_seen_at?: string;
   },
   registered_at: string;
-  // custom
-  request: UserFriendRequest;
 }
 
 const key = "user";

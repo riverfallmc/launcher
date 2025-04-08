@@ -7,7 +7,7 @@ export class UserService {
     return HttpService.get(getWebsite(`api/user/user/${id}`), jwt);
   }
 
-  static async getUserProfile(id: number, jwt: string): Promise<UserProfile> {
+  static async getUserProfile(id: number, jwt?: string): Promise<UserProfile> {
     return await HttpService.get(getWebsite(`api/user/profile/${id}`), jwt);
   }
 }
