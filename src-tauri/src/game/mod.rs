@@ -20,7 +20,7 @@ pub async fn game_play(
   client_path: String,
   ip: Option<String>
 ) -> TauriResult<()> {
-  let details = ClientDetails::from(&client)
+  let details = ClientDetails::from(&client_path)
     .map_err(|e| anyhow!("Не получилось обнаружить данные о игровом клиенте: {e}"))?;
 
   let session = SessionService::authorizate(jwt, id, &username)
@@ -31,7 +31,7 @@ pub async fn game_play(
     session,
     client: MinecraftClient {
       path: client_path.clone().into(),
-      version: &details.versions.game,
+      version: details.versions.game,
       server: None
     },
 

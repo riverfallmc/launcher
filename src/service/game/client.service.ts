@@ -16,7 +16,7 @@ export type Client = {
   modloader: "Forge" | "Fabric",
   version: string,
   mods: string[];
-}
+};
 
 export enum ClientState {
   Null,
@@ -94,7 +94,7 @@ export class ClientService {
 
     try {
       await mkdir(dir);
-    } catch(_) {};
+    } catch (_) { };
 
     return dir;
   }
@@ -109,7 +109,7 @@ export class ClientService {
   static async isInstalled(name: string): Promise<boolean> {
     const basePath = await this.getClientPath(name);
 
-    for (const item of ["assets", "libraries", "versions", "data.json"])
+    for (const item of ["assets", "libraries", "versions", "client.json"])
       if (!await exists(await join(basePath, item)))
         return false;
 
@@ -117,6 +117,6 @@ export class ClientService {
   };
 
   static async remove(name: string) {
-    return removeDir(await this.getClientPath(name))
+    return removeDir(await this.getClientPath(name));
   }
 }

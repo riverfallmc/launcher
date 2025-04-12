@@ -34,7 +34,7 @@ chrono = "0.4.39"
 tauri-plugin-websocket = "2"
 tauri-plugin-deep-link = "2"
 sysinfo = "0.34.2"
-mc-launcher = { version = "0.1.1", features = ["tokio"] }
+mc-launcher = { version = "0.1.2", features = ["tokio"] }
 
 [features]
 custom-protocol = []

@@ -29,7 +29,7 @@ export async function play(
   const session = getSession();
   const user = getUser();
 
-  return invoke("play", {
+  return invoke("game_play", {
     id: user?.id,
     username: user?.username,
     client: server.client,

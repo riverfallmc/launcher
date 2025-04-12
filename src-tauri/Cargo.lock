@@ -2675,9 +2675,9 @@ checksum = "2532096657941c2fea9c289d370a250971c689d4f143798ff67113ec042024a5"
 
 [[package]]
 name = "mc-launcher"
-version = "0.1.1"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b743b4ecfa2c824c4b40cfebe1a3d5909f06282da7246b998f9aeaa6dc0778c6"
+checksum = "0d40b7eab3f2d8aff569ebd1cf8b7e67496569013c779f1f440bc7b46dacea93"
 dependencies = [
  "regex",
  "serde",

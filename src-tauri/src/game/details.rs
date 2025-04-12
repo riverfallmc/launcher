@@ -19,6 +19,8 @@ impl ClientDetails {
     let path = Path::new(client_path)
       .join("client.json");
 
+    println!("Path: {path:?}");
+
     path.try_exists()?;
 
     let file = File::open(path)?;
