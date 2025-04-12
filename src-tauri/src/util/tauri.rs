@@ -14,4 +14,4 @@ impl From<TauriCommandError> for InvokeError {
 }
 
 #[allow(unused)]
-pub(crate) type AnyhowResult<T> = anyhow::Result<T, TauriCommandError>;
+pub(crate) type TauriResult<T> = anyhow::Result<T, TauriCommandError>;

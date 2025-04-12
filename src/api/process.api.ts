@@ -14,11 +14,11 @@ export async function env(variable: string): Promise<string> {
 }
 
 export async function unzip(path: string): Promise<void> {
-  return await invoke("unzip", { path });
+  return await invoke("fs_unzip", { path });
 }
 
 export async function exists(path: string): Promise<boolean> {
-  return invoke("exists", { path });
+  return invoke("fs_exists", { path });
 };
 
 // process
@@ -32,15 +32,15 @@ export async function play(
   return invoke("play", {
     id: user?.id,
     username: user?.username,
-    clientName: server.client,
-    path: await ClientService.getClientPath(server.client),
+    client: server.client,
+    clientPath: await ClientService.getClientPath(server.client),
     jwt: session?.jwt,
     ip: server.enabled ? server.ip : null
   });
 }
 
 export async function isProcessExist({ pid }: { pid: number, name: string; }): Promise<boolean> {
-  return invoke("is_process_exist", { pid });
+  return invoke("process_exist", { pid });
 }
 
 export async function close(

@@ -1,11 +1,11 @@
-use crate::util::url::get_url;
+use crate::utils::AppUrls;
+use tauri_plugin_opener::OpenerExt;
 use std::process::exit;
 use tauri::{
     menu::{Menu, MenuBuilder, MenuItemBuilder},
     tray::{TrayIcon, TrayIconBuilder},
     App, Manager, Result, Wry,
 };
-use tauri_plugin_opener::OpenerExt;
 
 fn build_menu(app: &App) -> Result<Menu<Wry>> {
     MenuBuilder::new(app)
@@ -27,7 +27,7 @@ pub(crate) fn setup_tray_icon(app: &App) -> Result<TrayIcon> {
         .on_menu_event(|app, event| match event.id.as_ref() {
             "website" => {
                 #[allow(unused)]
-                app.opener().open_url(get_url(), None::<&str>);
+                app.opener().open_url(AppUrls::base(), None::<&str>);
             }
 
             "show" => {
@@ -39,7 +39,7 @@ pub(crate) fn setup_tray_icon(app: &App) -> Result<TrayIcon> {
 
             "profile" => {
                 #[allow(unused)]
-                app.opener().open_url(format!("{}/profile", get_url()), None::<&str>);
+                app.opener().open_url(AppUrls::join("profile"), None::<&str>);
             }
 
             "exit" => {
