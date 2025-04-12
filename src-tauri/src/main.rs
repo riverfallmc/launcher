@@ -3,7 +3,6 @@
 mod game;
 mod logger;
 mod tray;
-mod util; // todo <- remove
 mod utils;
 mod watcher;
 

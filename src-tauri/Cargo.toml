@@ -26,7 +26,7 @@ tauri-plugin-http = "2"
 tauri-plugin-notification = "2"
 tauri-plugin-opener = "2.0.0"
 tauri-plugin-upload = "2"
-tauri-plugin-drpc = "*"
+tauri-plugin-drpc = "0.1.5"
 reqwest = { version = "0.12.9", features = ["blocking", "json"] }
 tokio = { version = "1.41.0", features = ["process"] }
 zip = "2.2.0"

@@ -39,7 +39,7 @@ export async function play(
   });
 }
 
-export async function isProcessExist({ pid }: { pid: number, name: string; }): Promise<boolean> {
+export async function isProcessExist({ pid }: { pid: number; }): Promise<boolean> {
   return invoke("process_exist", { pid });
 }
 

@@ -1,8 +1,9 @@
-use crate::util::tauri::TauriResult;
 use anyhow::{anyhow, Context};
 use tokio::{fs, task};
+use tauri::ipc::InvokeError;
+use thiserror::Error;
 use zip::ZipArchive;
-use std::{env::var, fs::File, path::Path, sync::Arc};
+use std::{env::var, fs::File, path::{Path, PathBuf}, sync::Arc};
 
 pub struct AppUrls;
 
@@ -101,3 +102,34 @@ pub(crate) fn get_info() -> OsInfo {
 pub fn env(variable: String) -> TauriResult<String> {
   Ok(var(variable).map_err(|e| anyhow!(e))?)
 }
+
+// PathBuf Utils
+
+pub(crate) trait PathBufToString {
+  fn to_string(&self) -> anyhow::Result<String>;
+}
+
+impl PathBufToString for PathBuf {
+  fn to_string(&self) -> anyhow::Result<String> {
+    Ok(self
+      .to_str()
+      .context("Failed to cast PathBuf to String type")?
+      .to_string())
+  }
+}
+
+// Tauri's Result
+#[derive(Error, Debug)]
+pub enum TauriCommandError {
+    #[error("{0}")]
+    Anyhow(#[from] anyhow::Error),
+}
+
+impl From<TauriCommandError> for InvokeError {
+    fn from(error: TauriCommandError) -> Self {
+        InvokeError::from(error.to_string())
+    }
+}
+
+#[allow(unused)]
+pub(crate) type TauriResult<T> = anyhow::Result<T, TauriCommandError>;

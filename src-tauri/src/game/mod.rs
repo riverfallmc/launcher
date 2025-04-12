@@ -1,14 +1,15 @@
-mod session;
 mod details;
+mod session;
 
 use std::path::Path;
 
 use anyhow::anyhow;
 use details::ClientDetails;
-use mc_launcher::minecraft::{configuration::{MinecraftClient, MinecraftConfiguration as Configuration, WindowConfiguration}, launcher::MinecraftLauncher as Launcher};
+use mc_launcher::{java::Java, minecraft::{configuration::{MinecraftClient, MinecraftConfiguration as Configuration, WindowConfiguration}, launcher::MinecraftLauncher as Launcher}};
 use session::SessionService;
 use tauri::{Emitter as _, WebviewWindow};
-use crate::{util::tauri::TauriResult, utils::get_info, watcher::ProcessWatcher};
+use tokio::process::Command;
+use crate::{utils::TauriResult, utils::get_info, watcher::ProcessWatcher};
 
 #[tauri::command]
 pub async fn game_play(
@@ -18,6 +19,7 @@ pub async fn game_play(
   jwt: String,
   client: String,
   client_path: String,
+  java_path: String,
   ip: Option<String>
 ) -> TauriResult<()> {
   let details = ClientDetails::from(&client_path)
@@ -27,7 +29,11 @@ pub async fn game_play(
     .await
     .map_err(|e| anyhow!("Не получилось авторизоваться: {e}"))?;
 
+  let java =Java::new(java_path.into())
+    .map_err(|_| anyhow!("Java не была найдена"))?;
+
   let config = Configuration {
+    java: Some(java),
     session,
     client: MinecraftClient {
       path: client_path.clone().into(),
@@ -36,7 +42,6 @@ pub async fn game_play(
     },
 
     window: WindowConfiguration { ..Default::default() },
-    java: None
   };
 
   let game = Launcher::new(config)
@@ -45,7 +50,7 @@ pub async fn game_play(
 
   let mut watcher = ProcessWatcher::new(game);
   watcher.on_exit(move || {
-    let _ = window.emit("close", ());
+    let _ = window.emit("game_close", ());
   });
 
   let logs = Path::new(&client_path).join("logs");
@@ -60,11 +65,34 @@ pub async fn game_play(
 }
 
 #[tauri::command]
-pub async fn process_exists(pid: i32, name: String) -> bool {
-  todo!()
+pub async fn process_exists(pid: i32) -> TauriResult<bool> {
+  let output = if cfg!(target_os = "windows") {
+    Command::new("tasklist")
+      .arg("/FI")
+      .arg(format!("PID eq {}", pid))
+      .output()
+  } else {
+    Command::new("ps").arg("-p").arg(pid.to_string()).output()
+  }.await.map_err(|e| anyhow!("{e}"))?;
+
+  let out = String::from_utf8_lossy(&output.stdout);
+
+  Ok(out.contains(&pid.to_string()) && !out.contains("defunct"))
 }
 
 #[tauri::command]
 pub async fn close(pid: i32) -> TauriResult<()> {
-  todo!()
+  let status = if cfg!(target_os = "windows") {
+    Command::new("taskkill")
+        .args(["/PID", &pid.to_string(), "/F"])
+        .status()
+    } else {
+        Command::new("kill").arg("-9").arg(pid.to_string()).status()
+    }.await.map_err(|e| anyhow!("{e}"))?;
+
+  if status.success() {
+    Ok(())
+  } else {
+    Err(anyhow!("Failed to terminate process").into())
+  }
 }
